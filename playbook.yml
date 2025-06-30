@@ -34,7 +34,7 @@
     new_pg_container_name: "my_postgres_new" # Name for the new PostgreSQL Docker container
     pg_image: "postgres" # Docker image for PostgreSQL (e.g., 'postgres', 'bitnami/postgresql')
     pg_version: "16" # PostgreSQL version tag (e.g., '16', 'latest')
-    pg_password: "{{ vault_pg_password }}" # REQUIRED: PostgreSQL superuser password. USE ANSIBLE VAULT FOR THIS!
+    pg_password: "{{ vault_pg_password }}"
 
     # --- New Volume Settings (Optional) ---
     new_volume_size_gb: 20 # Optional: New size for the cloned volume in GB.
