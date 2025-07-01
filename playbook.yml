@@ -17,7 +17,7 @@
 
   hosts: [ospo] # Define your target server group in your inventory (e.g., [webservers] or [db_servers])
   gather_facts: yes # Gather facts about the target host
-  become: yes # Required for mounting volumes, managing Docker, etc.
+  become: yes # Required for mounting volumes, managing Docker, execute docker commands on the remote host, etc.
 
   vars:
     # --- AWS EBS Volume Configuration ---
@@ -35,6 +35,7 @@
     pg_image: "postgres" # Docker image for PostgreSQL (e.g., 'postgres', 'bitnami/postgresql')
     pg_version: "16" # PostgreSQL version tag (e.g., '16', 'latest')
     pg_password: "{{ vault_pg_password }}"
+    backup_label: "ansible_snapshot_backup" # A label for your backup (e.g., to identify the snapshot source)
 
     # --- New Volume Settings (Optional) ---
     new_volume_size_gb: 20 # Optional: New size for the cloned volume in GB.
@@ -56,19 +57,24 @@
       retries: 3
       delay: 5
 
-    - name: Stop old PostgreSQL Docker container ({{ old_pg_container_name }})
-      # Stops the running PostgreSQL container to ensure data consistency for the snapshot.
-      community.docker.docker_container:
-        name: "{{ old_pg_container_name }}"
-        state: stopped
-      ignore_errors: true # Ignore if the container doesn't exist or is already stopped
-
-    - name: Unmount old volume from {{ mount_point }}
-      # Unmounts the existing volume from its mount point.
-      ansible.builtin.mount:
-        path: "{{ mount_point }}"
-        state: absent
-      ignore_errors: true # Ignore if the volume is not mounted or path doesn't exist
+    - name: Enable PostgreSQL backup mode (pg_start_backup)
+      # Executes the pg_start_backup function inside the PostgreSQL container.
+      # This prepares the database for a consistent filesystem-level backup (snapshot).
+      community.docker.docker_exec:
+        container: "{{ pg_container_name }}"
+        command: "psql -U postgres -c \"SELECT pg_start_backup('{{ backup_label }}');\""
+        # The command is escaped correctly for shell execution within docker_exec.
+        # It calls psql, connects as 'postgres' user, and executes the SQL function.
+      environment:
+        PGPASSWORD: "{{ pg_password }}" # Pass the password securely via environment variable
+      register: pg_start_backup_result
+      # Check for successful output from psql. pg_start_backup returns a text string.
+      failed_when: "'pg_start_backup' not in pg_start_backup_result.stdout"
+      changed_when: true # This task changes the state of the database
+      # Add a delay to ensure the command has time to execute and flush.
+      # For pg_start_backup, the flush happens immediately, but a small delay
+      # before the snapshot can be prudent.
+      # This task should be executed *before* taking the EBS snapshot.
 
     - name: Create snapshot of the source volume ({{ source_volume_id }})
       # Creates a point-in-time snapshot of the specified EBS volume.
@@ -79,6 +85,21 @@
         state: present
       register: snapshot_result # Stores the snapshot details for later use
       delegate_to: localhost # AWS API calls are typically delegated to localhost
+
+    - name: Disable PostgreSQL backup mode (pg_stop_backup)
+      # Executes the pg_stop_backup function inside the PostgreSQL container.
+      # This finalizes the backup process and flushes any remaining WAL data.
+      community.docker.docker_exec:
+        container: "{{ pg_container_name }}"
+        command: "psql -U postgres -c \"SELECT pg_stop_backup();\""
+      environment:
+        PGPASSWORD: "{{ pg_password }}"
+      register: pg_stop_backup_result
+      # Check for successful output from psql. pg_stop_backup returns a text string.
+      failed_when: "'pg_stop_backup' not in pg_stop_backup_result.stdout"
+      changed_when: true # This task changes the state of the database
+      # This task should be executed *after* the EBS snapshot has completed.
+
 
     - name: Create new volume from snapshot {{ snapshot_result.snapshot_id }}
       # Creates a new EBS volume based on the snapshot.
