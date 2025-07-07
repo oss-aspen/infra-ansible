@@ -34,7 +34,7 @@
     new_pg_container_name: "my_postgres_new" # Name for the new PostgreSQL Docker container
     pg_image: "postgres" # Docker image for PostgreSQL (e.g., 'postgres', 'bitnami/postgresql')
     pg_version: "16" # PostgreSQL version tag (e.g., '16', 'latest')
-    pg_password: "{{ vault_pg_password }}"
+    augur_pg_password: "{{ vault_pg_password }}"
     backup_label: "ansible_snapshot_backup" # A label for your backup (e.g., to identify the snapshot source)
 
     # --- New Volume Settings (Optional) ---
@@ -66,7 +66,7 @@
         # The command is escaped correctly for shell execution within docker_exec.
         # It calls psql, connects as 'postgres' user, and executes the SQL function.
       environment:
-        PGPASSWORD: "{{ pg_password }}" # Pass the password securely via environment variable
+        PGPASSWORD: "{{ augur_pg_password }}" # Pass the password securely via environment variable
       register: pg_start_backup_result
       # Check for successful output from psql. pg_start_backup returns a text string.
       failed_when: "'pg_start_backup' not in pg_start_backup_result.stdout"
@@ -93,7 +93,7 @@
         container: "{{ pg_container_name }}"
         command: "psql -U postgres -c \"SELECT pg_stop_backup();\""
       environment:
-        PGPASSWORD: "{{ pg_password }}"
+        PGPASSWORD: "{{ augur_pg_password }}"
       register: pg_stop_backup_result
       # Check for successful output from psql. pg_stop_backup returns a text string.
       failed_when: "'pg_stop_backup' not in pg_stop_backup_result.stdout"
