@@ -1,0 +1,23 @@
+- name: Ensure docker is installed
+  apt:
+    pkg:
+      - docker
+      - docker.io
+      - docker-compose
+    state: present
+    update_cache: true
+  become: true
+- name: Add user to docker group
+  ansible.builtin.user:
+    name: "{{ ansible_user }}"
+    groups: docker
+    append: true
+
+- name: Reset ssh connection to allow user changes to affect ansible user
+  ansible.builtin.meta:
+    reset_connection
+
+- name: Ensure docker sdk is installed
+  ansible.builtin.include_role:
+    name: common
+    tasks_from: docker-python

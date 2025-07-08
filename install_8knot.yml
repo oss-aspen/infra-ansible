@@ -5,3 +5,7 @@
       ansible.builtin.include_role:
         name: eightknot
         tasks_from: download
+    - name: Build the 8Knot container image
+      ansible.builtin.include_role:
+        name: eightknot
+        tasks_from: build
