@@ -1,4 +1,4 @@
-install_path: /opt/git/8Knot
+git_clone_path: /opt/git/8Knot
 docker_image_tag: localhost/8knot:main
 
 

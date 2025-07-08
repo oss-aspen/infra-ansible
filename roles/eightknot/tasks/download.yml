@@ -7,7 +7,7 @@
 
 - name: Prepare location for 8Knot sources
   ansible.builtin.file:
-    path: "{{ install_path }}"
+    path: "{{ git_clone_path }}"
     state: directory
     mode: '0755'
     owner: "{{ ansible_user }}"
@@ -16,7 +16,7 @@
 - name: Clone the 8Knot repository
   git:
     repo: https://github.com/oss-aspen/8Knot
-    dest: "{{ install_path }}"
+    dest: "{{ git_clone_path }}"
     clone: yes
     update: yes
     single_branch: yes
@@ -27,5 +27,5 @@
   ansible.posix.patch:
     src: ../patches/8knot/proxyfix.patch
     remote_src: false
-    dest: "{{ install_path }}/8Knot/app.py"
+    dest: "{{ git_clone_path }}/8Knot/app.py"
 

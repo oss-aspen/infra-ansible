@@ -55,6 +55,6 @@
 - name: Build the 8Knot image
   community.docker.docker_image_build:
     name: "{{ docker_image_tag }}"
-    path: "{{ install_path }}/"
+    path: "{{ git_clone_path }}/"
     dockerfile: docker/Dockerfile
   
