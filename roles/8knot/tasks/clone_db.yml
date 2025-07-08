@@ -16,8 +16,8 @@
   #    If migrating to a *different* server, the `ec2_vol` attachment logic and host targeting would need adjustment.
 
   hosts: [ospo] # Define your target server group in your inventory (e.g., [webservers] or [db_servers])
-  gather_facts: yes # Gather facts about the target host
-  become: yes # Required for mounting volumes, managing Docker, execute docker commands on the remote host, etc.
+  gather_facts: true # Gather facts about the target host
+  become: true # Required for mounting volumes, managing Docker, execute docker commands on the remote host, etc.
 
   tasks:
     - name: Ensure boto3 and botocore are installed on the Ansible control node
@@ -107,7 +107,7 @@
     #   delegate_to: localhost
     #   # ensures this task only runs if the 'new_volume_result'
     #   # variable (from the volume creation task) contains a valid snapshot ID.
-    #   when: new_volume_result.snapshot_id is defined and new_volume_result.snapshot_id != ''     
+    #   when: new_volume_result.snapshot_id is defined and new_volume_result.snapshot_id != ''
 
     - name: Attach new volume {{ new_volume_result.volume_id }} to instance {{ target_instance_id }} as {{ source_device_name }}
       # Attaches the newly created volume to the target EC2 instance.
