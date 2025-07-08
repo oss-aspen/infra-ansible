@@ -1,3 +1,15 @@
+- name: Load extra variables
+  ansible.builtin.include_vars:
+    file: secrets.yml
+
+- name: Prepare location for compose files
+  ansible.builtin.file:
+    path: /opt/compose/8knot/
+    state: directory
+    mode: '0755'
+    owner: "{{ ansible_user }}"
+  become: true
+
 - name: Write compose file using jinja2
   ansible.builtin.template:
       src: templates/compose.yml.j2
@@ -8,6 +20,14 @@
       src: templates/env.list.j2
       dest: /opt/compose/8knot/env.list
 
+- name: Prepare location for caddy config files
+  ansible.builtin.file:
+    path: /opt/caddy/
+    state: directory
+    mode: '0755'
+    owner: "{{ ansible_user }}"
+  become: true
+
 - name: Copy Caddyfile
   ansible.builtin.copy:
     src: files/Caddyfile
@@ -15,6 +35,14 @@
     owner: "{{ ansible_user }}"
     group: "{{ ansible_user }}"
     mode: '0644'
+
+- name: Prepare location for postgres and nginx config files
+  ansible.builtin.file:
+    path: /opt/8knot/config
+    state: directory
+    mode: '0755'
+    owner: "{{ ansible_user }}"
+  become: true
 
 - name: Copy postgres.conf
   ansible.builtin.copy:
@@ -32,21 +60,30 @@
     group: "{{ ansible_user }}"
     mode: '0644'
 
+- name: Prepare location for postgres data mount
+  ansible.builtin.file:
+    path: /opt/augur/postgresql/data
+    state: directory
+    mode: '0755'
+    owner: "{{ ansible_user }}"
+  become: true
+
 - name: mount cloned DB into opt directory
   ansible.posix.mount:
     path: /opt/augur/postgresql/data
     src: "{{ source_device_name }}"
     fstype: xfs
     state: present
+  become: true
 
 - name: Stop all services
   community.docker.docker_compose_v2:
-    project_src: "{{ git_clone_path }}"
+    project_src: /opt/compose/8knot/
     state: stopped
 
 
 - name: Start all services
   community.docker.docker_compose_v2:
-    project_src: "{{ git_clone_path }}"
+    project_src: /opt/compose/8knot/
 
 
