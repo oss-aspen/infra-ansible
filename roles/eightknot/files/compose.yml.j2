@@ -1,0 +1,218 @@
+x-postgres-common:
+  &postgres-common
+  image: postgres:16
+  user: postgres
+  restart: unless-stopped
+  stop_grace_period: 1800s
+  shm_size: 268435456
+  healthcheck:
+    test: 'pg_isready -U augur --dbname=postgres'
+    interval: 10s
+    timeout: 5s
+    retries: 5
+
+services:
+  augur-db:
+    <<: *postgres-common
+    environment:
+      PGUSER: replicator
+      PGPASSWORD: {{ vault_postgres_password }}
+    command: |
+       postgres
+#      bash -c "sleep 360000"
+#      bash -c "
+#      until pg_basebackup --pgdata=/var/lib/postgresql/data -R --slot=replication_slot --host=augur.ospo --port=5432
+#      do
+#        echo 'Waiting for primary to connect...'
+#        sleep 1s
+#      done
+#      echo 'Backup done, starting replica...'
+#      chmod 0700 /var/lib/postgresql/data
+#      postgres
+#      "
+    volumes:
+      - /opt/augur/postgresql/data:/var/lib/postgresql/data
+      - /opt/backups:/backups
+    networks:
+      - 8knot
+    extra_hosts:
+      - "augur.ospo:172.31.47.128"
+    ports:
+      - 5432:5432
+
+  db-init:
+    #image: 8knot-new:latest
+    #image: 8knot:20250514
+    image: 8knot:20250620
+    command: ["python3", "./cache_manager/db_init.py"]
+    depends_on:
+      postgres-cache:
+        condition: service_healthy # to ensure that postgres is indeed initialized before this starts
+    env_file:
+      - ./env.list
+    # sometimes, postgres-cache isn't spun up before this starts.
+    # so it'll fail. We want this to restart when it fails, because
+    # postgres will be ready eventually. we don't want it to restart
+    # after it succeeds. give it 1000 attempts I guess.
+    restart: on-failure:1000 
+    networks:
+      - 8knot
+
+  reverse-proxy:
+    image: nginx:latest
+    volumes:
+      - /opt/8knot/config/nginx.conf:/etc/nginx/nginx.conf:ro
+    depends_on:
+      - app-server
+    ports:
+      - "8080:8080" # bound to host port, exposed app endpoint
+    networks:
+      - 8knot
+
+  app-server:
+    #image: 8knot-new:latest
+    #image: 8knot:20250514
+    image: 8knot:20250620
+    command:
+      [
+        "gunicorn",
+        "--bind",
+        ":8080",
+        "app:server",
+        "--workers",
+        "1",
+        "--threads",
+        "4",
+        "--timeout",
+        "300",
+        "--keep-alive",
+        "5"
+      ]
+    depends_on:
+      - worker-callback
+      - worker-query
+      - redis-cache
+      - redis-users
+      - postgres-cache
+      - db-init
+    env_file:
+      - ./env.list
+    restart: always
+    networks:
+      - 8knot
+
+  worker-callback:
+    #image: 8knot-new:latest
+    #image: 8knot:20250514
+    image: 8knot:20250620
+    command: ["celery", "-A", "app:celery_app", "worker", "--loglevel=INFO", "--concurrency=4", "--time-limit=300", "--soft-time-limit=240"]
+    depends_on:
+      - redis-cache
+      - redis-users
+      - postgres-cache
+    env_file:
+      - ./env.list
+    restart: always
+    networks:
+      - 8knot
+
+  worker-query:
+    #image: 8knot-new:latest
+    #image: 8knot:20250514
+    image: 8knot:20250620
+    command:
+      [
+        "celery",
+        "-A",
+        "app:celery_app",
+        "worker",
+        "--loglevel=INFO",
+        "-Q",
+        "data",
+        "--concurrency=4",
+        "--time-limit=600",
+        "--soft-time-limit=540"
+      ]
+    depends_on:
+      - redis-cache
+      - postgres-cache
+    env_file:
+      - ./env.list
+    restart: always
+    networks:
+      - 8knot
+
+  # for data blob caching
+  redis-cache:
+    image: docker.io/library/redis:6
+    command:
+      - /bin/sh
+      - -c
+      # - Double dollars, so that the variable is not expanded by Docker Compose
+      # - Surround by quotes, so that the shell does not split the password
+      # - The ${variable:?message} syntax causes shell to exit with a non-zero
+      #   code and print a message, when the variable is not set or empty
+      - redis-server --requirepass "$${REDIS_PASSWORD:?REDIS_PASSWORD variable is not set}"
+    env_file:
+      - ./env.list
+    restart: always
+    networks:
+      - 8knot
+
+  # for user session storage
+  redis-users:
+    image: docker.io/library/redis:6
+    command:
+      - /bin/sh
+      - -c
+      # - Double dollars, so that the variable is not expanded by Docker Compose
+      # - Surround by quotes, so that the shell does not split the password
+      # - The ${variable:?message} syntax causes shell to exit with a non-zero
+      #   code and print a message, when the variable is not set or empty
+      - redis-server --requirepass "$${REDIS_PASSWORD:?REDIS_PASSWORD variable is not set}"
+    env_file:
+      - ./env.list
+    restart: always
+    networks:
+      - 8knot
+
+  postgres-cache:
+    image: docker.io/library/postgres:16
+    command: ["postgres", "-c", "config_file=/etc/postgresql/postgresql.conf"]
+    volumes:
+      - /opt/8knot/config/postgres.conf:/etc/postgresql/postgresql.conf:ro
+      - postgres-cache:/var/lib/postgresql/data
+    env_file:
+      - ./env.list
+    restart: always
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    networks:
+      - 8knot
+
+  caddy:
+    image: caddy:2.9-alpine
+    restart: unless-stopped
+    cap_add:
+      - NET_ADMIN
+    ports:
+      - "80:80"
+      - "443:443"
+      - "443:443/udp"
+    volumes:
+      - /opt/caddy:/etc/caddy
+      - caddy_data:/data
+      - caddy_config:/config
+    networks:
+      - 8knot
+
+volumes:
+  caddy_data:
+  caddy_config:
+  postgres-cache:
+
+networks:
+  8knot:
