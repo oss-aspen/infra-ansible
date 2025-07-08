@@ -25,7 +25,7 @@
 
 - name: Patch the 8Knot repository
   ansible.posix.patch:
-    src: ../patches/8knot/proxyfix.patch
+    src: patches/proxyfix.patch
     remote_src: false
     dest: "{{ git_clone_path }}/8Knot/app.py"
 
