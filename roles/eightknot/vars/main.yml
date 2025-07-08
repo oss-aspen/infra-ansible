@@ -1,4 +1,6 @@
 install_path: /opt/git/8Knot
+docker_image_tag: localhost/8knot:main
+
 
 # --- AWS EBS Volume Configuration ---
 source_volume_id: "vol-0abcdef1234567890" # REQUIRED: The ID of the existing EBS Volume to snapshot

@@ -1,13 +1,42 @@
+- name: Ensure gpg is installed
+  apt:
+    pkg:
+      - gpg
+    state: present
+    update_cache: true
+  become: true
+
 - name: Ensure docker is installed
   apt:
     pkg:
       - docker
       - docker.io
       - docker-compose
-      - docker-buildx-plugin
     state: present
     update_cache: true
   become: true
+
+- name: Add docker apt repository key.
+  ansible.builtin.get_url:
+    url: https://download.docker.com/linux/debian/gpg
+    dest: /etc/apt/trusted.gpg.d/docker.asc
+    mode: '0644'
+    force: true
+  become: true
+
+- name: Add Docker Repository
+  apt_repository:
+    repo: deb https://download.docker.com/linux/debian bookworm stable
+    state: present
+  become: true
+
+- name: Install docker-ce
+  apt:
+    name: docker-ce
+    state: latest
+    update_cache: true
+  become: true
+
 - name: Add user to docker group
   ansible.builtin.user:
     name: "{{ ansible_user }}"
@@ -22,3 +51,10 @@
   ansible.builtin.include_role:
     name: common
     tasks_from: docker-python
+
+- name: Build the 8Knot image
+  community.docker.docker_image_build:
+    name: "{{ docker_image_tag }}"
+    path: "{{ install_path }}/"
+    dockerfile: docker/Dockerfile
+  
