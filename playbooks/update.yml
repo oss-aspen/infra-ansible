@@ -1,0 +1,8 @@
+- name: Run apt updates
+  hosts: [ospo]
+  become: true
+  tasks:
+    - name: apt
+      apt:
+        update_cache: true
+        upgrade: 'yes'
