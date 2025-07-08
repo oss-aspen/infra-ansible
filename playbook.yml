@@ -1,0 +1,196 @@
+---
+- name: Clone PostgreSQL Volume and Migrate Container
+  # This playbook assumes you are using AWS EBS volumes and Docker for PostgreSQL.
+  # It will snapshot an existing EBS volume, create a new volume from that snapshot,
+  # attach it to the specified EC2 instance, mount it, and then start a new
+  # PostgreSQL Docker container pointing to this new volume.
+  # Finally, it offers steps to clean up the old volume and snapshot.
+
+  # IMPORTANT:
+  # 1. Replace all placeholder variables (e.g., "vol-0abcdef1234567890") with your actual values.
+  # 2. For `pg_password`, ALWAYS use Ansible Vault for security.
+  # 3. Ensure `boto3` and `botocore` Python libraries are installed on your Ansible control node.
+  # 4. The `source_device_name` might map differently on the Linux OS (e.g., /dev/xvdf instead of /dev/sdf).
+  #    You may need to verify this on your EC2 instance using `lsblk` or `fdisk -l`.
+  # 5. This playbook assumes the new volume is mounted on the *same server* where the old volume was.
+  #    If migrating to a *different* server, the `ec2_vol` attachment logic and host targeting would need adjustment.
+
+  hosts: your_target_server_group # Define your target server group in your inventory (e.g., [webservers] or [db_servers])
+  gather_facts: yes # Gather facts about the target host
+  become: yes # Required for mounting volumes, managing Docker, etc.
+
+  vars:
+    # --- AWS EBS Volume Configuration ---
+    source_volume_id: "vol-0abcdef1234567890" # REQUIRED: The ID of the existing EBS Volume to snapshot
+    target_instance_id: "i-0123456789abcdef0" # REQUIRED: The ID of the EC2 Instance where the volume is attached/will be attached
+    aws_region: "us-east-1" # REQUIRED: Your AWS region (e.g., us-east-1, eu-west-2)
+    source_device_name: "/dev/sdf" # REQUIRED: The device name on the EC2 instance (e.g., /dev/sdf, /dev/sdg).
+                                   # Linux might map it differently (e.g., /dev/xvdf, /dev/xvdg, /dev/nvme0n1).
+                                   # Verify this on your instance.
+
+    # --- PostgreSQL & Docker Configuration ---
+    mount_point: "/var/lib/postgresql/data" # The mount point for PostgreSQL data on the target server
+    old_pg_container_name: "my_postgres_old" # Name of the existing PostgreSQL Docker container
+    new_pg_container_name: "my_postgres_new" # Name for the new PostgreSQL Docker container
+    pg_image: "postgres" # Docker image for PostgreSQL (e.g., 'postgres', 'bitnami/postgresql')
+    pg_version: "16" # PostgreSQL version tag (e.g., '16', 'latest')
+    pg_password: "{{ vault_pg_password }}" # REQUIRED: PostgreSQL superuser password. USE ANSIBLE VAULT FOR THIS!
+
+    # --- New Volume Settings (Optional) ---
+    new_volume_size_gb: 20 # Optional: New size for the cloned volume in GB.
+                           # Set to 0 or comment out to keep the original size from the snapshot.
+    new_volume_type: "gp2" # Optional: Type of the new EBS volume (e.g., gp2, gp3, io1, st1)
+
+  tasks:
+    - name: Ensure boto3 and botocore are installed on the Ansible control node
+      # These Python libraries are required for Ansible to interact with AWS APIs.
+      delegate_to: localhost # Run this task on the Ansible control machine
+      run_once: true # Only run this once, even if multiple hosts are targeted
+      ansible.builtin.pip:
+        name:
+          - boto3
+          - botocore
+        state: present
+      register: pip_install_result
+      until: pip_install_result is not failed # Retry if pip installation fails
+      retries: 3
+      delay: 5
+
+    - name: Stop old PostgreSQL Docker container ({{ old_pg_container_name }})
+      # Stops the running PostgreSQL container to ensure data consistency for the snapshot.
+      community.docker.docker_container:
+        name: "{{ old_pg_container_name }}"
+        state: stopped
+      ignore_errors: true # Ignore if the container doesn't exist or is already stopped
+
+    - name: Unmount old volume from {{ mount_point }}
+      # Unmounts the existing volume from its mount point.
+      ansible.builtin.mount:
+        path: "{{ mount_point }}"
+        state: absent
+      ignore_errors: true # Ignore if the volume is not mounted or path doesn't exist
+
+    - name: Create snapshot of the source volume ({{ source_volume_id }})
+      # Creates a point-in-time snapshot of the specified EBS volume.
+      community.aws.ec2_snapshot:
+        volume_id: "{{ source_volume_id }}"
+        region: "{{ aws_region }}"
+        description: "Snapshot for {{ old_pg_container_name }} migration - {{ ansible_date_time.iso8601_basic }}"
+        state: present
+      register: snapshot_result # Stores the snapshot details for later use
+      delegate_to: localhost # AWS API calls are typically delegated to localhost
+
+    - name: Create new volume from snapshot {{ snapshot_result.snapshot_id }}
+      # Creates a new EBS volume based on the snapshot.
+      # The size can be increased here if `new_volume_size_gb` is set.
+      community.aws.ec2_vol:
+        snapshot_id: "{{ snapshot_result.snapshot_id }}"
+        region: "{{ aws_region }}"
+        volume_type: "{{ new_volume_type }}"
+        size: "{{ new_volume_size_gb if new_volume_size_gb > 0 else omit }}" # Omit size if 0 to keep original
+        tags:
+          Name: "{{ new_pg_container_name }}-data-volume"
+          Project: "PostgresMigration"
+        state: present
+      register: new_volume_result # Stores the new volume details
+      delegate_to: localhost
+
+    - name: Attach new volume {{ new_volume_result.volume_id }} to instance {{ target_instance_id }} as {{ source_device_name }}
+      # Attaches the newly created volume to the target EC2 instance.
+      community.aws.ec2_vol:
+        instance: "{{ target_instance_id }}"
+        id: "{{ new_volume_result.volume_id }}"
+        device_name: "{{ source_device_name }}" # Use the same device name or a new one
+        region: "{{ aws_region }}"
+        state: present
+      register: attach_volume_result
+      delegate_to: localhost
+
+    - name: Wait for the new device to be available on the host
+      # Waits until the kernel recognizes the newly attached device.
+      ansible.builtin.wait_for:
+        path: "{{ source_device_name }}" # This path needs to be the kernel's device path (e.g., /dev/xvdf)
+        timeout: 60
+        msg: "New device {{ source_device_name }} did not appear within 60 seconds."
+
+    - name: Create mount point directory ({{ mount_point }}) if it doesn't exist
+      # Ensures the directory where the volume will be mounted exists.
+      ansible.builtin.file:
+        path: "{{ mount_point }}"
+        state: directory
+        mode: '0755'
+
+    - name: Mount new volume ({{ source_device_name }}) to {{ mount_point }}
+      # Mounts the new EBS volume to the specified directory.
+      # Ensure `fstype` matches the filesystem on your volume.
+      ansible.builtin.mount:
+        src: "{{ source_device_name }}" # The actual device path on the target OS
+        path: "{{ mount_point }}"
+        fstype: "ext4" # Adjust filesystem type (e.g., xfs, ext4)
+        state: mounted
+
+    - name: Start new PostgreSQL Docker container ({{ new_pg_container_name }})
+      # Starts a new PostgreSQL Docker container, pointing its data volume to the newly mounted EBS volume.
+      community.docker.docker_container:
+        name: "{{ new_pg_container_name }}"
+        image: "{{ pg_image }}:{{ pg_version }}"
+        state: started
+        restart_policy: always
+        env:
+          POSTGRES_PASSWORD: "{{ pg_password }}" # Pass PostgreSQL password
+        volumes:
+          - "{{ mount_point }}:/var/lib/postgresql/data" # Mount the new volume as PostgreSQL data directory
+        ports:
+          - "5432:5432" # Expose PostgreSQL port. Adjust if old container used it or if you need a different port.
+      register: new_pg_container_start
+
+    - name: Wait for new PostgreSQL container to be healthy
+      # Waits for the PostgreSQL service inside the container to become reachable on port 5432.
+      ansible.builtin.wait_for:
+        port: 5432
+        host: "{{ ansible_host }}" # Connects to the target server's IP
+        delay: 5 # Wait 5 seconds before first check
+        timeout: 120 # Timeout after 120 seconds
+        state: started
+        msg: "PostgreSQL container did not become healthy on port 5432."
+
+    - name: Verify that the new PostgreSQL is running and taking requests
+      # Executes a simple `psql` command inside the new container to verify connectivity.
+      ansible.builtin.shell: |
+        docker exec {{ new_pg_container_name }} psql -U postgres -c "SELECT 1;"
+      environment:
+        PGPASSWORD: "{{ pg_password }}" # Pass password via environment variable for psql
+      register: pg_check_result
+      failed_when: "'(1 row)' not in pg_check_result.stdout" # Fails if '1 row' is not found in output
+      changed_when: false # This task is for verification, not for changing state
+      until: pg_check_result is not failed # Retry until successful
+      retries: 5
+      delay: 10
+      # You can add more robust verification steps here, e.g., querying specific data.
+
+    - name: Unmount and delete old volume ({{ source_volume_id }})
+      # CAUTION: This step permanently deletes your old volume.
+      # ONLY run this AFTER you have thoroughly verified that the new PostgreSQL
+      # instance is fully functional and data is correct.
+      # Consider commenting this out or running it manually after verification.
+      community.aws.ec2_vol:
+        id: "{{ source_volume_id }}"
+        region: "{{ aws_region }}"
+        state: absent
+      delegate_to: localhost
+      # when: new_pg_container_start.changed and pg_check_result.rc == 0
+      # Uncomment the 'when' condition above to only delete if the new container was started
+      # and the PostgreSQL verification command succeeded.
+
+    - name: Delete the snapshot ({{ snapshot_result.snapshot_id }})
+      # CAUTION: This step permanently deletes the snapshot.
+      # Keep the snapshot as a recovery point until you are absolutely certain
+      # the new setup is stable and you no longer need it.
+      community.aws.ec2_snapshot:
+        snapshot_id: "{{ snapshot_result.snapshot_id }}"
+        region: "{{ aws_region }}"
+        state: absent
+      delegate_to: localhost
+      # when: new_pg_container_start.changed and pg_check_result.rc == 0
+      # Uncomment the 'when' condition above to only delete if the new container was started
+      # and the PostgreSQL verification command succeeded.
