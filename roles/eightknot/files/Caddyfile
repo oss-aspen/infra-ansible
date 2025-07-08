@@ -1,0 +1,3 @@
+{{ public_hostname }}
+
+reverse_proxy reverse-proxy:8080

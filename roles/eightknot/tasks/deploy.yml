@@ -1,0 +1,52 @@
+- name: Write compose file using jinja2
+  ansible.builtin.template:
+      src: templates/compose.yml.j2
+      dest: /opt/compose/8knot/compose.yml
+
+- name: Write environment file using jinja2
+  ansible.builtin.template:
+      src: templates/env.list.j2
+      dest: /opt/compose/8knot/env.list
+
+- name: Copy Caddyfile
+  ansible.builtin.copy:
+    src: files/Caddyfile
+    dest: /opt/caddy/Caddyfile
+    owner: "{{ ansible_user }}"
+    group: "{{ ansible_user }}"
+    mode: '0644'
+
+- name: Copy postgres.conf
+  ansible.builtin.copy:
+    src: files/postgres.conf
+    dest: /opt/8knot/config/postgres.conf
+    owner: "{{ ansible_user }}"
+    group: "{{ ansible_user }}"
+    mode: '0644'
+
+- name: Copy nginx.conf
+  ansible.builtin.copy:
+    src: files/nginx.conf
+    dest: /opt/8knot/config/nginx.conf
+    owner: "{{ ansible_user }}"
+    group: "{{ ansible_user }}"
+    mode: '0644'
+
+- name: mount cloned DB into opt directory
+  ansible.posix.mount:
+    path: /opt/augur/postgresql/data
+    src: "{{ source_device_name }}"
+    fstype: xfs
+    state: present
+
+- name: Stop all services
+  community.docker.docker_compose_v2:
+    project_src: "{{ git_clone_path }}"
+    state: stopped
+
+
+- name: Start all services
+  community.docker.docker_compose_v2:
+    project_src: "{{ git_clone_path }}"
+
+
