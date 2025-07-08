@@ -1,0 +1,25 @@
+# --- AWS EBS Volume Configuration ---
+source_volume_id: "vol-0abcdef1234567890" # REQUIRED: The ID of the existing EBS Volume to snapshot
+target_instance_id: "i-0123456789abcdef0" # REQUIRED: The ID of the EC2 Instance where the volume is attached/will be attached
+aws_region: "us-east-1" # REQUIRED: Your AWS region (e.g., us-east-1, eu-west-2)
+source_device_name: "/dev/sdf" # REQUIRED: The device name on the EC2 instance (e.g., /dev/sdf, /dev/sdg).
+                                # Linux might map it differently (e.g., /dev/xvdf, /dev/xvdg, /dev/nvme0n1).
+                                # Verify this on your instance.
+
+# --- PostgreSQL & Docker Configuration ---
+mount_point: "/var/lib/postgresql/data" # The mount point for PostgreSQL data on the target server
+augur_pg_container_name: "postgres"
+augur_pg_container_user: "augur"
+augur_pg_password: "{{ vault_pg_password }}"
+
+# 8knot_pg_container_name: "postgres"
+old_pg_container_name: "my_postgres_old" # Name of the existing PostgreSQL Docker container
+new_pg_container_name: "my_postgres_new" # Name for the new PostgreSQL Docker container
+pg_image: "postgres" # Docker image for PostgreSQL (e.g., 'postgres', 'bitnami/postgresql')
+pg_version: "16" # PostgreSQL version tag (e.g., '16', 'latest')
+backup_label: "ansible_snapshot_backup" # A label for your backup (e.g., to identify the snapshot source)
+
+# --- New Volume Settings (Optional) ---
+new_volume_size_gb: 20 # Optional: New size for the cloned volume in GB.
+                        # Set to 0 or comment out to keep the original size from the snapshot.
+new_volume_type: "gp2" # Optional: Type of the new EBS volume (e.g., gp2, gp3, io1, st1)
