@@ -4,6 +4,7 @@
       - docker
       - docker.io
       - docker-compose
+      - docker-buildx-plugin
     state: present
     update_cache: true
   become: true
