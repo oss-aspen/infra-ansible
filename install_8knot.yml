@@ -9,3 +9,7 @@
       ansible.builtin.include_role:
         name: eightknot
         tasks_from: build
+    - name: Deploy the 8Knot config files and container images
+      ansible.builtin.include_role:
+        name: eightknot
+        tasks_from: deploy
