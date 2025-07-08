@@ -1,4 +1,9 @@
-
+- name: Ensure git is installed
+  apt:
+    name: git
+    state: present
+    update_cache: true
+  become: true
 
 - name: Prepare location for 8Knot sources
   ansible.builtin.file:

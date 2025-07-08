@@ -1,10 +1,6 @@
 - name: Install the latest version of 8Knot
   hosts: [ospo]
   tasks:
-    - name: Set up the environment
-      ansible.builtin.include_role:
-        name: eightknot
-        tasks_from: environment
     - name: Download 8Knot
       ansible.builtin.include_role:
         name: eightknot
