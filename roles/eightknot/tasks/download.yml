@@ -15,6 +15,7 @@
     clone: yes
     update: yes
     single_branch: yes
+    force: true # clear any patches that may exist. start totally fresh
     version: main
 
 - name: Patch the 8Knot repository
