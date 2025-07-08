@@ -1,0 +1,9 @@
+- name: Install the latest version of 8Knot
+  hosts: [ospo]
+  tasks:
+    - name: Ensure git is installed
+      apt:
+        name: git
+        state: present
+        update_cache: true
+      become: true
