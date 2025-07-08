@@ -42,6 +42,13 @@
         update: yes
         single_branch: yes
         version: main
+    
+    - name: Patch the 8Knot repository
+      ansible.posix.patch:
+        src: ../patches/8knot/proxyfix.patch
+        remote_src: false
+        dest: /opt/git/8Knot/8Knot/app.py
+    
 
     
 
