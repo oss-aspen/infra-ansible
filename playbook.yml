@@ -30,11 +30,15 @@
 
     # --- PostgreSQL & Docker Configuration ---
     mount_point: "/var/lib/postgresql/data" # The mount point for PostgreSQL data on the target server
+    augur_pg_container_name: "postgres"
+    augur_pg_container_user: "augur"
+    augur_pg_password: "{{ vault_pg_password }}"
+
+    8knot_pg_container_name: "postgres"
     old_pg_container_name: "my_postgres_old" # Name of the existing PostgreSQL Docker container
     new_pg_container_name: "my_postgres_new" # Name for the new PostgreSQL Docker container
     pg_image: "postgres" # Docker image for PostgreSQL (e.g., 'postgres', 'bitnami/postgresql')
     pg_version: "16" # PostgreSQL version tag (e.g., '16', 'latest')
-    augur_pg_password: "{{ vault_pg_password }}"
     backup_label: "ansible_snapshot_backup" # A label for your backup (e.g., to identify the snapshot source)
 
     # --- New Volume Settings (Optional) ---
@@ -61,8 +65,8 @@
       # Executes the pg_start_backup function inside the PostgreSQL container.
       # This prepares the database for a consistent filesystem-level backup (snapshot).
       community.docker.docker_exec:
-        container: "{{ pg_container_name }}"
-        command: "psql -U postgres -c \"SELECT pg_start_backup('{{ backup_label }}');\""
+        container: "{{ augur_pg_container_name }}"
+        command: "psql -U {{ augur_pg_container_user }} -c \"SELECT pg_start_backup('{{ backup_label }}');\""
         # The command is escaped correctly for shell execution within docker_exec.
         # It calls psql, connects as 'postgres' user, and executes the SQL function.
       environment:
@@ -90,8 +94,8 @@
       # Executes the pg_stop_backup function inside the PostgreSQL container.
       # This finalizes the backup process and flushes any remaining WAL data.
       community.docker.docker_exec:
-        container: "{{ pg_container_name }}"
-        command: "psql -U postgres -c \"SELECT pg_stop_backup();\""
+        container: "{{ augur_pg_container_name }}"
+        command: "psql -U {{ augur_pg_container_user }} -c \"SELECT pg_stop_backup();\""
       environment:
         PGPASSWORD: "{{ augur_pg_password }}"
       register: pg_stop_backup_result
