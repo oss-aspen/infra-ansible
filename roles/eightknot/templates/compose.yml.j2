@@ -42,7 +42,7 @@ services:
   db-init:
     #image: 8knot-new:latest
     #image: 8knot:20250514
-    image: 8knot:20250620
+    image: {{ docker_image_tag }}
     command: ["python3", "./cache_manager/db_init.py"]
     depends_on:
       postgres-cache:
@@ -71,7 +71,7 @@ services:
   app-server:
     #image: 8knot-new:latest
     #image: 8knot:20250514
-    image: 8knot:20250620
+    image: {{ docker_image_tag }}
     command:
       [
         "gunicorn",
@@ -103,7 +103,7 @@ services:
   worker-callback:
     #image: 8knot-new:latest
     #image: 8knot:20250514
-    image: 8knot:20250620
+    image: {{ docker_image_tag }}
     command: ["celery", "-A", "app:celery_app", "worker", "--loglevel=INFO", "--concurrency=4", "--time-limit=300", "--soft-time-limit=240"]
     depends_on:
       - redis-cache
@@ -118,7 +118,7 @@ services:
   worker-query:
     #image: 8knot-new:latest
     #image: 8knot:20250514
-    image: 8knot:20250620
+    image: {{ docker_image_tag }}
     command:
       [
         "celery",
