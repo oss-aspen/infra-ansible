@@ -21,7 +21,7 @@
     update: yes
     single_branch: yes
     force: true # clear any patches that may exist. start totally fresh
-    version: main
+    version: "{{ git_clone_ref }}"
 
 - name: Patch the 8Knot repository
   ansible.posix.patch:
