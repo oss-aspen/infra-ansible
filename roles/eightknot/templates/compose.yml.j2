@@ -15,9 +15,9 @@ services:
   augur-db:
     <<: *postgres-common
     environment:
-      POSTGRES_DB: ${AUGUR_DB}
-      POSTGRES_USER: ${AUGUR_DB_USER}
-      POSTGRES_PASSWORD: ${AUGUR_DB_PASSWORD}
+      POSTGRES_DB: ${AUGUR_DATABASE}
+      POSTGRES_USER: ${AUGUR_USERNAME}
+      POSTGRES_PASSWORD: ${AUGUR_PASSWORD}
     #command: postgres
     volumes:
       - /opt/augur/postgresql/data:/var/lib/postgresql/data
