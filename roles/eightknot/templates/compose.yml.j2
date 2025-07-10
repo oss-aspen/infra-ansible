@@ -15,21 +15,10 @@ services:
   augur-db:
     <<: *postgres-common
     environment:
-      PGUSER: replicator
-      PGPASSWORD: {{ vault_postgres_password }}
-    command: |
-       postgres
-#      bash -c "sleep 360000"
-#      bash -c "
-#      until pg_basebackup --pgdata=/var/lib/postgresql/data -R --slot=replication_slot --host=augur.ospo --port=5432
-#      do
-#        echo 'Waiting for primary to connect...'
-#        sleep 1s
-#      done
-#      echo 'Backup done, starting replica...'
-#      chmod 0700 /var/lib/postgresql/data
-#      postgres
-#      "
+      POSTGRES_DB: ${AUGUR_DB}
+      POSTGRES_USER: ${AUGUR_DB_USER}
+      POSTGRES_PASSWORD: ${AUGUR_DB_PASSWORD}
+    #command: postgres
     volumes:
       - /opt/augur/postgresql/data:/var/lib/postgresql/data
     networks:

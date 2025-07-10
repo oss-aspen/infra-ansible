@@ -91,5 +91,6 @@
   community.docker.docker_compose_v2:
     project_src: /opt/compose/8knot/
     pull: missing
+    env_files: env.list
 
 
