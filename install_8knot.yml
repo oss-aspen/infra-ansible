@@ -13,3 +13,7 @@
       ansible.builtin.include_role:
         name: eightknot
         tasks_from: deploy
+    - name: restart 8Knot
+      ansible.builtin.include_role:
+        name: eightknot
+        tasks_from: restart
