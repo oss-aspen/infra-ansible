@@ -70,7 +70,7 @@
     path: /opt/augur/postgresql/data
     src: "{{ source_device_name }}"
     fstype: xfs
-    state: present
+    state: mounted
   become: true
 
 - name: Stop all services
