@@ -72,15 +72,3 @@
     fstype: xfs
     state: mounted
   become: true
-
-- name: Ensure permissions on the postgres data are correct
-  ansible.builtin.file:
-    path: /opt/augur/postgresql/data
-    state: directory
-    recurse: yes
-    owner: "{{ ansible_user }}"
-  become: true
-
-
-
-
