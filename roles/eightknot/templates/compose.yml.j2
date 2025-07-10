@@ -58,8 +58,6 @@ services:
       - 8knot
 
   app-server:
-    #image: 8knot-new:latest
-    #image: 8knot:20250514
     image: {{ docker_image_tag }}
     command:
       [
@@ -90,8 +88,6 @@ services:
       - 8knot
 
   worker-callback:
-    #image: 8knot-new:latest
-    #image: 8knot:20250514
     image: {{ docker_image_tag }}
     command: ["celery", "-A", "app:celery_app", "worker", "--loglevel=INFO", "--concurrency=4", "--time-limit=300", "--soft-time-limit=240"]
     depends_on:
@@ -105,8 +101,6 @@ services:
       - 8knot
 
   worker-query:
-    #image: 8knot-new:latest
-    #image: 8knot:20250514
     image: {{ docker_image_tag }}
     command:
       [
