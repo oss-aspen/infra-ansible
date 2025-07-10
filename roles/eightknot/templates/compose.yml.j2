@@ -23,8 +23,6 @@ services:
       - /opt/augur/postgresql/data:/var/lib/postgresql/data
     networks:
       - 8knot
-    extra_hosts:
-      - "augur.ospo:172.31.47.128"
     ports:
       - 5432:5432
 
