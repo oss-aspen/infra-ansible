@@ -3,7 +3,7 @@ git_clone_ref: main
 docker_image_tag: 8knot:main
 
 #eightknot.osci.io
-public_hostname: localhost
+public_hostname: http://{{ inventory_hostname }}
 
 
 # --- AWS EBS Volume Configuration ---
