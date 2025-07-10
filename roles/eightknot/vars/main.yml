@@ -28,4 +28,4 @@ backup_label: "ansible_snapshot_backup" # A label for your backup (e.g., to iden
 # --- New Volume Settings (Optional) ---
 new_volume_size_gb: 20 # Optional: New size for the cloned volume in GB.
                         # Set to 0 or comment out to keep the original size from the snapshot.
-new_volume_type: "gp2" # Optional: Type of the new EBS volume (e.g., gp2, gp3, io1, st1)
+new_volume_type: "gp3" # Optional: Type of the new EBS volume (e.g., gp2, gp3, io1, st1)
