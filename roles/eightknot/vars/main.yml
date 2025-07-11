@@ -16,7 +16,7 @@ source_device_name: "/dev/sdb1"
 mount_point: "/var/lib/postgresql/data" # The mount point for PostgreSQL data on the target server
 augur_pg_container_name: "postgres"
 augur_pg_container_user: "augur"
-augur_pg_password: "{{ vault_pg_password }}"
+augur_pg_password: "{{ vault_postgres_password }}"
 
 # 8knot_pg_container_name: "postgres"
 old_pg_container_name: "my_postgres_old" # Name of the existing PostgreSQL Docker container
