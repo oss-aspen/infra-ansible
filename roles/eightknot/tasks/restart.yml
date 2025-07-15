@@ -1,10 +1,7 @@
-- name: Stop all services
-  community.docker.docker_compose_v2:
-    project_src: /opt/compose/8knot/
-    state: stopped
+---
+- name: Stop the 8Knot compose
+  ansible.builtin.include_tasks: down.yml # This will execute roles/eightknot/tasks/stop.yml
 
-- name: Start all services
-  community.docker.docker_compose_v2:
-    project_src: /opt/compose/8knot/
-    pull: missing
-    env_files: env.list
+- name: Start the 8Knot compose
+  ansible.builtin.include_tasks: up.yml # This will execute roles/eightknot/tasks/start.yml
+
