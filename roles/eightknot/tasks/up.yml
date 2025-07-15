@@ -1,5 +1,5 @@
 - name: Start all services
   community.docker.docker_compose_v2:
-    project_src: /opt/compose/8knot/
+    project_src: "{{ compose_path }}"
     pull: missing
     env_files: env.list

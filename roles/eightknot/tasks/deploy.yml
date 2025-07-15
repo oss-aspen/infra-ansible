@@ -4,7 +4,7 @@
 
 - name: Prepare location for compose files
   ansible.builtin.file:
-    path: /opt/compose/8knot/
+    path: "{{ compose_path }}"
     state: directory
     mode: '0755'
     owner: "{{ ansible_user }}"
@@ -13,12 +13,12 @@
 - name: Write compose file using jinja2
   ansible.builtin.template:
       src: templates/compose.yml.j2
-      dest: /opt/compose/8knot/compose.yml
+      dest: "{{ compose_path }}/compose.yml"
 
 - name: Write environment file using jinja2
   ansible.builtin.template:
       src: templates/env.list.j2
-      dest: /opt/compose/8knot/env.list
+      dest: "{{ compose_path }}/env.list"
 
 - name: Prepare location for caddy config files
   ansible.builtin.file:
