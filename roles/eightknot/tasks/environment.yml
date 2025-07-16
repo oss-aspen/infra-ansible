@@ -1,1 +1,8 @@
 
+# Set vm.overcommit_memory to 1 in /etc/sysctl.conf
+# This is helpful for ensuring redis doesnt corrupt or
+# lose data in low memory environments
+- ansible.posix.sysctl:
+    name: vm.overcommit_memory
+    value: '1'
+    state: present
