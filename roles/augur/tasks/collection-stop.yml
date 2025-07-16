@@ -1,0 +1,11 @@
+- name: Stop all services except database
+  community.docker.docker_compose_v2:
+    project_src: "{{ compose_path }}"
+    files: "{{ compose_file }}"
+    services: 
+      - augur-redis-1
+      - augur-rabbitmq-1
+      - augur-flower-1
+      - augur-augur-keyman-1
+      - augur-augur-1
+    state: stopped
