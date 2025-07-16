@@ -1,5 +1,5 @@
 - name: Install the latest version of 8Knot
-  hosts: [ospo]
+  hosts: [ospo_staging]
   tasks:
     - name: Download 8Knot
       ansible.builtin.include_role:

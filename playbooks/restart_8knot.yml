@@ -1,5 +1,5 @@
 - name: Restert the 8Knot containers
-  hosts: [ospo]
+  hosts: [ospo_staging]
   tasks:
     - name: restart 8Knot
       ansible.builtin.include_role:
