@@ -22,6 +22,11 @@
     single_branch: yes
     force: true # clear any patches that may exist. start totally fresh
     version: "{{ git_clone_ref }}"
+  register: git_clone_result
+
+- name: Display deployed commit hash
+  debug:
+    msg: "8Knot deployed from commit: {{ git_clone_result.after }} ({{ git_clone_ref }})"
 
 - name: Patch the 8Knot repository
   ansible.posix.patch:
