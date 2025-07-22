@@ -59,7 +59,7 @@
 
 - name: Prepare location for postgres data mount
   ansible.builtin.file:
-    path: /opt/augur/postgresql/data
+    path: "{{ mount_point }}"
     state: directory
     mode: '0755'
     owner: "{{ ansible_user }}"
@@ -67,7 +67,7 @@
 
 - name: mount cloned DB into opt directory
   ansible.posix.mount:
-    path: /opt/augur/postgresql/data
+    path: "{{ mount_point }}"
     src: "{{ source_device_partition }}"
     fstype: xfs
     state: mounted
