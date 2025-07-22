@@ -1,75 +1,51 @@
 #!/usr/bin/python
 
-# Copyright: (c) 2018, Terry Jones <terry.jones@example.org>
-# GNU General Public License v3.0+ (see COPYING or https://www.gnu.org/licenses/gpl-3.0.txt)
 from __future__ import (absolute_import, division, print_function)
 __metaclass__ = type
+from ansible.module_utils.basic import AnsibleModule
 
+# --- Ansible Module Documentation ---
 DOCUMENTATION = r'''
 ---
-module: my_test
-
-short_description: This is my test module
-
-# If this is part of a collection, you need to use semantic versioning,
-# i.e. the version is of the form "2.5.0" and not "2.4".
-version_added: "1.0.0"
-
-description: This is my longer description explaining my test module.
-
+module: find_aws_volume
+short_description: Finds the AWS Volume ID for a given mount point.
+description:
+  - This module inspects a local mount point, determines its underlying root block device,
+    and retrieves the device's serial number, which corresponds to the AWS EBS Volume ID.
 options:
-    name:
-        description: This is the message to send to the test module.
-        required: true
-        type: str
-    new:
-        description:
-            - Control to demo if the result of this module is changed or not.
-            - Parameter description can be a list as well.
-        required: false
-        type: bool
-# Specify this value according to your collection
-# in format of namespace.collection.doc_fragment_name
-# extends_documentation_fragment:
-#     - my_namespace.my_collection.my_doc_fragment_name
-
+  mount_point:
+    description: The absolute path of the mounted filesystem to inspect.
+    required: true
+    type: str
 author:
-    - Your Name (@yourGitHubHandle)
+    - Adrian Edwards (@MoralCode)
 '''
 
 EXAMPLES = r'''
-# Pass in a message
-- name: Test with a message
-  my_namespace.my_collection.my_test:
-    name: hello world
+- name: Find the volume ID for the /data mount
+  find_aws_volume:
+    mount_point: /data
+  register: volume_info
 
-# pass in a message and have changed true
-- name: Test with a message and changed output
-  my_namespace.my_collection.my_test:
-    name: hello world
-    new: true
-
-# fail the module
-- name: Test failure of the module
-  my_namespace.my_collection.my_test:
-    name: fail me
+- name: Display the found volume ID
+  ansible.builtin.debug:
+    msg: "The AWS Volume ID is {{ volume_info.aws_volume_id }}"
 '''
 
 RETURN = r'''
-# These are examples of possible return values, and in general should use other names for return values.
-original_message:
-    description: The original name param that was passed in.
-    type: str
-    returned: always
-    sample: 'hello world'
-message:
-    description: The output message that the test module generates.
-    type: str
-    returned: always
-    sample: 'goodbye'
+aws_volume_id:
+  description: The AWS-formatted EBS Volume ID.
+  returned: on success
+  type: str
+  sample: "vol-012345abcdef6789"
+root_block_device:
+  description: The root block device for the mount point (e.g., /dev/nvme0n1).
+  returned: on success
+  type: str
+  sample: "/dev/nvme0n1"
 '''
+# --- End of Documentation ---
 
-from ansible.module_utils.basic import AnsibleModule
 
 
 def run_module():
