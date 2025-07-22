@@ -1,4 +1,9 @@
 # at this point this should probably be a custom module...
+
+- name: Gather facts from EC2 metadata service
+  amazon.aws.ec2_metadata_facts:
+  no_log: true
+
 - name: Find the device mounted at {{ mount_point }}
   ansible.builtin.set_fact:
     # Find the mount, get the first result, and extract its 'device' attribute
