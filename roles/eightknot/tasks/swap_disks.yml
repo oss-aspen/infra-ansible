@@ -1,0 +1,19 @@
+- name: Ensure 8knot database (and everything that relies on it) is not running
+  include_tasks: down.yml
+
+- name: unmount DB from opt directory
+  ansible.posix.mount:
+    path: "{{ mount_point }}"
+    src: "{{ source_device_partition }}"
+    fstype: xfs
+    state: unmounted
+  become: true
+
+- name: Identify aws volume mounted at location
+  ansible.builtin.include_role:
+    name: aws
+    tasks_from: identify_volume
+  # vars:
+    # mount_point: "{{ mount_point }}"# this is already set in the role variables, but if its not it needs to be
+# - debug:
+#       msg: "volume: {{ aws_volume_id }}"
