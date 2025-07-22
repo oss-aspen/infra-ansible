@@ -28,7 +28,6 @@
 
 - name: 4. Get serial number (volume ID) for {{ root_block_device }}
   ansible.builtin.shell: "lsblk -o SERIAL -n -d {{ root_block_device }}"
-  # ansible.builtin.shell: "lsblk -o SERIAL -n -d {{ source_device_disk }}"
   register: source_device_serial
   # # Loop through all found mounts and ignore temporary/virtual filesystems
   # loop: "{{ ansible_facts.mount_points | selectattr('fstype', 'not in', ['tmpfs', 'devtmpfs', 'nfs4', 'overlay']) | list }}"
