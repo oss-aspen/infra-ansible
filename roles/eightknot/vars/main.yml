@@ -8,6 +8,8 @@ docker_image_tag: 8knot:main
 public_hostname: http://{{ inventory_hostname }}
 
 
+aws_auth_profile: saml
+aws_region: "us-east-1" # REQUIRED: Your AWS region (e.g., us-east-1, eu-west-2)
 source_device_disk: "/dev/sdb"
 source_device_partition: "/dev/sdb1"
 
@@ -15,7 +17,6 @@ source_device_partition: "/dev/sdb1"
 # --- AWS EBS Volume Configuration ---
 source_volume_id: "vol-0abcdef1234567890" # REQUIRED: The ID of the existing EBS Volume to snapshot
 target_instance_id: "i-0123456789abcdef0" # REQUIRED: The ID of the EC2 Instance where the volume is attached/will be attached
-aws_region: "us-east-1" # REQUIRED: Your AWS region (e.g., us-east-1, eu-west-2)
 
 # --- PostgreSQL & Docker Configuration ---
 mount_point: "/var/lib/postgresql/data" # The mount point for PostgreSQL data on the target server
