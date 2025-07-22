@@ -74,27 +74,20 @@ def run_module():
         supports_check_mode=False
     )
 
-    # manipulate or modify the state as needed (this is going to be the
-    # part where your module will do what it needs to do)
-    result['original_message'] = module.params['name']
-    result['message'] = 'goodbye'
+    mount_point = module.params['mount_point']
+    
+    # 1. Find the partition device for the mount point (replaces `selectattr` task)
 
-    # use whatever logic you need to determine whether or not this module
-    # made any modifications to your target
-    if module.params['new']:
-        result['changed'] = False
+    # 2. Find the parent device using lsblk (replaces `lsblk -no pkname` task)
+    # This handles cases where the device is a partition (e.g., /dev/sda1)
 
-    # during the execution of the module, if there is an exception or a
-    # conditional state that effectively causes a failure, run
-    # AnsibleModule.fail_json() to pass in the message and the result
-    if module.params['name'] == 'fail me':
-        module.fail_json(msg='You requested this to fail', **result)
+    # 3. Get the serial number (volume ID) for the root device
 
-    # nothing should ever change as a result of this module
-    result['changed'] = False
+    # 4. Transform the serial number into the standard AWS Volume ID format
 
-    # in the event of a successful module execution, you will want to
-    # simple AnsibleModule.exit_json(), passing the key/value results
+    # Prepare the results to return
+
+    # Exit successfully, returning the result
     module.exit_json(**result)
 
 
