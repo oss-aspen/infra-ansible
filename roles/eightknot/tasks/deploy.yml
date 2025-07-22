@@ -68,7 +68,7 @@
 - name: mount cloned DB into opt directory
   ansible.posix.mount:
     path: /opt/augur/postgresql/data
-    src: "{{ source_device_name }}"
+    src: "{{ source_device_partition }}"
     fstype: xfs
     state: mounted
   become: true

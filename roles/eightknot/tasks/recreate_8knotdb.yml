@@ -29,12 +29,12 @@
     #   # variable (from the volume creation task) contains a valid snapshot ID.
     #   when: new_volume_result.snapshot_id is defined and new_volume_result.snapshot_id != ''
 
-    - name: Attach new volume {{ new_volume_result.volume_id }} to instance {{ target_instance_id }} as {{ source_device_name }}
+    - name: Attach new volume {{ new_volume_result.volume_id }} to instance {{ target_instance_id }} as {{ source_device_disk }}
       # Attaches the newly created volume to the target EC2 instance.
       community.aws.ec2_vol:
         instance: "{{ target_instance_id }}"
         id: "{{ new_volume_result.volume_id }}"
-        device_name: "{{ source_device_name }}" # Use the same device name or a new one
+        device_name: "{{ source_device_disk }}" # Use the same device name or a new one
         region: "{{ aws_region }}"
         state: present
       register: attach_volume_result
@@ -43,9 +43,9 @@
     - name: Wait for the new device to be available on the host
       # Waits until the kernel recognizes the newly attached device.
       ansible.builtin.wait_for:
-        path: "{{ source_device_name }}" # This path needs to be the kernel's device path (e.g., /dev/xvdf)
+        path: "{{ source_device_partition }}" # This path needs to be the kernel's device path (e.g., /dev/xvdf)
         timeout: 60
-        msg: "New device {{ source_device_name }} did not appear within 60 seconds."
+        msg: "New device {{ source_device_partition }} did not appear within 60 seconds."
 
     - name: Create mount point directory ({{ mount_point }}) if it doesn't exist
       # Ensures the directory where the volume will be mounted exists.
@@ -54,11 +54,11 @@
         state: directory
         mode: '0755'
 
-    - name: Mount new volume ({{ source_device_name }}) to {{ mount_point }}
+    - name: Mount new volume ({{ source_device_partition }}) to {{ mount_point }}
       # Mounts the new EBS volume to the specified directory.
       # Ensure `fstype` matches the filesystem on your volume.
       ansible.builtin.mount:
-        src: "{{ source_device_name }}" # The actual device path on the target OS
+        src: "{{ source_device_partition }}" # The actual device path on the target OS
         path: "{{ mount_point }}"
         fstype: "ext4" # Adjust filesystem type (e.g., xfs, ext4)
         state: mounted
