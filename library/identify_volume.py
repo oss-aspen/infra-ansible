@@ -7,24 +7,24 @@ from ansible.module_utils.basic import AnsibleModule
 # --- Ansible Module Documentation ---
 DOCUMENTATION = r'''
 ---
-module: find_aws_volume
-short_description: Finds the AWS Volume ID for a given mount point.
+module: find_aws_volume_from_device
+short_description: Finds the AWS Volume ID for a given block device name.
 description:
-  - This module inspects a local mount point, determines its underlying root block device,
-    and retrieves the device's serial number, which corresponds to the AWS EBS Volume ID.
+  - This module inspects a local block device and retrieves it's serial number,
+  which corresponds to the AWS EBS Volume ID.
 options:
-  mount_point:
-    description: The absolute path of the mounted filesystem to inspect.
-    required: true
+  device_name:
+    description: The block device to inspect (e.g., /dev/nvme0n1p1), if available.
+    required: false
     type: str
 author:
     - Adrian Edwards (@MoralCode)
 '''
 
 EXAMPLES = r'''
-- name: Find the volume ID for the /data mount
-  find_aws_volume:
-    mount_point: /data
+- name: Find the volume ID for a specific device
+  find_aws_volume_from_device:
+    device_name: /dev/nvme1n1p1
   register: volume_info
 
 - name: Display the found volume ID
@@ -38,11 +38,6 @@ aws_volume_id:
   returned: on success
   type: str
   sample: "vol-012345abcdef6789"
-root_block_device:
-  description: The root block device for the mount point (e.g., /dev/nvme0n1).
-  returned: on success
-  type: str
-  sample: "/dev/nvme0n1"
 '''
 # --- End of Documentation ---
 
@@ -51,7 +46,7 @@ root_block_device:
 def run_module():
     # define available arguments/parameters a user can pass to the module
     module_args = dict(
-        mount_point=dict(type='str', required=True)
+        partition_device=dict(type='str', required=True)
     )
 
     # seed the result dict in the object
@@ -74,7 +69,7 @@ def run_module():
         supports_check_mode=False
     )
 
-    mount_point = module.params['mount_point']
+    partition_device = module.params['device_name']
     
     # 1. Find the partition device for the mount point (replaces `selectattr` task)
 
