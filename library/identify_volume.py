@@ -75,12 +75,28 @@ def run_module():
 
     # 2. Find the parent device using lsblk (replaces `lsblk -no pkname` task)
     # This handles cases where the device is a partition (e.g., /dev/sda1)
+    pkname_stdout, _, _ = module.run_command(f"lsblk -no pkname {partition_device}", check_rc=False)
+    pkname = pkname_stdout.strip()
+
+    if pkname:
+        root_block_device = f"/dev/{pkname}"
+    else:
+        root_block_device = partition_device
 
     # 3. Get the serial number (volume ID) for the root device
+    serial = run_command(module, f"lsblk -o SERIAL -n -d {root_block_device}")
+
+    if not serial:
+        module.fail_json(msg=f"Could not retrieve serial number for device '{root_block_device}'.")
 
     # 4. Transform the serial number into the standard AWS Volume ID format
+    aws_volume_id = serial
+    # The serial for EBS volumes is 'vol<id>', but the API needs 'vol-<id>'
+    if serial.startswith('vol') and '-' not in serial:
+        aws_volume_id = 'vol-' + serial[3:]
 
     # Prepare the results to return
+    result["aws_volume_id"] = aws_volume_id
 
     # Exit successfully, returning the result
     module.exit_json(**result)
