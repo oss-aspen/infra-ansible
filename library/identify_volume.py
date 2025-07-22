@@ -41,6 +41,12 @@ aws_volume_id:
 '''
 # --- End of Documentation ---
 
+def run_command(module, cmd):
+    """Helper function to run a shell command."""
+    rc, stdout, stderr = module.run_command(cmd, check_rc=False)
+    if rc != 0:
+        module.fail_json(msg=f"Command failed: {cmd}", stderr=stderr)
+    return stdout.strip()
 
 
 def run_module():
