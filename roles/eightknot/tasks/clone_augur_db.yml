@@ -17,12 +17,12 @@
   # before the snapshot can be prudent.
   # This task should be executed *before* taking the EBS snapshot.
 
-- name: Create snapshot of the source volume ({{ source_volume_id }})
+- name: Create snapshot of the source volume ({{ aws_volume_id }})
   # Creates a point-in-time snapshot of the specified EBS volume.
   community.aws.ec2_snapshot:
     volume_id: "{{ source_volume_id }}"
     region: "{{ aws_region }}"
-    description: "Snapshot for {{ old_pg_container_name }} migration - {{ ansible_date_time.iso8601_basic }}"
+    description: "Snapshot for ansible 8knot data migration - {{ ansible_date_time.iso8601_basic }}"
     state: present
   register: snapshot_result # Stores the snapshot details for later use
   delegate_to: localhost # AWS API calls are typically delegated to localhost
