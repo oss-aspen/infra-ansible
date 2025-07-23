@@ -13,7 +13,7 @@ description:
   - This module inspects a local block device and retrieves it's serial number,
   which corresponds to the AWS EBS Volume ID.
 options:
-  device_name:
+  partition_device:
     description: The block device to inspect (e.g., /dev/nvme0n1p1), if available.
     required: false
     type: str
@@ -24,7 +24,7 @@ author:
 EXAMPLES = r'''
 - name: Find the volume ID for a specific device
   find_aws_volume_from_device:
-    device_name: /dev/nvme1n1p1
+    partition_device: /dev/nvme1n1p1
   register: volume_info
 
 - name: Display the found volume ID
@@ -75,7 +75,7 @@ def run_module():
         supports_check_mode=False
     )
 
-    partition_device = module.params['device_name']
+    partition_device = module.params['partition_device']
     
     # 1. Find the partition device for the mount point (replaces `selectattr` task)
 
