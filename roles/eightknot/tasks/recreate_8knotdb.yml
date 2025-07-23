@@ -54,29 +54,6 @@
     state: directory
     mode: '0755'
 
-- name: Mount new volume ({{ source_device_partition }}) to {{ mount_point }}
-  # Mounts the new EBS volume to the specified directory.
-  # Ensure `fstype` matches the filesystem on your volume.
-  ansible.builtin.mount:
-    src: "{{ source_device_partition }}" # The actual device path on the target OS
-    path: "{{ mount_point }}"
-    fstype: "ext4" # Adjust filesystem type (e.g., xfs, ext4)
-    state: mounted
-
-- name: Start new PostgreSQL Docker container ({{ new_pg_container_name }})
-  # Starts a new PostgreSQL Docker container, pointing its data volume to the newly mounted EBS volume.
-  community.docker.docker_container:
-    name: "{{ new_pg_container_name }}"
-    image: "{{ pg_image }}:{{ pg_version }}"
-    state: started
-    restart_policy: always
-    env:
-      POSTGRES_PASSWORD: "{{ pg_password }}" # Pass PostgreSQL password
-    volumes:
-      - "{{ mount_point }}:/var/lib/postgresql/data" # Mount the new volume as PostgreSQL data directory
-    ports:
-      - "5432:5432" # Expose PostgreSQL port. Adjust if old container used it or if you need a different port.
-  register: new_pg_container_start
 
 - name: Wait for new PostgreSQL container to be healthy
   # Waits for the PostgreSQL service inside the container to become reachable on port 5432.
