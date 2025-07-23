@@ -62,8 +62,6 @@ def run_module():
     # for consumption, for example, in a subsequent task
     result = dict(
         changed=False,
-        original_message='',
-        message=''
     )
 
     # the AnsibleModule object will be our abstraction working with Ansible
