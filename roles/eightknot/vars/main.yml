@@ -21,7 +21,7 @@ target_instance_id: "i-0123456789abcdef0" # REQUIRED: The ID of the EC2 Instance
 
 # --- PostgreSQL & Docker Configuration ---
 augur_pg_container_mount_point: "/var/lib/postgresql/data" # The mount point for PostgreSQL data on the target server
-augur_pg_container_name: "postgres"
+augur_pg_container_name: "8knot-augur-db-1"
 augur_pg_container_user: "augur"
 augur_pg_password: "{{ vault_postgres_password }}"
 
