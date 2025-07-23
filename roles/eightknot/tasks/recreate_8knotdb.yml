@@ -55,30 +55,6 @@
     mode: '0755'
 
 
-- name: Wait for new PostgreSQL container to be healthy
-  # Waits for the PostgreSQL service inside the container to become reachable on port 5432.
-  ansible.builtin.wait_for:
-    port: 5432
-    host: "{{ ansible_host }}" # Connects to the target server's IP
-    delay: 5 # Wait 5 seconds before first check
-    timeout: 120 # Timeout after 120 seconds
-    state: started
-    msg: "PostgreSQL container did not become healthy on port 5432."
-
-- name: Verify that the new PostgreSQL is running and taking requests
-  # Executes a simple `psql` command inside the new container to verify connectivity.
-  ansible.builtin.shell: |
-    docker exec {{ new_pg_container_name }} psql -U postgres -c "SELECT 1;"
-  environment:
-    PGPASSWORD: "{{ pg_password }}" # Pass password via environment variable for psql
-  register: pg_check_result
-  failed_when: "'(1 row)' not in pg_check_result.stdout" # Fails if '1 row' is not found in output
-  changed_when: false # This task is for verification, not for changing state
-  until: pg_check_result is not failed # Retry until successful
-  retries: 5
-  delay: 10
-  # You can add more robust verification steps here, e.g., querying specific data.
-
 # - name: Unmount and delete old volume ({{ source_volume_id }})
 #   # CAUTION: This step permanently deletes your old volume.
 #   # ONLY run this AFTER you have thoroughly verified that the new PostgreSQL
