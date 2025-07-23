@@ -17,10 +17,10 @@
 - name: Enable PostgreSQL backup mode (pg_backup_start)
   # Executes the pg_backup_start function inside the PostgreSQL container.
   # This prepares the database for a consistent filesystem-level backup (snapshot).
-  community.docker.docker_exec:
+  community.docker.docker_container_exec:
     container: "{{ augur_pg_container_name }}"
     command: "psql -U {{ augur_pg_container_user }} -c \"SELECT pg_backup_start('{{ backup_label }}');\""
-    # The command is escaped correctly for shell execution within docker_exec.
+    # The command is escaped correctly for shell execution within docker_container_exec.
     # It calls psql, connects as 'postgres' user, and executes the SQL function.
   environment:
     PGPASSWORD: "{{ augur_pg_password }}" # Pass the password securely via environment variable
@@ -63,7 +63,7 @@
 - name: Disable PostgreSQL backup mode (pg_backup_stop)
   # Executes the pg_backup_stop function inside the PostgreSQL container.
   # This finalizes the backup process and flushes any remaining WAL data.
-  community.docker.docker_exec:
+  community.docker.docker_container_exec:
     container: "{{ augur_pg_container_name }}"
     command: "psql -U {{ augur_pg_container_user }} -c \"SELECT pg_backup_stop();\""
   environment:
