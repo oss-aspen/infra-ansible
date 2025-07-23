@@ -31,6 +31,9 @@
   when: "{{ mount_point is mount }}"
 
 
+# TODO: somehow get the new volume ID
+# TODO: perform the volume swap with AWS
+
 - name: remount DB to {{ mount_point }}
   ansible.posix.mount:
     path: "{{ mount_point }}"
@@ -38,6 +41,8 @@
     fstype: xfs
     state: mounted
   become: true
+
+# TODO: verify the new mount point matches the new volume ID
 
 - name: Bring 8knot back up
   include_tasks: up.yml
