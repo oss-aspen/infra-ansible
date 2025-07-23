@@ -17,19 +17,27 @@
   # before the snapshot can be prudent.
   # This task should be executed *before* taking the EBS snapshot.
 
+
+- name: Determine block device for {{ mount_point }}
+  ansible.builtin.set_fact:
+    mount_point_block: "{{ ansible_mounts | json_query(query) | first }}"
+  vars:
+    query: "[?mount=='{{ mount_point }}'].device"
+
+
 - name: Identify aws volume mounted at location
-  ansible.builtin.include_role:
-    name: aws
-    tasks_from: identify_volume
+  identify_volume:
+    partition_device: "{{ mount_point_block }}"
+  register: aws_vol
   # vars:
     # mount_point: "{{ mount_point }}"# this is already set in the role variables, but if its not it needs to be
 # - debug:
-#       msg: "volume: {{ aws_volume_id }}"
+#       msg: "volume: {{ aws_vol.aws_volume_id }}"
 
-- name: Create snapshot of the source volume ({{ aws_volume_id }})
+- name: Create snapshot of the source volume ({{ aws_vol.aws_volume_id }})
   # Creates a point-in-time snapshot of the specified EBS volume.
   community.aws.ec2_snapshot:
-    volume_id: "{{ aws_volume_id }}"
+    volume_id: "{{ aws_vol.aws_volume_id }}"
     region: "{{ aws_region }}"
     description: "Snapshot for ansible 8knot data migration - {{ ansible_date_time.iso8601_basic }}"
     state: present

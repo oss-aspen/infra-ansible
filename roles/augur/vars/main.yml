@@ -1,2 +1,4 @@
 compose_path: /opt/git/augur
 compose_file: production-docker-compose.yml
+
+mount_point: "/opt/augur/postgresql/data"

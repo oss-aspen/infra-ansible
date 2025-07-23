@@ -1,19 +1,23 @@
 - name: Ensure 8knot database (and everything that relies on it) is not running
   include_tasks: down.yml
 
+# TODO: handle case where the device is already unmounted
+- name: "Determine block device for {{ mount_point }}"
+  ansible.builtin.set_fact:
+    mount_point_block: "{{ ansible_mounts | json_query(query) | first }}"
+  vars:
+    query: "[?mount=='{{ mount_point }}'].device"
+
+- name: Identify aws volume mounted at location
+  identify_volume:
+    partition_device: "{{ mount_point_block }}"
+  register: aws_vol
+
 - name: unmount DB from opt directory
   ansible.posix.mount:
     path: "{{ mount_point }}"
-    src: "{{ source_device_partition }}"
+    src: "{{ mount_point_block }}"
     fstype: xfs
     state: unmounted
   become: true
 
-- name: Identify aws volume mounted at location
-  ansible.builtin.include_role:
-    name: aws
-    tasks_from: identify_volume
-  # vars:
-    # mount_point: "{{ mount_point }}"# this is already set in the role variables, but if its not it needs to be
-# - debug:
-#       msg: "volume: {{ aws_volume_id }}"
