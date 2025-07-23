@@ -1,3 +1,11 @@
+
+# - name: Get snapshots from AWS
+  # amazon.aws.ec2_snapshot_info:
+  #   filters:
+  #     "tag:Name": Example
+
+
+
 - name: Create new volume from snapshot {{ snapshot_result.snapshot_id }}
   # Creates a new EBS volume based on the snapshot.
   # The size can be increased here if `new_volume_size_gb` is set.
@@ -6,6 +14,7 @@
     region: "{{ aws_region }}"
     volume_type: "{{ new_volume_type }}"
     size: "{{ new_volume_size_gb if new_volume_size_gb > 0 else omit }}" # Omit size if 0 to keep original
+    profile: "{{ aws_auth_profile }}"
     tags:
       Name: "{{ new_pg_container_name }}-data-volume"
       Project: "PostgresMigration"
@@ -36,6 +45,7 @@
     id: "{{ new_volume_result.volume_id }}"
     device_name: "{{ source_device_disk }}" # Use the same device name or a new one
     region: "{{ aws_region }}"
+    profile: "{{ aws_auth_profile }}"
     state: present
   register: attach_volume_result
   delegate_to: localhost

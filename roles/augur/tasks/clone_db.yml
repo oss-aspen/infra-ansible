@@ -57,6 +57,7 @@
     region: "{{ aws_region }}"
     description: "Snapshot for ansible 8knot data migration - {{ ansible_date_time.iso8601_basic }}"
     state: present
+    profile: saml
   register: snapshot_result # Stores the snapshot details for later use
   delegate_to: localhost # AWS API calls are typically delegated to localhost
 
