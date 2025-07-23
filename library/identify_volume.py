@@ -81,10 +81,9 @@ def run_module():
 
     # 2. Find the parent device using lsblk (replaces `lsblk -no pkname` task)
     # This handles cases where the device is a partition (e.g., /dev/sda1)
-    pkname_stdout, _, _ = module.run_command(f"lsblk -no pkname {partition_device}", check_rc=False)
-    pkname = pkname_stdout.strip()
+    pkname = run_command(module, f"lsblk -no pkname {partition_device}")
 
-    if pkname:
+    if not pkname.startswith("/dev"):
         root_block_device = f"/dev/{pkname}"
     else:
         root_block_device = partition_device
