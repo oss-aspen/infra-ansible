@@ -1,3 +1,19 @@
+- name: "Find the facts for the '{{ mount_point }}' mount point"
+  ansible.builtin.set_fact:
+    # Use selectattr to find the specific mount and `first` to get it from the list
+    mount_info: "{{ ansible_facts.mounts | selectattr('mount', 'equalto', mount_point) | first | default({}) }}"
+
+- name: "Fail if available space is less than {{ required_free_space }}"
+  ansible.builtin.fail:
+    msg: >
+      Insufficient free space on '{{ mount_point }}'.
+      Required: {{ required_free_space }},
+      Available: {{ mount_info.size_available | human_readable(unit='B', traditional=True) }}.
+  when: mount_info.size_available < required_free_space | ansible.builtin.human_to_bytes
+  vars:
+    # --- Define your requirements here ---
+    required_free_space: "500 GB"
+
 - name: Enable PostgreSQL backup mode (pg_backup_start)
   # Executes the pg_backup_start function inside the PostgreSQL container.
   # This prepares the database for a consistent filesystem-level backup (snapshot).
