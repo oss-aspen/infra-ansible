@@ -40,3 +40,18 @@ the `ansible.cfg` file defines configuration items that help ansible know where 
 Many parts of this script require access to secrets. Some of these (like your SSH key) may already be set up for allowing you to access the services, others, like AWS access and the ansible vault password, are things you may need additional approval to access.
 
 The main way secrets are stored in this repository is using ansible vault - this encrypts any secret values such that they can only be read (and thus used in playbooks) when you have the password. To learn more about using ansible vault, check out [this digitalocean primer](https://www.digitalocean.com/community/tutorials/how-to-use-vault-to-protect-sensitive-ansible-data).
+
+
+## Included Module Testing
+
+This ansible directory comes with a custom module for fetching the AWS volume ID from a provided device file.
+
+To test this module in a one-off setting, run:
+
+```
+ansible -m identify_volume -a 'partition_device=/dev/whatever' [somehost]
+```
+
+This relies on ansible being set to use the `library` directory for modules. This is present in `ansible.cfg` already, but if not you can add `ANSIBLE_LIBRARY=./library` to the start of the above command. 
+
+This module is designed to simply gather information using the fact that AWS sets disk serial numbers such that they align with the AWS volume identifiers. It is not destructive.
