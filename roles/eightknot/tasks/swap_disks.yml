@@ -1,23 +1,43 @@
 - name: Ensure 8knot database (and everything that relies on it) is not running
   include_tasks: down.yml
 
-# TODO: handle case where the device is already unmounted
 - name: "Determine block device for {{ mount_point }}"
   ansible.builtin.set_fact:
     mount_point_block: "{{ ansible_mounts | json_query(query) | first }}"
   vars:
     query: "[?mount=='{{ mount_point }}'].device"
+  when: "{{ mount_point is mount }}"
+
+# this should overwrite the fallback value in the variables if we can determine 
+# the actual partition device for the mount point
+- name: Set source partition values.
+  ansible.builtin.set_fact:
+    source_device_partition: "{{ mount_point_block }}"
+  when: "{{ mount_point is mount }}"
 
 - name: Identify aws volume mounted at location
   identify_volume:
     partition_device: "{{ mount_point_block }}"
   register: aws_vol
+  when: "{{ mount_point is mount }}"
 
-- name: unmount DB from opt directory
+- name: unmount DB from {{ mount_point }}
   ansible.posix.mount:
     path: "{{ mount_point }}"
     src: "{{ mount_point_block }}"
     fstype: xfs
     state: unmounted
   become: true
+  when: "{{ mount_point is mount }}"
 
+
+- name: remount DB to {{ mount_point }}
+  ansible.posix.mount:
+    path: "{{ mount_point }}"
+    src: "{{ source_device_partition }}" # uses this version of the variable so that it is always set
+    fstype: xfs
+    state: mounted
+  become: true
+
+- name: Bring 8knot back up
+  include_tasks: up.yml
