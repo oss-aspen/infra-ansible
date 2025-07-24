@@ -10,6 +10,8 @@ public_hostname: http://{{ inventory_hostname }}
 
 aws_auth_profile: saml
 aws_region: "us-east-1" # REQUIRED: Your AWS region (e.g., us-east-1, eu-west-2)
+aws_zone: "us-east-1c"
+
 source_device_disk: "/dev/sdb"
 source_device_partition: "/dev/sdb1" # fallback value in case one cant be determined from the mount point
 mount_point: "/opt/augur/postgresql/data"

@@ -12,6 +12,7 @@
   community.aws.ec2_vol:
     snapshot_id: "{{ snapshot_result.snapshot_id }}"
     region: "{{ aws_region }}"
+    zone: "{{ aws_zone }}"
     volume_type: "{{ new_volume_type }}"
     size: "{{ new_volume_size_gb if new_volume_size_gb > 0 else omit }}" # Omit size if 0 to keep original
     profile: "{{ aws_auth_profile }}"
