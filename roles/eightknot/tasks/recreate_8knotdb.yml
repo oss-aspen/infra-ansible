@@ -5,12 +5,12 @@
       "tag:createdby": ansible
     profile: "{{ aws_auth_profile }}"
     region: "{{ aws_region }}"
-  register: job_result
+  register: snapshot_lookup_results
   delegate_to: localhost
 
 - name: Determine the most recent snapshot created by this script
   set_fact:
-    latest_snapshot: "{{ job_result.snapshots | sort(attribute='start_time', reverse=true) | first }}"
+    latest_snapshot: "{{ snapshot_lookup_results.snapshots | sort(attribute='start_time', reverse=true) | first }}"
 
 
 - name: Create new volume from snapshot {{ latest_snapshot.snapshot_id }}
