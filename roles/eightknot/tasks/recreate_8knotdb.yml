@@ -12,6 +12,12 @@
   set_fact:
     latest_snapshot: "{{ snapshot_lookup_results.snapshots | sort(attribute='start_time', reverse=true) | first }}"
 
+- name: Fail if progress is not 100% on the snapshot
+  ansible.builtin.fail:
+    msg: >
+      Snapshot creation progress for snapshot {{ latest_snapshot.snapshot_id }} is not at 100%.
+      Actual progress: {{ latest_snapshot.progress }}.
+  when: latest_snapshot.progress != "100%"
 
 - name: Create new volume from snapshot {{ latest_snapshot.snapshot_id }}
   # Creates a new EBS volume based on the snapshot.
