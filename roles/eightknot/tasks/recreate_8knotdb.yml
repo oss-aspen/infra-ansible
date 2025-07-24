@@ -1,16 +1,23 @@
+- name: Gather snapshot info from AWS
+  amazon.aws.ec2_snapshot_info:
+    filters:
+      owner-id: "{{ aws_account_id }}"
+      "tag:createdby": ansible
+    profile: "{{ aws_auth_profile }}"
+    region: "{{ aws_region }}"
+  register: job_result
+  delegate_to: localhost
 
-# - name: Get snapshots from AWS
-  # amazon.aws.ec2_snapshot_info:
-  #   filters:
-  #     "tag:Name": Example
+- name: Determine the most recent snapshot created by this script
+  set_fact:
+    latest_snapshot: "{{ job_result.snapshots | sort(attribute='start_time', reverse=true) | first }}"
 
 
-
-- name: Create new volume from snapshot {{ snapshot_result.snapshot_id }}
+- name: Create new volume from snapshot {{ latest_snapshot.snapshot_id }}
   # Creates a new EBS volume based on the snapshot.
   # The size can be increased here if `new_volume_size_gb` is set.
   community.aws.ec2_vol:
-    snapshot_id: "{{ snapshot_result.snapshot_id }}"
+    snapshot_id: "{{ latest_snapshot.snapshot_id }}"
     region: "{{ aws_region }}"
     zone: "{{ aws_zone }}"
     volume_type: "{{ new_volume_type }}"
