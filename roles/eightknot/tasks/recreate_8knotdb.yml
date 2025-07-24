@@ -16,7 +16,7 @@
 - name: Create new volume from snapshot {{ latest_snapshot.snapshot_id }}
   # Creates a new EBS volume based on the snapshot.
   # The size can be increased here if `new_volume_size_gb` is set.
-  community.aws.ec2_vol:
+  amazon.aws.ec2_vol:
     snapshot_id: "{{ latest_snapshot.snapshot_id }}"
     region: "{{ aws_region }}"
     zone: "{{ aws_zone }}"
@@ -37,7 +37,7 @@
 #   #
 #   # CAUTION: Deleting snapshots means you lose that specific point-in-time recovery point.
 #   # Ensure this is the desired behavior for your workflow.
-#   community.aws.ec2_snapshot:
+#   amazon.aws.ec2_snapshot:
 #     snapshot_id: "{{ new_volume_result.snapshot_id }}"
 #     region: "{{ aws_region }}"
 #     state: absent
@@ -48,7 +48,7 @@
 
 - name: Attach new volume {{ new_volume_result.volume_id }} to instance {{ target_instance_id }} as {{ source_device_disk }}
   # Attaches the newly created volume to the target EC2 instance.
-  community.aws.ec2_vol:
+  amazon.aws.ec2_vol:
     instance: "{{ target_instance_id }}"
     id: "{{ new_volume_result.volume_id }}"
     device_name: "{{ source_device_disk }}" # Use the same device name or a new one
@@ -78,7 +78,7 @@
 #   # ONLY run this AFTER you have thoroughly verified that the new PostgreSQL
 #   # instance is fully functional and data is correct.
 #   # Consider commenting this out or running it manually after verification.
-#   community.aws.ec2_vol:
+#   amazon.aws.ec2_vol:
 #     id: "{{ source_volume_id }}"
 #     region: "{{ aws_region }}"
 #     state: absent
@@ -90,7 +90,7 @@
 #   # CAUTION: This step permanently deletes the snapshot.
 #   # Keep the snapshot as a recovery point until you are absolutely certain
 #   # the new setup is stable and you no longer need it.
-#   community.aws.ec2_snapshot:
+#   amazon.aws.ec2_snapshot:
 #     snapshot_id: "{{ snapshot_result.snapshot_id }}"
 #     region: "{{ aws_region }}"
 #     state: absent
