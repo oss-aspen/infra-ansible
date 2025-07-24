@@ -23,7 +23,7 @@
   # Creates a new EBS volume based on the snapshot.
   # The size can be increased here if `new_volume_size_gb` is set.
   amazon.aws.ec2_vol:
-    snapshot_id: "{{ latest_snapshot.snapshot_id }}"
+    snapshot: "{{ latest_snapshot.snapshot_id }}"
     region: "{{ aws_region }}"
     zone: "{{ aws_zone }}"
     volume_type: "{{ new_volume_type }}"
