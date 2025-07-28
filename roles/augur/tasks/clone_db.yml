@@ -14,19 +14,19 @@
     # --- Define your requirements here ---
     required_free_space: "500 GB"
 
-- name: Enable PostgreSQL backup mode (pg_backup_start)
+- name: Tell PostgreSQL to make a checkpoint
   # Executes the pg_backup_start function inside the PostgreSQL container.
   # This prepares the database for a consistent filesystem-level backup (snapshot).
   community.docker.docker_container_exec:
     container: "{{ augur_pg_container_name }}"
-    command: "psql -U {{ augur_pg_container_user }} -c \"SELECT pg_backup_start('{{ backup_label }}');\""
+    command: "psql -U {{ augur_pg_container_user }} -c \"CHECKPOINT;\""
     # The command is escaped correctly for shell execution within docker_container_exec.
     # It calls psql, connects as 'postgres' user, and executes the SQL function.
   environment:
     PGPASSWORD: "{{ augur_pg_password }}" # Pass the password securely via environment variable
-  register: pg_backup_start_result
+  register: pg_checkpoint_result
   # Check for successful output from psql. pg_backup_start returns a text string.
-  failed_when: "'pg_backup_start' not in pg_backup_start_result.stdout"
+  # failed_when: "'pg_backup_start' not in pg_backup_start_result.stdout"
   changed_when: true # This task changes the state of the database
   # Add a delay to ensure the command has time to execute and flush.
   # For pg_backup_start, the flush happens immediately, but a small delay
@@ -61,16 +61,3 @@
   register: snapshot_result # Stores the snapshot details for later use
   delegate_to: localhost # AWS API calls are typically delegated to localhost
 
-- name: Disable PostgreSQL backup mode (pg_backup_stop)
-  # Executes the pg_backup_stop function inside the PostgreSQL container.
-  # This finalizes the backup process and flushes any remaining WAL data.
-  community.docker.docker_container_exec:
-    container: "{{ augur_pg_container_name }}"
-    command: "psql -U {{ augur_pg_container_user }} -c \"SELECT pg_backup_stop();\""
-  environment:
-    PGPASSWORD: "{{ augur_pg_password }}"
-  register: pg_backup_stop_result
-  # Check for successful output from psql.pg_backup_stop returns a text string.
-  failed_when: "'pg_backup_stop' not in pg_backup_stop_result.stdout"
-  changed_when: true # This task changes the state of the database
-  # This task should be executed *after* the EBS snapshot has completed.
