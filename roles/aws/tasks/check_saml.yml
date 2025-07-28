@@ -1,0 +1,29 @@
+- name: "Check AWS credentials"
+  block:
+    - amazon.aws.aws_caller_info:
+        profile: saml
+      register: my_aws_identity
+      delegate_to: localhost
+    - debug:
+        msg: "AWS saml credential is valid and active."
+
+  rescue:
+    - name: "Token is expired, running re-authentication script"
+      ansible.builtin.command: "aws-saml.py"
+      delegate_to: localhost
+      when: "'ExpiredToken' in ansible_failed_result.msg"
+
+    - name: "❌ FAIL: Profile 'saml' not found"
+      ansible.builtin.fail:
+        msg: "The profile 'saml' could not be found in your AWS config."
+      when: "'profile could not be found' in ansible_failed_result.msg"
+
+    - name: "❌ FAIL: An unknown AWS error occurred"
+      ansible.builtin.fail:
+        msg: |
+          An unexpected error occurred while checking AWS credentials.
+          Details: {{ ansible_failed_result.msg }}
+      # This runs if the error was not an ExpiredToken or a missing profile
+      when:
+        - "'ExpiredToken' not in ansible_failed_result.msg"
+        - "'profile could not be found' not in ansible_failed_result.msg"

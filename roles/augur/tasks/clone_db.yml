@@ -1,3 +1,8 @@
+- name: test aws credentials
+  ansible.builtin.include_role:
+    name: aws
+    tasks_from: check_saml
+
 - name: "Find the facts for the '{{ mount_point }}' mount point"
   ansible.builtin.set_fact:
     # Use selectattr to find the specific mount and `first` to get it from the list
