@@ -62,7 +62,7 @@
     region: "{{ aws_region }}"
     description: "Snapshot for ansible 8knot data migration - {{ ansible_date_time.iso8601_basic }}"
     state: present
-    profile: saml
+    profile: "{{ aws_auth_profile }}"
     wait: false
     snapshot_tags:
       createdby: ansible
