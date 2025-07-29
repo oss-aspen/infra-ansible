@@ -79,10 +79,6 @@
   register: enable_fsr_result
   changed_when: "'enabling' in enable_fsr_result.stdout"
 
-- name: "ℹ️  Display the result of the enable command"
-  ansible.builtin.debug:
-    var: enable_fsr_result.stdout
-
 - name: "✅ Verify that the FSR enable command was successful"
   ansible.builtin.assert:
     that:
