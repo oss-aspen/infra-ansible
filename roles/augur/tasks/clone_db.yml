@@ -63,6 +63,7 @@
     description: "Snapshot for ansible 8knot data migration - {{ ansible_date_time.iso8601_basic }}"
     state: present
     profile: saml
+    wait: false
     snapshot_tags:
       createdby: ansible
   register: snapshot_result # Stores the snapshot details for later use
