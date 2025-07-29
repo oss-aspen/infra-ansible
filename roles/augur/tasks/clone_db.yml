@@ -66,3 +66,32 @@
   register: snapshot_result # Stores the snapshot details for later use
   delegate_to: localhost # AWS API calls are typically delegated to localhost
 
+- name: test aws credentials
+  ansible.builtin.include_role:
+    name: aws
+    tasks_from: check_saml
+  
+- name: "Enable FSR for snapshot {{ snapshot_result.snapshot_id }} in AZ {{ aws_zone }}"
+  ansible.builtin.command: >
+    aws ec2 enable-fast-snapshot-restores
+    --source-snapshot-ids {{ snapshot_result.snapshot_id }}
+    --availability-zones {{ aws_zone }}
+    --profile {{ aws_auth_profile }}
+    --region {{ aws_region }}
+  register: enable_fsr_result
+  changed_when: "'enabling' in enable_fsr_result.stdout"
+
+- name: "ℹ️  Display the result of the enable command"
+  ansible.builtin.debug:
+    var: enable_fsr_result.stdout
+
+- name: "✅ Verify that the FSR enable command was successful"
+  ansible.builtin.assert:
+    that:
+      # Check 1: Ensure the 'Unsuccessful' array is empty.
+      - (enable_fsr_result.stdout | from_json).Unsuccessful | length == 0
+
+      # Check 2: Ensure our snapshot ID is in the 'Successful' array.
+      - snapshot_result.snapshot_id in ((enable_fsr_result.stdout | from_json).Successful | map(attribute='SnapshotId'))
+    success_msg: "Successfully initiated FSR for snapshot {{ snapshot_result.snapshot_id }}."
+    fail_msg: "Failed to initiate FSR for snapshot {{ snapshot_result.snapshot_id }}. Check the command output."
