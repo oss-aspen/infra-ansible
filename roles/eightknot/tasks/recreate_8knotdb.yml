@@ -71,12 +71,16 @@
     timeout: 60
     msg: "New device {{ source_device_partition }} did not appear within 60 seconds."
 
-- name: Create mount point directory ({{ mount_point }}) if it doesn't exist
-  # Ensures the directory where the volume will be mounted exists.
-  ansible.builtin.file:
-    path: "{{ mount_point }}"
-    state: directory
-    mode: '0755'
+- name: remount the augur db
+  include_tasks: mount_augur.yml
+
+# TODO: verify the new mount point matches the new volume ID
+
+- name: Bring 8knot up
+  include_tasks: up.yml
+
+# disable FSR?
+
 
 
 # - name: Unmount and delete old volume ({{ source_volume_id }})
