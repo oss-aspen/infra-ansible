@@ -41,14 +41,11 @@
       Name: "{{ new_pg_container_name }}-data-volume"
       Project: "PostgresMigration"
     state: present
-  register: new_volume_result # Stores the new volume details
+  register: new_volume_result
   delegate_to: localhost
 
 - name: Bring 8knot down
   include_tasks: down.yml
-
-# - name: unmount the augur db
-#   include_tasks: unmount_augur.yml
 
 - name: unmount the augur db
   block:
