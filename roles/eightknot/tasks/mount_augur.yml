@@ -1,0 +1,15 @@
+- name: Prepare location for postgres data mount
+  ansible.builtin.file:
+    path: "{{ mount_point }}"
+    state: directory
+    mode: '0755'
+    owner: "{{ ansible_user }}"
+  become: true
+
+- name: remount DB to {{ mount_point }}
+  ansible.posix.mount:
+    path: "{{ mount_point }}"
+    src: "{{ source_device_partition }}"
+    fstype: xfs
+    state: mounted
+  become: true
