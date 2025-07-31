@@ -81,10 +81,10 @@
     become: true
     when: "{{ mount_point is mount }}"
 
-- name: Attach new volume {{ new_volume_result.volume_id }} to instance {{ target_instance_id }} as {{ mount_point_block }}
+- name: Attach new volume {{ new_volume_result.volume_id }} to instance {{ ansible_ec2_instance_id }} as {{ mount_point_block }}
   # Attaches the newly created volume to the target EC2 instance.
   amazon.aws.ec2_vol:
-    instance: "{{ target_instance_id }}"
+    instance: "{{ ansible_ec2_instance_id }}"
     id: "{{ new_volume_result.volume_id }}"
     device_name: "{{ mount_point_block }}" # Use the same device name or a new one
     region: "{{ aws_region }}"

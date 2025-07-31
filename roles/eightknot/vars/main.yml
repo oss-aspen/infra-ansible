@@ -20,7 +20,6 @@ mount_point: "/opt/augur/postgresql/data"
 
 # --- AWS EBS Volume Configuration ---
 source_volume_id: "vol-0abcdef1234567890" # REQUIRED: The ID of the existing EBS Volume to snapshot
-target_instance_id: "i-0123456789abcdef0" # REQUIRED: The ID of the EC2 Instance where the volume is attached/will be attached
 
 # --- PostgreSQL & Docker Configuration ---
 augur_pg_container_mount_point: "/var/lib/postgresql/data" # The mount point for PostgreSQL data on the target server
