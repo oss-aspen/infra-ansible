@@ -3,6 +3,9 @@
     name: aws
     tasks_from: check_saml
 
+- name: gather AWS EC2 metadata facts
+  amazon.aws.ec2_metadata_facts:
+
 - name: Gather snapshot info from AWS
   amazon.aws.ec2_snapshot_info:
     filters:
