@@ -18,9 +18,6 @@ source_device_partition: "/dev/sdb1" # fallback value in case one cant be determ
 mount_point: "/opt/augur/postgresql/data"
 
 
-# --- AWS EBS Volume Configuration ---
-source_volume_id: "vol-0abcdef1234567890" # REQUIRED: The ID of the existing EBS Volume to snapshot
-
 # --- PostgreSQL & Docker Configuration ---
 augur_pg_container_mount_point: "/var/lib/postgresql/data" # The mount point for PostgreSQL data on the target server
 augur_pg_container_name: "8knot-augur-db-1"

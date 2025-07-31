@@ -120,13 +120,13 @@
 
 
 
-# - name: Unmount and delete old volume ({{ source_volume_id }})
+# - name: Unmount and delete old volume ({{ aws_vol.volume_id }})
 #   # CAUTION: This step permanently deletes your old volume.
 #   # ONLY run this AFTER you have thoroughly verified that the new PostgreSQL
 #   # instance is fully functional and data is correct.
 #   # Consider commenting this out or running it manually after verification.
 #   amazon.aws.ec2_vol:
-#     id: "{{ source_volume_id }}"
+#     id: "{{ aws_vol.volume_id }}"
 #     region: "{{ aws_region }}"
 #     state: absent
 #   delegate_to: localhost
