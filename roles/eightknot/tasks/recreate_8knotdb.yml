@@ -36,21 +36,6 @@
   register: new_volume_result # Stores the new volume details
   delegate_to: localhost
 
-# - name: Delete the snapshot ({{ new_volume_result.snapshot_id }}) after volume creation
-#   # This task removes the EBS snapshot immediately after a new volume has been successfully
-#   # created from it. It relies on the 'new_volume_result' variable which should be
-#   # registered from the 'Create new volume from snapshot' task.
-#   #
-#   # CAUTION: Deleting snapshots means you lose that specific point-in-time recovery point.
-#   # Ensure this is the desired behavior for your workflow.
-#   amazon.aws.ec2_snapshot:
-#     snapshot_id: "{{ new_volume_result.snapshot_id }}"
-#     region: "{{ aws_region }}"
-#     state: absent
-#   delegate_to: localhost
-#   # ensures this task only runs if the 'new_volume_result'
-#   # variable (from the volume creation task) contains a valid snapshot ID.
-#   when: new_volume_result.snapshot_id is defined and new_volume_result.snapshot_id != ''
 
 - name: Attach new volume {{ new_volume_result.volume_id }} to instance {{ target_instance_id }} as {{ source_device_disk }}
   # Attaches the newly created volume to the target EC2 instance.
@@ -107,3 +92,21 @@
 #   delegate_to: localhost
 #   # only delete if the new container was started and the PostgreSQL verification command succeeded.
 #   when: new_pg_container_start.changed and pg_check_result.rc == 0
+
+
+
+# - name: Delete the snapshot ({{ new_volume_result.snapshot_id }}) after volume creation
+#   # This task removes the EBS snapshot immediately after a new volume has been successfully
+#   # created from it. It relies on the 'new_volume_result' variable which should be
+#   # registered from the 'Create new volume from snapshot' task.
+#   #
+#   # CAUTION: Deleting snapshots means you lose that specific point-in-time recovery point.
+#   # Ensure this is the desired behavior for your workflow.
+#   amazon.aws.ec2_snapshot:
+#     snapshot_id: "{{ new_volume_result.snapshot_id }}"
+#     region: "{{ aws_region }}"
+#     state: absent
+#   delegate_to: localhost
+#   # ensures this task only runs if the 'new_volume_result'
+#   # variable (from the volume creation task) contains a valid snapshot ID.
+#   when: new_volume_result.snapshot_id is defined and new_volume_result.snapshot_id != ''
