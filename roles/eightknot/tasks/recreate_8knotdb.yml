@@ -81,12 +81,12 @@
     become: true
     when: "{{ mount_point is mount }}"
 
-- name: Attach new volume {{ new_volume_result.volume_id }} to instance {{ target_instance_id }} as {{ source_device_disk }}
+- name: Attach new volume {{ new_volume_result.volume_id }} to instance {{ target_instance_id }} as {{ mount_point_block }}
   # Attaches the newly created volume to the target EC2 instance.
   amazon.aws.ec2_vol:
     instance: "{{ target_instance_id }}"
     id: "{{ new_volume_result.volume_id }}"
-    device_name: "{{ source_device_disk }}" # Use the same device name or a new one
+    device_name: "{{ mount_point_block }}" # Use the same device name or a new one
     region: "{{ aws_region }}"
     profile: "{{ aws_auth_profile }}"
     state: present
@@ -96,9 +96,9 @@
 - name: Wait for the new device to be available on the host
   # Waits until the kernel recognizes the newly attached device.
   ansible.builtin.wait_for:
-    path: "{{ source_device_partition }}" # This path needs to be the kernel's device path (e.g., /dev/xvdf)
+    path: "{{ mount_point_block }}" # This path needs to be the kernel's device path (e.g., /dev/xvdf)
     timeout: 60
-    msg: "New device {{ source_device_partition }} did not appear within 60 seconds."
+    msg: "New device {{ mount_point_block }} did not appear within 60 seconds."
 
 - name: remount the augur db
   include_tasks: mount_augur.yml
