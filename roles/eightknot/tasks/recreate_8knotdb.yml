@@ -1,3 +1,8 @@
+- name: test aws credentials
+  ansible.builtin.include_role:
+    name: aws
+    tasks_from: check_saml
+
 - name: Gather snapshot info from AWS
   amazon.aws.ec2_snapshot_info:
     filters:
