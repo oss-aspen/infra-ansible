@@ -113,11 +113,11 @@
   delegate_to: localhost
   when: aws_vol.aws_volume_id is defined
 
-- name: Attach new volume {{ latest_volume.volume_id }} to instance {{ ansible_ec2_instance_id }} as {{ mount_point_block }}
+- name: Attach new volume {{ latest_volume.id }} to instance {{ ansible_ec2_instance_id }} as {{ mount_point_block }}
   # Attaches the newly created volume to the target EC2 instance.
   amazon.aws.ec2_vol:
     instance: "{{ ansible_ec2_instance_id }}"
-    id: "{{ latest_volume.volume_id }}"
+    id: "{{ latest_volume.id }}"
     device_name: "/dev/sdb" # Use the same device name or a new one
     region: "{{ aws_region }}"
     profile: "{{ aws_auth_profile }}"
