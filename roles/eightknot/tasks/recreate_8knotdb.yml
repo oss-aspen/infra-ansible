@@ -54,20 +54,17 @@
       mount_point_block: "{{ ansible_mounts | json_query(query) | first }}"
     vars:
       query: "[?mount=='{{ mount_point }}'].device"
-    when: "{{ mount_point is mount }}"
 
   # this should overwrite the fallback value in the variables if we can determine 
   # the actual partition device for the mount point
   - name: Set source partition values.
     ansible.builtin.set_fact:
       source_device_partition: "{{ mount_point_block }}"
-    when: "{{ mount_point is mount }}"
 
   - name: Identify aws volume mounted at location
     identify_volume:
       partition_device: "{{ mount_point_block }}"
     register: aws_vol
-    when: "{{ mount_point is mount }}"
 
   - name: unmount DB from {{ mount_point }}
     ansible.posix.mount:
@@ -76,7 +73,6 @@
       fstype: xfs
       state: unmounted
     become: true
-    when: "{{ mount_point is mount }}"
 
 - name: Detach old volume {{ aws_vol.volume_id }} from instance {{ ansible_ec2_instance_id }} mounted at {{ mount_point_block }}
   amazon.aws.ec2_vol:
