@@ -103,9 +103,9 @@
     state: unmounted
   become: true
 
-- name: Detach old volume {{ aws_vol.volume_id }} from instance {{ ansible_ec2_instance_id }} mounted at {{ mount_point_block }}
+- name: Detach old volume {{ aws_vol.aws_volume_id }} from instance {{ ansible_ec2_instance_id }}
   amazon.aws.ec2_vol:
-    id: "{{ aws_vol.volume_id }}"
+    id: "{{ aws_vol.aws_volume_id }}"
     region: "{{ aws_region }}"
     profile: "{{ aws_auth_profile }}"
     state: absent
