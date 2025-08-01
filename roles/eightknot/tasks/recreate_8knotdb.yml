@@ -58,9 +58,16 @@
       createdby: ansible
       Project: PostgresMigration
     state: present
-  register: latest_volume
+  register: new_volume
   delegate_to: localhost
-  when: (now(utc=True) - (latest_volume.create_time | to_datetime(iso8601format) )).days > 4
+  when: (now(utc=True) - (latest_volume.create_time | to_datetime(iso8601format) )).days > 3
+  vars:
+    iso8601format: '%Y-%m-%dT%H:%M:%S.%f+00:00'
+  
+- name: use newly created volume as latest
+  ansible.builtin.set_fact:
+    latest_volume: "{{ new_volume }}"
+  when: (now(utc=True) - (latest_volume.create_time | to_datetime(iso8601format) )).days > 3
   vars:
     iso8601format: '%Y-%m-%dT%H:%M:%S.%f+00:00'
 
