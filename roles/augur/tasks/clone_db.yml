@@ -66,6 +66,7 @@
     wait: false
     snapshot_tags:
       createdby: ansible
+      Project: "PostgresMigration"
   register: snapshot_result # Stores the snapshot details for later use
   delegate_to: localhost # AWS API calls are typically delegated to localhost
 
