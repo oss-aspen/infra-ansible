@@ -28,7 +28,22 @@
       Actual progress: {{ latest_snapshot.progress }}.
   when: latest_snapshot.progress != "100%"
 
-- name: Create new volume from snapshot {{ latest_snapshot.snapshot_id }}
+- name: Gather volume info from AWS
+  amazon.aws.ec2_vol_info:
+    filters:
+      # owner id is implied - i dont think volumes can be public like snapshots
+      # "tag:createdby": ansible
+      "tag:Project": PostgresMigration
+    profile: "{{ aws_auth_profile }}"
+    region: "{{ aws_region }}"
+  register: volume_lookup_results
+  delegate_to: localhost
+
+- name: Determine the most recent volume created for this project
+  set_fact:
+    latest_volume: "{{ volume_lookup_results.volumes | sort(attribute='create_time', reverse=true) | first }}"
+
+- name: Create new volume from snapshot {{ latest_snapshot.snapshot_id }} (if there isnt a relatively new one available)
   # Creates a new EBS volume based on the snapshot.
   # The size can be increased here if `new_volume_size_gb` is set.
   amazon.aws.ec2_vol:
@@ -43,8 +58,11 @@
       createdby: ansible
       Project: PostgresMigration
     state: present
-  register: new_volume_result
+  register: latest_volume
   delegate_to: localhost
+  when: (now(utc=True) - (latest_volume.create_time | to_datetime(iso8601format) )).days > 4
+  vars:
+    iso8601format: '%Y-%m-%dT%H:%M:%S.%f+00:00'
 
 - name: Bring 8knot down
   include_tasks: down.yml
