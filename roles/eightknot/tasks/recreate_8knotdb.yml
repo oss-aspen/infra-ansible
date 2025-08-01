@@ -65,19 +65,16 @@
         mount_point_block: "{{ source_device_disk }}"
       when: mount_point_devices is not defined or (mount_point_devices | length == 0)
 
-- name: unmount the augur db
-  block:
+- name: Identify aws volume mounted at location
+  identify_volume:
+    partition_device: "{{ mount_point_block }}"
+  register: aws_vol
 
-  - name: Identify aws volume mounted at location
-    identify_volume:
-      partition_device: "{{ mount_point_block }}"
-    register: aws_vol
-
-  - name: unmount DB from {{ mount_point }}
-    ansible.posix.mount:
-      path: "{{ mount_point }}"
-      state: unmounted
-    become: true
+- name: unmount DB from {{ mount_point }}
+  ansible.posix.mount:
+    path: "{{ mount_point }}"
+    state: unmounted
+  become: true
 
 - name: Detach old volume {{ aws_vol.volume_id }} from instance {{ ansible_ec2_instance_id }} mounted at {{ mount_point_block }}
   amazon.aws.ec2_vol:
