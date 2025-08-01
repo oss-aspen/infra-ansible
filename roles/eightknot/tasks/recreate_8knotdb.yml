@@ -68,12 +68,6 @@
 - name: unmount the augur db
   block:
 
-  # this should overwrite the fallback value in the variables if we can determine 
-  # the actual partition device for the mount point
-  - name: Set source partition values.
-    ansible.builtin.set_fact:
-      source_device_partition: "{{ mount_point_block }}"
-
   - name: Identify aws volume mounted at location
     identify_volume:
       partition_device: "{{ mount_point_block }}"
