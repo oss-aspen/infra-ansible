@@ -47,13 +47,26 @@
 - name: Bring 8knot down
   include_tasks: down.yml
 
+- name: "Determine block device for {{ mount_point }}"
+  block:
+    - name: list matching mounts
+      ansible.builtin.set_fact:
+        mount_point_devices: "{{ ansible_mounts | json_query(query) }}"
+      vars:
+        query: "[?mount=='{{ mount_point }}'].device"
+
+    - name: "Determine block device for {{ mount_point }}"
+      ansible.builtin.set_fact:
+        mount_point_block: "{{ mount_point_devices | first }}"
+      when: mount_point_devices is defined and (mount_point_devices | length > 0)
+
+    - name: "Determine block device for {{ mount_point }}"
+      ansible.builtin.set_fact:
+        mount_point_block: "{{ source_device_disk }}"
+      when: mount_point_devices is not defined or (mount_point_devices | length == 0)
+
 - name: unmount the augur db
   block:
-  - name: "Determine block device for {{ mount_point }}"
-    ansible.builtin.set_fact:
-      mount_point_block: "{{ ansible_mounts | json_query(query) | first }}"
-    vars:
-      query: "[?mount=='{{ mount_point }}'].device"
 
   # this should overwrite the fallback value in the variables if we can determine 
   # the actual partition device for the mount point
