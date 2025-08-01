@@ -10,13 +10,14 @@
   amazon.aws.ec2_snapshot_info:
     filters:
       owner-id: "{{ aws_account_id }}"
-      "tag:createdby": ansible
+      # "tag:createdby": ansible
+      "tag:Project": PostgresMigration
     profile: "{{ aws_auth_profile }}"
     region: "{{ aws_region }}"
   register: snapshot_lookup_results
   delegate_to: localhost
 
-- name: Determine the most recent snapshot created by this script
+- name: Determine the most recent snapshot created for this project
   set_fact:
     latest_snapshot: "{{ snapshot_lookup_results.snapshots | sort(attribute='start_time', reverse=true) | first }}"
 
