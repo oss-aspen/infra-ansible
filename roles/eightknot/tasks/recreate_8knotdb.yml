@@ -76,8 +76,6 @@
   - name: unmount DB from {{ mount_point }}
     ansible.posix.mount:
       path: "{{ mount_point }}"
-      src: "{{ mount_point_block }}"
-      fstype: xfs
       state: unmounted
     become: true
 
