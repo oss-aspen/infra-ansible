@@ -118,7 +118,7 @@
   amazon.aws.ec2_vol:
     instance: "{{ ansible_ec2_instance_id }}"
     id: "{{ latest_volume.volume_id }}"
-    device_name: "{{ mount_point_block }}" # Use the same device name or a new one
+    device_name: "/dev/sdb" # Use the same device name or a new one
     region: "{{ aws_region }}"
     profile: "{{ aws_auth_profile }}"
     state: present
