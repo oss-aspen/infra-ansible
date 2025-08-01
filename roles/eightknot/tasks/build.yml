@@ -47,10 +47,6 @@
   ansible.builtin.meta:
     reset_connection
 
-- name: Ensure docker sdk is installed
-  ansible.builtin.include_role:
-    name: common
-    tasks_from: docker-python
 
 - name: Build the 8Knot image
   community.docker.docker_image_build:
