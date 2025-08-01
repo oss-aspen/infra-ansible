@@ -20,7 +20,7 @@ services:
       POSTGRES_PASSWORD: ${AUGUR_PASSWORD}
     #command: postgres
     volumes:
-      - "{{ mount_point }}":/var/lib/postgresql/data
+      - {{ mount_point }}:/var/lib/postgresql/data
     networks:
       - 8knot
     ports:
