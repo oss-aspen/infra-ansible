@@ -3,7 +3,7 @@
     path: "{{ mount_point }}"
     state: directory
     mode: '0755'
-    owner: "{{ ansible_user }}"
+    owner: 999
   become: true
 
 - name: remount DB to {{ mount_point }}
