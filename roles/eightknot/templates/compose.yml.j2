@@ -35,7 +35,7 @@ services:
       postgres-cache:
         condition: service_healthy # to ensure that postgres is indeed initialized before this starts
     env_file:
-      - ./env.list
+      - .env
     # sometimes, postgres-cache isn't spun up before this starts.
     # so it'll fail. We want this to restart when it fails, because
     # postgres will be ready eventually. we don't want it to restart
@@ -80,7 +80,7 @@ services:
       - postgres-cache
       - db-init
     env_file:
-      - ./env.list
+      - .env
     restart: always
     networks:
       - 8knot
@@ -93,7 +93,7 @@ services:
       - redis-users
       - postgres-cache
     env_file:
-      - ./env.list
+      - .env
     restart: always
     networks:
       - 8knot
@@ -117,7 +117,7 @@ services:
       - redis-cache
       - postgres-cache
     env_file:
-      - ./env.list
+      - .env
     restart: always
     networks:
       - 8knot
@@ -134,7 +134,7 @@ services:
       #   code and print a message, when the variable is not set or empty
       - redis-server --requirepass "$${REDIS_PASSWORD:?REDIS_PASSWORD variable is not set}"
     env_file:
-      - ./env.list
+      - .env
     restart: always
     networks:
       - 8knot
@@ -151,7 +151,7 @@ services:
       #   code and print a message, when the variable is not set or empty
       - redis-server --requirepass "$${REDIS_PASSWORD:?REDIS_PASSWORD variable is not set}"
     env_file:
-      - ./env.list
+      - .env
     restart: always
     networks:
       - 8knot
@@ -163,7 +163,7 @@ services:
       - /opt/8knot/config/postgres.conf:/etc/postgresql/postgresql.conf:ro
       - postgres-cache:/var/lib/postgresql/data
     env_file:
-      - ./env.list
+      - .env
     restart: always
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U postgres"]

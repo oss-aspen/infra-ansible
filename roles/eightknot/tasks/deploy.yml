@@ -17,8 +17,8 @@
 
 - name: Write environment file using jinja2
   ansible.builtin.template:
-      src: templates/env.list.j2
-      dest: "{{ compose_path }}/env.list"
+      src: templates/.env.j2
+      dest: "{{ compose_path }}/.env"
 
 - name: Prepare location for caddy config files
   ansible.builtin.file:
