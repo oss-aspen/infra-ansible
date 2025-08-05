@@ -33,30 +33,6 @@
     src: templates/Caddyfile.j2
     dest: /opt/caddy/Caddyfile
 
-- name: Prepare location for postgres and nginx config files
-  ansible.builtin.file:
-    path: /opt/8knot/config
-    state: directory
-    mode: '0755'
-    owner: "{{ ansible_user }}"
-  become: true
-
-- name: Copy postgres.conf
-  ansible.builtin.copy:
-    src: files/postgres.conf
-    dest: /opt/8knot/config/postgres.conf
-    owner: "{{ ansible_user }}"
-    group: "{{ ansible_user }}"
-    mode: '0644'
-
-- name: Copy nginx.conf
-  ansible.builtin.copy:
-    src: files/nginx.conf
-    dest: /opt/8knot/config/nginx.conf
-    owner: "{{ ansible_user }}"
-    group: "{{ ansible_user }}"
-    mode: '0644'
-
 - name: Mount Augur DB
   ansible.builtin.include_role:
     name: eightknot

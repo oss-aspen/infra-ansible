@@ -47,7 +47,7 @@ services:
   reverse-proxy:
     image: nginx:latest
     volumes:
-      - /opt/8knot/config/nginx.conf:/etc/nginx/nginx.conf:ro
+      - {{ git_clone_path }}/nginx.conf:/etc/nginx/nginx.conf:ro
     depends_on:
       - app-server
     ports:
@@ -160,7 +160,7 @@ services:
     image: docker.io/library/postgres:16
     command: ["postgres", "-c", "config_file=/etc/postgresql/postgresql.conf"]
     volumes:
-      - /opt/8knot/config/postgres.conf:/etc/postgresql/postgresql.conf:ro
+      - {{ git_clone_path }}/postgres.conf:/etc/postgresql/postgresql.conf:ro
       - postgres-cache:/var/lib/postgresql/data
     env_file:
       - .env
