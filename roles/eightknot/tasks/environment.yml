@@ -6,3 +6,4 @@
     name: vm.overcommit_memory
     value: '1'
     state: present
+  become: true
