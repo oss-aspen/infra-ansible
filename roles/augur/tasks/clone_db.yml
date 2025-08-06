@@ -11,15 +11,17 @@
     mount_info: "{{ ansible_facts.mounts | selectattr('mount', 'equalto', mount_point) | first | default({}) }}"
 
 - name: "Fail if available space is less than {{ required_free_space }}"
+  # the purpose of this check is to make sure we have enough free space in case
+  # the postgres checkpointing/backup process happens during collection (and therefore writes a bunch of WAL).
+  # this check for 500GB of free space ensures it has room so it is less likely to fill the disk and create downtime
+  vars:
+    required_free_space: "500 GB"
   ansible.builtin.fail:
     msg: >
       Insufficient free space on '{{ mount_point }}'.
       Required: {{ required_free_space }},
       Available: {{ mount_info.size_available | human_readable(unit='B', traditional=True) }}.
   when: mount_info.size_available < required_free_space | ansible.builtin.human_to_bytes
-  vars:
-    # --- Define your requirements here ---
-    required_free_space: "500 GB"
 
 - name: Tell PostgreSQL to make a checkpoint
   # Executes the pg_backup_start function inside the PostgreSQL container.
