@@ -3,6 +3,8 @@
     name: aws
     tasks_from: check_saml
 
+# TODO: maybe make sure materialized views were updated semi recently
+
 - name: "Find the facts for the '{{ mount_point }}' mount point"
   ansible.builtin.set_fact:
     # Use selectattr to find the specific mount and `first` to get it from the list
