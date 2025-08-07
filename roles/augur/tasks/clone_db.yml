@@ -37,6 +37,7 @@
   # Check for successful output from psql. pg_backup_start returns a text string.
   # failed_when: "'pg_backup_start' not in pg_backup_start_result.stdout"
   changed_when: true # This task changes the state of the database
+  become: true
   # Add a delay to ensure the command has time to execute and flush.
   # For pg_backup_start, the flush happens immediately, but a small delay
   # before the snapshot can be prudent.
@@ -83,6 +84,7 @@
     --region {{ aws_region }}
   register: enable_fsr_result
   changed_when: "'enabling' in enable_fsr_result.stdout"
+  delegate_to: localhost
 
 - name: "✅ Verify that the FSR enable command was successful"
   ansible.builtin.assert:

@@ -1,0 +1,23 @@
+---
+- name: Clone PostgreSQL Volume
+  # This playbook assumes you are using AWS EBS volumes and Docker for PostgreSQL.
+  # It will snapshot an existing EBS volume, create a new volume from that snapshot,
+  # attach it to the specified EC2 instance, mount it, and then start a new
+  # PostgreSQL Docker container pointing to this new volume.
+  # Finally, it offers steps to clean up the old volume and snapshot.
+
+  # IMPORTANT:
+  # 1. Replace all placeholder variables (e.g., "vol-0abcdef1234567890") with your actual values.
+  # 2. For `pg_password`, ALWAYS use Ansible Vault for security.
+  # 3. Ensure `boto3` and `botocore` Python libraries are installed on your Ansible control node.
+  #    You may need to verify this on your EC2 instance using `lsblk` or `fdisk -l`.
+  # 5. This playbook assumes the new volume is mounted on the *same server* where the old volume was.
+  #    If migrating to a *different* server, the `ec2_vol` attachment logic and host targeting would need adjustment.
+
+  hosts: [ec2-54-166-135-123.compute-1.amazonaws.com] # Define your target server group in your inventory (e.g., [webservers] or [db_servers])
+  gather_facts: true # Gather facts about the target host
+  tasks:
+    - name: run tasks
+      ansible.builtin.include_role:
+        name: augur
+        tasks_from: clone_db
