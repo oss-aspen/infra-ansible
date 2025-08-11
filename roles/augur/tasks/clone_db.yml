@@ -3,6 +3,10 @@
     name: aws
     tasks_from: check_saml
 
+- name: Load extra variables
+  ansible.builtin.include_vars:
+    file: secrets.yml
+
 # TODO: maybe make sure materialized views were updated semi recently
 
 - name: "Find the facts for the '{{ mount_point }}' mount point"
