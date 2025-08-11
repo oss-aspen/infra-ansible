@@ -8,11 +8,6 @@ docker_image_tag: 8knot:main
 public_hostname: http://{{ inventory_hostname }}
 
 
-aws_auth_profile: saml
-aws_region: "us-east-1" # REQUIRED: Your AWS region (e.g., us-east-1, eu-west-2)
-aws_zone: "us-east-1c"
-aws_account_id: "976193262863"
-
 source_device_disk: "/dev/nvme1n1"
 # fallback value in case one cant be determined from the mount point (i.e. because it isnt mounted)
 source_device_partition: "{{source_device_disk}}p1"

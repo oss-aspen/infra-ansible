@@ -1,3 +1,8 @@
+- name: Load aws variables
+  ansible.builtin.include_vars:
+    file: main.yml
+    dir: ../../aws/vars
+
 - name: test aws credentials
   ansible.builtin.include_role:
     name: aws

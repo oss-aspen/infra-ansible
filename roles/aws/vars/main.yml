@@ -1,0 +1,5 @@
+
+aws_auth_profile: saml
+aws_region: "us-east-1" # REQUIRED: Your AWS region (e.g., us-east-1, eu-west-2)
+aws_zone: "us-east-1c"
+aws_account_id: "976193262863"

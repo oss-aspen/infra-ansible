@@ -9,8 +9,8 @@
 - name: "List snapshots with FSR enabled in AZ {{ availability_zone }}"
   ansible.builtin.command: >
     aws ec2 describe-fast-snapshot-restores
-    --profile saml
-    --region us-east-1
+    --profile {{ aws_auth_profile }}
+    --region {{ aws_region }}
   register: fsr_status
   delegate_to: localhost
 
@@ -22,8 +22,8 @@
     aws ec2 disable-fast-snapshot-restores
     --source-snapshot-ids {{ item.snapshot_id }}
     --availability-zones {{ item.availability_zone }}
-    --profile saml
-    --region {{ item.availability_zone[:-1] }}
+    --profile {{ aws_auth_profile }}
+    --region {{ aws_region }}
   register: disable_fsr_result
   changed_when: "'disabling' in disable_fsr_result.stdout"
   when: item.state == "enabled"
