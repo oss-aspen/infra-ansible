@@ -1,0 +1,31 @@
+- name: test aws credentials
+  ansible.builtin.include_role:
+    name: aws
+    tasks_from: check_saml
+
+- name: gather AWS EC2 metadata facts
+  amazon.aws.ec2_metadata_facts:
+
+- name: "List snapshots with FSR enabled in AZ {{ availability_zone }}"
+  ansible.builtin.command: >
+    aws ec2 describe-fast-snapshot-restores
+    --profile saml
+    --region us-east-1
+  register: fsr_status
+  delegate_to: localhost
+
+- ansible.builtin.set_fact:
+    fsr_status: "{{ fsr_status.stdout | from_json | json_query('FastSnapshotRestores') | aws_to_snake_case }}"
+
+- name: "Disable FSR for snapshot {{ item.snapshot_id }} in AZ {{ item.availability_zone }}"
+  ansible.builtin.command: >
+    aws ec2 disable-fast-snapshot-restores
+    --source-snapshot-ids {{ item.snapshot_id }}
+    --availability-zones {{ item.availability_zone }}
+    --profile saml
+    --region {{ item.availability_zone[:-1] }}
+  register: disable_fsr_result
+  changed_when: "'disabling' in disable_fsr_result.stdout"
+  when: item.state == "enabled"
+  loop: "{{ fsr_status }}"
+  delegate_to: localhost
