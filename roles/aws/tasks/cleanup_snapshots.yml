@@ -1,0 +1,57 @@
+- name: test aws credentials
+  ansible.builtin.include_role:
+    name: aws
+    tasks_from: check_saml
+
+- name: Gather snapshot info from AWS
+  amazon.aws.ec2_snapshot_info:
+    filters:
+      owner-id: "{{ aws_account_id }}"
+      # "tag:createdby": ansible # enable this to limit deletion to just the snapshots that were automatically created
+      "tag:Project": PostgresMigration
+    profile: "{{ aws_auth_profile }}"
+    region: "{{ aws_region }}"
+  register: snapshot_lookup_results
+  delegate_to: localhost
+
+- name: get total count
+  debug:
+    msg: "{{ snapshot_lookup_results.snapshots | length }}"
+
+- ansible.builtin.set_fact:
+    keep_list: "{{ (snapshot_lookup_results.snapshots | sort(attribute='start_time', reverse=True))[:keep_recent_snapshots] }}"
+
+- name: Get the list of snapshots to delete (all but the most recent {{ keep_recent_snapshots }})
+  ansible.builtin.set_fact:
+    snapshots_to_delete: "{{ snapshot_lookup_results.snapshots | sort(attribute='start_time', reverse=True) | difference(keep_list) }}"
+  when: snapshot_lookup_results.snapshots | length > keep_recent_snapshots
+
+# filter unused attributes from the snapshot data
+- ansible.builtin.set_fact:
+    snapshots_to_delete: "{{ snapshots_to_delete | map('combine', {'create_volume_permissions': omit, 'encrypted': omit, 'progress': omit, 'state': omit, 'storage_tier': omit, 'transfer_type': omit, 'full_snapshot_size_in_bytes': omit, 'completion_time': omit, 'owner_id': omit,  }) | list }}"
+
+- name: Display the snapshots that will be deleted
+  ansible.builtin.debug:
+    # summary: "Found {{ snapshots_to_delete | length }} snapshots to delete: "
+    msg: "{{ snapshots_to_delete }}"
+  when: snapshots_to_delete is defined and snapshots_to_delete | length > 0
+
+
+# Debugging: show what is being kept
+# - ansible.builtin.set_fact:
+#     snapshots_to_keep: "{{ keep_list | map('combine', {'create_volume_permissions': omit, 'encrypted': omit, 'progress': omit, 'state': omit, 'storage_tier': omit, 'transfer_type': omit, 'full_snapshot_size_in_bytes': omit, 'completion_time': omit, 'owner_id': omit,  }) | list }}"
+
+# - name: Display the snapshots that will be kept
+#   ansible.builtin.debug:
+#     # summary: "Found {{ snapshots_to_delete | length }} snapshots to delete: "
+#     msg: "{{ snapshots_to_keep }}"
+
+
+
+# - name: Delete snapshots
+#   community.aws.ec2_snapshot:
+#     region: "{{ aws_region }}"
+#     snapshot_id: "{{ item.snapshot_id }}"
+#     state: absent
+#   when: not dry_run and snapshots_to_delete is defined
+#   loop: "{{ snapshots_to_delete }}"
