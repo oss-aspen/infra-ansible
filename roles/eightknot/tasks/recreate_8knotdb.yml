@@ -66,7 +66,7 @@
   
 - name: use newly created volume as latest
   ansible.builtin.set_fact:
-    latest_volume: "{{ new_volume }}"
+    latest_volume: "{{ new_volume.volume }}"
   when: (now(utc=True) - (latest_volume.create_time | to_datetime(iso8601format) )).days > 3
   vars:
     iso8601format: '%Y-%m-%dT%H:%M:%S.%f+00:00'
