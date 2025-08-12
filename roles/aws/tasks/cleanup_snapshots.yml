@@ -26,6 +26,7 @@
 # filter unused attributes from the snapshot data
 - ansible.builtin.set_fact:
     snapshots_to_delete: "{{ snapshots_to_delete | map('combine', {'create_volume_permissions': omit, 'encrypted': omit, 'progress': omit, 'state': omit, 'storage_tier': omit, 'transfer_type': omit, 'full_snapshot_size_in_bytes': omit, 'completion_time': omit, 'owner_id': omit,  }) | list }}"
+  when: snapshot_lookup_results.snapshots | length > keep_recent_snapshots
 
 - name: Display the snapshots that will be deleted
   ansible.builtin.debug:
