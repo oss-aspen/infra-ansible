@@ -7,3 +7,23 @@
     value: '1'
     state: present
   become: true
+
+
+- name: install warning for users logging into root shells
+  become: true
+  block:
+  - name: Check if warning is already defined
+    lineinfile:
+      state: absent
+      path: /root/.profile
+      regexp: '^echo'
+    check_mode: true
+    changed_when: false # This just makes things look prettier in the logs
+    register: check
+
+  - name: Define couchbase.host if undefined
+    lineinfile:
+      state: present
+      path: /root/.profile
+      line: echo -e "\n\e[1;31mWelcome to the root shell.\e[0m\nYour user account should have access to \e[1msudo\e[0m and \e[1mdocker\e[0m commands already.\nFor simple tasks involving docker or checking in on something, it is marginally safer to use your own account rather than this one.\nThat said, using a root shell can be more convenient for tab-complete and other things.\nStay safe out there.\n"
+    when: check.found == 0
