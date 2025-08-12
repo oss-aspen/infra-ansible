@@ -20,21 +20,9 @@ services:
       POSTGRES_DB: ${AUGUR_DB}
       POSTGRES_USER: ${AUGUR_DB_USER}
       POSTGRES_PASSWORD: ${AUGUR_DB_PASSWORD}
-      POSTGRES_HOST_AUTH_METHOD: "scram-sha-256\nhost replication all 0.0.0.0/0 md5"
-      POSTGRES_INITDB_ARGS: "--auth-host=scram-sha-256"
-      command: |
-        postgres
-        -c wal_level=replica
-        -c hot_standby=on
-        -c max_wal_senders=10
-        -c max_replication_slots=10
-        -c hot_standby_feedback=on
     volumes:
-      - /opt/augur/config/00_init.sql:/docker-entrypoint-initdb.d/00_init.sql
       - /opt/augur/postgresql/data:/var/lib/postgresql/data
       - /opt/facade/dumps/:/dumps
-    ports:
-      - 5432:5432 # expose port for replication
     networks:
       - augur
 
