@@ -1,0 +1,27 @@
+- name: Load users variables
+  ansible.builtin.include_vars:
+    file: users.yml
+
+- name: Ensure user {{ item.name }} exists
+  ansible.builtin.user:
+    name: "{{ item.name }}"
+    uid: "{{ item.uid }}"
+    groups: "{{ item.user_groups | split(',') }}"
+    password: "{{ item.hash }}"
+    shell: /bin/bash
+    # homedir created by default
+  loop: "{{ system_users }}"
+  when: system_users is defined
+  become: true
+
+- name: set ssh key for {{ item.name }}
+  ansible.posix.authorized_key:
+    user: "{{ item.0.name }}"
+    state: present
+    key: '{{ item.1 }}'
+  loop: "{{ system_users | subelements('ssh_keys') }}"
+  when: system_users is defined
+  become: true
+  
+
+## Remove user
