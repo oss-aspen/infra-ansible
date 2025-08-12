@@ -16,6 +16,7 @@
 
 
 - ansible.builtin.set_fact:
+    # this sorts newest stuff first and then takes the first {{ keep_recent_snapshots }} values
     keep_list: "{{ (snapshot_lookup_results.snapshots | sort(attribute='start_time', reverse=True))[:keep_recent_snapshots] }}"
 
 - name: Get the list of snapshots to delete (all but the most recent {{ keep_recent_snapshots }})
