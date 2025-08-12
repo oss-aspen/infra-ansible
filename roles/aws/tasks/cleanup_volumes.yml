@@ -1,0 +1,56 @@
+- name: test aws credentials
+  ansible.builtin.include_role:
+    name: aws
+    tasks_from: check_saml
+
+- name: Gather volume info from AWS
+  amazon.aws.ec2_vol_info:
+    filters:
+      # owner id is implied - i dont think volumes can be public like snapshots
+      # "tag:createdby": ansible
+      "tag:Project": PostgresMigration
+      status: available # filter out any that are attached/actively in use
+    profile: "{{ aws_auth_profile }}"
+    region: "{{ aws_region }}"
+  register: volume_lookup_results
+  delegate_to: localhost
+
+- ansible.builtin.set_fact:
+    # keep the most recent {{ keep_recent_volumes }} volumes
+    keep_list: "{{ (volume_lookup_results.volumes | sort(attribute='create_time', reverse=True))[:keep_recent_volumes] }}"
+
+- name: Get the list of volumes to delete (all but the most recent {{ keep_recent_volumes }})
+  ansible.builtin.set_fact:
+    volumes_to_delete: "{{ volume_lookup_results.volumes | sort(attribute='create_time', reverse=True) | difference(keep_list) }}"
+  when: volume_lookup_results.volumes | length > keep_recent_volumes
+
+# filter unused attributes from the snapshot data
+- ansible.builtin.set_fact:
+    volumes_to_delete: "{{ volumes_to_delete | map('combine', {'encrypted': omit, 'iops': omit, 'throughput': omit, 'snapshot_id': omit }) | list }}"
+  when: volume_lookup_results.volumes | length > keep_recent_volumes
+
+- name: Display the snapshots that will be deleted
+  ansible.builtin.debug:
+    # summary: "Found {{ volumes_to_delete | length }} snapshots to delete: "
+    msg: "{{ volumes_to_delete }}"
+  when: volumes_to_delete is defined and volumes_to_delete | length > 0
+
+# Debugging: show what is being kept
+# - ansible.builtin.set_fact:
+#     snapshots_to_keep: "{{ keep_list | map('combine', {'encrypted': omit, 'iops': omit, 'throughput': omit, 'snapshot_id': omit }) | list }}"
+
+# - name: Display the snapshots that will be kept
+#   ansible.builtin.debug:
+#     # summary: "Found {{ snapshots_to_delete | length }} snapshots to delete: "
+#     msg: "{{ snapshots_to_keep }}"
+
+
+- name: Delete volumes
+  amazon.aws.ec2_vol:
+    region: "{{ aws_region }}"
+    id: "{{ item.id }}"
+    profile: "{{ aws_auth_profile }}"
+    state: absent
+  when: volumes_to_delete is defined and volumes_to_delete | length > 0
+  loop: "{{ volumes_to_delete }}"
+  delegate_to: localhost

@@ -6,3 +6,4 @@ aws_account_id: "976193262863"
 
 
 keep_recent_snapshots: 3
+keep_recent_volumes: 1
