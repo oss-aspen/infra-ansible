@@ -22,7 +22,7 @@ services:
       POSTGRES_PASSWORD: ${AUGUR_DB_PASSWORD}
     volumes:
       - {{ mount_point }}:/var/lib/postgresql/data
-      - /opt/facade/dumps/:/dumps
+     # - /opt/facade/dumps/:/dumps # probably legacy from when backups were done this way
     networks:
       - augur
 
