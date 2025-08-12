@@ -48,10 +48,12 @@
 
 
 
-# - name: Delete snapshots
-#   community.aws.ec2_snapshot:
-#     region: "{{ aws_region }}"
-#     snapshot_id: "{{ item.snapshot_id }}"
-#     state: absent
-#   when: not dry_run and snapshots_to_delete is defined
-#   loop: "{{ snapshots_to_delete }}"
+- name: Delete snapshots
+  amazon.aws.ec2_snapshot:
+    region: "{{ aws_region }}"
+    snapshot_id: "{{ item.snapshot_id }}"
+    profile: "{{ aws_auth_profile }}"
+    state: absent
+  when: snapshots_to_delete is defined
+  loop: "{{ snapshots_to_delete }}"
+  delegate_to: localhost
