@@ -14,9 +14,6 @@
   register: snapshot_lookup_results
   delegate_to: localhost
 
-- name: get total count
-  debug:
-    msg: "{{ snapshot_lookup_results.snapshots | length }}"
 
 - ansible.builtin.set_fact:
     keep_list: "{{ (snapshot_lookup_results.snapshots | sort(attribute='start_time', reverse=True))[:keep_recent_snapshots] }}"
