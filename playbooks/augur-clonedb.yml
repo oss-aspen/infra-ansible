@@ -14,7 +14,7 @@
   # 5. This playbook assumes the new volume is mounted on the *same server* where the old volume was.
   #    If migrating to a *different* server, the `ec2_vol` attachment logic and host targeting would need adjustment.
 
-  hosts: [ec2-54-166-135-123.compute-1.amazonaws.com] # Define your target server group in your inventory (e.g., [webservers] or [db_servers])
+  hosts: [augur] # Define your target server group in your inventory (e.g., [webservers] or [db_servers])
   gather_facts: true # Gather facts about the target host
   tasks:
     - name: run tasks
