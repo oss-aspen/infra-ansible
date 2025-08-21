@@ -21,7 +21,7 @@
     changed_when: false # This just makes things look prettier in the logs
     register: check
 
-  - name: Define couchbase.host if undefined
+  - name: Define the welcome message to discourage direct root usage
     lineinfile:
       state: present
       path: /root/.profile
