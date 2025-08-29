@@ -1,5 +1,5 @@
 - name: Run apt updates
-  hosts: [ospo_staging]
+  hosts: [ospo_prod]
   become: true
   tasks:
     - name: apt
