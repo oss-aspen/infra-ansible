@@ -42,6 +42,22 @@ Many parts of this script require access to secrets. Some of these (like your SS
 The main way secrets are stored in this repository is using ansible vault - this encrypts any secret values such that they can only be read (and thus used in playbooks) when you have the password. To learn more about using ansible vault, check out [this digitalocean primer](https://www.digitalocean.com/community/tutorials/how-to-use-vault-to-protect-sensitive-ansible-data).
 
 
+### Usage
+
+provided all the prerequisites are present, usage should be a relatively simple matter of running `ansible-playbook` followed by the path to the playbook you want to run (from the `playbooks` folder).
+
+However, depending on the playbook you may need extra parameters:
+
+- `--vault-id` - this tells ansible which credentials to use for ansible vault. The value `prod` is most likely what you want. Note that depending on how you store your ansible vault credentials, you may need to specify something else, such as:
+  - `prod@<path to script>` if you use a [script](https://github.com/ansible-community/contrib-scripts/blob/main/vault/vault-keyring-client.py) to fetch your ansible vault password
+- `--ask-become-pass` - If the server you are connecting to asks for a password the first time you use `sudo`, you need to provide that password so ansible can elevate its permissions when needed.
+- `-e "ansible_user=username"` - If your username on the relevant system is different from the one on your local machine, ansible needs to know what it is so it can log in.
+
+
+### Example
+for example, following all the above guidelines, kicking off a snapshot of the Augur DB would look like this 
+`ansible-playbook playbooks/augur-clonedb.yml --vault-id prod@~/Scripts/vault-keyring-client.py --ask-become-pass -e "ansible_user=username"`
+
 ## Included Module Testing
 
 This ansible directory comes with a custom module for fetching the AWS volume ID from a provided device file.
