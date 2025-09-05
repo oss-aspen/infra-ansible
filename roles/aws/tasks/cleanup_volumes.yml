@@ -37,11 +37,11 @@
 
 # Debugging: show what is being kept
 # - ansible.builtin.set_fact:
-#     snapshots_to_keep: "{{ keep_list | map('combine', {'encrypted': omit, 'iops': omit, 'throughput': omit, 'snapshot_id': omit }) | list }}"
+#     volumes_to_keep: "{{ keep_list | map('combine', {'encrypted': omit, 'iops': omit, 'throughput': omit, 'snapshot_id': omit }) | list }}"
 
 # - name: Display the snapshots that will be kept
 #   ansible.builtin.debug:
-#     # summary: "Found {{ snapshots_to_delete | length }} snapshots to delete: "
+#     # summary: "Found {{ volumes_to_delete | length }} volumes to delete: "
 #     msg: "{{ snapshots_to_keep }}"
 
 
