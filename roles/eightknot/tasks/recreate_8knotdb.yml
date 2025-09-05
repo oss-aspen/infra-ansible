@@ -141,6 +141,11 @@
 
 # TODO: verify the new mount point matches the new volume ID
 
+- name: Delete the 8Knot cache volume to clear the cache
+  community.docker.docker_volume:
+    name: "{{ eightknot_pg_cache_volume_name }}"
+    state: absent
+
 - name: Bring 8knot up
   include_tasks: up.yml
 

@@ -20,6 +20,8 @@ augur_pg_container_name: "8knot-augur-db-1"
 augur_pg_container_user: "augur"
 augur_pg_password: "{{ vault_postgres_password }}"
 
+eightknot_pg_cache_volume_name: 8knot_postgres-cache
+
 # 8knot_pg_container_name: "postgres"
 old_pg_container_name: "my_postgres_old" # Name of the existing PostgreSQL Docker container
 new_pg_container_name: "my_postgres_new" # Name for the new PostgreSQL Docker container
