@@ -149,49 +149,19 @@
 - name: Bring 8knot up
   include_tasks: up.yml
 
-# disable FSR?
 
 
+# - name: Disable Fast Snapshot Restore on all snapshots to save money
+#   ansible.builtin.include_role:
+#     name: aws
+#     tasks_from: disable_fsr
 
-# - name: Unmount and delete old volume ({{ aws_vol.volume_id }})
-#   # CAUTION: This step permanently deletes your old volume.
-#   # ONLY run this AFTER you have thoroughly verified that the new PostgreSQL
-#   # instance is fully functional and data is correct.
-#   # Consider commenting this out or running it manually after verification.
-#   amazon.aws.ec2_vol:
-#     id: "{{ aws_vol.volume_id }}"
-#     region: "{{ aws_region }}"
-#     state: absent
-#   delegate_to: localhost
-#   #only delete if the new container was started and the PostgreSQL verification command succeeded.
-#   when: new_pg_container_start.changed and pg_check_result.rc == 0
+# - name: Cleanup old snapshots
+#   ansible.builtin.include_role:
+#     name: aws
+#     tasks_from: cleanup_snapshots.yml
 
-# - name: Delete the snapshot ({{ snapshot_result.snapshot_id }})
-#   # CAUTION: This step permanently deletes the snapshot.
-#   # Keep the snapshot as a recovery point until you are absolutely certain
-#   # the new setup is stable and you no longer need it.
-#   amazon.aws.ec2_snapshot:
-#     snapshot_id: "{{ snapshot_result.snapshot_id }}"
-#     region: "{{ aws_region }}"
-#     state: absent
-#   delegate_to: localhost
-#   # only delete if the new container was started and the PostgreSQL verification command succeeded.
-#   when: new_pg_container_start.changed and pg_check_result.rc == 0
-
-
-
-# - name: Delete the snapshot ({{ latest_volume.snapshot_id }}) after volume creation
-#   # This task removes the EBS snapshot immediately after a new volume has been successfully
-#   # created from it. It relies on the 'latest_volume' variable which should be
-#   # registered from the 'Create new volume from snapshot' task.
-#   #
-#   # CAUTION: Deleting snapshots means you lose that specific point-in-time recovery point.
-#   # Ensure this is the desired behavior for your workflow.
-#   amazon.aws.ec2_snapshot:
-#     snapshot_id: "{{ latest_volume.snapshot_id }}"
-#     region: "{{ aws_region }}"
-#     state: absent
-#   delegate_to: localhost
-#   # ensures this task only runs if the 'latest_volume'
-#   # variable (from the volume creation task) contains a valid snapshot ID.
-#   when: latest_volume.snapshot_id is defined and latest_volume.snapshot_id != ''
+# - name: Cleanup old volumes
+#   ansible.builtin.include_role:
+#     name: aws
+#     tasks_from: cleanup_volumes.yml
