@@ -80,6 +80,7 @@
     snapshot_tags:
       createdby: ansible
       Project: "PostgresMigration"
+      Name: "db-clone-{{ ansible_date_time.date }}"
   register: snapshot_result # Stores the snapshot details for later use
   delegate_to: localhost # AWS API calls are typically delegated to localhost
 
