@@ -1,4 +1,4 @@
 - name: Stop all services
   community.docker.docker_compose_v2:
     project_src: "{{ compose_path }}"
-    state: stopped
+    state: stopped # we use stopped rather than absent (aka "down") to preserve logs
