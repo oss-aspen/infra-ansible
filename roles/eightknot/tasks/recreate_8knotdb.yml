@@ -112,7 +112,7 @@
     id: "{{ aws_vol.aws_volume_id }}"
     region: "{{ aws_region }}"
     profile: "{{ aws_auth_profile }}"
-    state: absent
+    instance: None
   register: detach_volume_result
   delegate_to: localhost
   when: aws_vol.aws_volume_id is defined
