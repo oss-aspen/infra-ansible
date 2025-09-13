@@ -141,6 +141,15 @@
 
 # TODO: verify the new mount point matches the new volume ID
 
+- name: take down 8knot cache container to clear the cache
+  community.docker.docker_compose_v2:
+    project_src: "{{ compose_path }}"
+    pull: missing
+    services: 
+      - postgres-cache
+    env_files: .env
+    state: absent
+
 - name: Delete the 8Knot cache volume to clear the cache
   community.docker.docker_volume:
     name: "{{ eightknot_pg_cache_volume_name }}"
