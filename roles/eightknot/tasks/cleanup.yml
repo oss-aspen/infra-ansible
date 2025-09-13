@@ -1,0 +1,14 @@
+- name: Disable Fast Snapshot Restore on all snapshots to save money
+  ansible.builtin.include_role:
+    name: aws
+    tasks_from: disable_fsr
+
+- name: Cleanup old snapshots
+  ansible.builtin.include_role:
+    name: aws
+    tasks_from: cleanup_snapshots
+
+- name: Cleanup old volumes
+  ansible.builtin.include_role:
+    name: aws
+    tasks_from: cleanup_volumes

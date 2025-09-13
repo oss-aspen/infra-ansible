@@ -1,0 +1,7 @@
+- name: Clean up AWS leftovers
+  hosts: [eightknot]
+  tasks:
+    - name: Clean things
+      ansible.builtin.include_role:
+        name: eightknot
+        tasks_from: cleanup
