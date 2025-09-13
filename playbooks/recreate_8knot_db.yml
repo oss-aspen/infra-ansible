@@ -1,0 +1,7 @@
+- name: recreate 8knot db
+  hosts: [eightknot]
+  tasks:
+    - name: run tasks
+      ansible.builtin.include_role:
+        name: eightknot
+        tasks_from: recreate_8knotdb
