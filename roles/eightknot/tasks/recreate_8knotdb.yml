@@ -25,6 +25,9 @@
   set_fact:
     latest_snapshot: "{{ snapshot_lookup_results.snapshots | sort(attribute='start_time', reverse=true) | first }}"
 
+- debug:
+    var: latest_snapshot.snapshot_id
+
 - name: Fail if progress is not 100% on the snapshot
   ansible.builtin.fail:
     msg: >
@@ -46,6 +49,9 @@
 - name: Determine the most recent volume created for this project
   set_fact:
     latest_volume: "{{ volume_lookup_results.volumes | sort(attribute='create_time', reverse=true) | first }}"
+
+- debug:
+    var: latest_volume.id
 
 - name: Create new volume from snapshot {{ latest_snapshot.snapshot_id }} (if there isnt a relatively new one available)
   # Creates a new EBS volume based on the snapshot.
