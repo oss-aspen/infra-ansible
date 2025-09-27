@@ -5,7 +5,7 @@ compose_path: /opt/compose/8knot/
 docker_image_tag: 8knot:main
 
 #eightknot.osci.io
-public_hostname: http://{{ inventory_hostname }}
+public_hostname: "{{ inventory_hostname }}"
 
 
 source_device_disk: "/dev/nvme1n1"
