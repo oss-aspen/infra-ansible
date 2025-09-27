@@ -1,8 +1,8 @@
 diff --git a/8Knot/app.py b/8Knot/app.py
-index 611fd26..7c17d47 100644
+index 1b51586..0374c5f 100644
 --- a/8Knot/app.py
 +++ b/8Knot/app.py
-@@ -83,6 +83,11 @@ app = dash.Dash(
+@@ -125,6 +125,12 @@ app = dash.Dash(
  server = app.server
  server = _login.configure_server_login(server)
  
@@ -11,6 +11,7 @@ index 611fd26..7c17d47 100644
 +server.wsgi_app = ProxyFix(
 +    server.wsgi_app, x_for=1, x_proto=1, x_host=1, x_prefix=1
 +)
++
+ """HEALTH CHECK ENDPOINT"""
  
- """DASH PAGES LAYOUT"""
- # layout of the app stored in the app_layout file, must be imported after the app is initiated
+ 
