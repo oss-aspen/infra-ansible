@@ -147,14 +147,11 @@
 
 # TODO: verify the new mount point matches the new volume ID
 
-- name: take down 8knot cache container to clear the cache
-  community.docker.docker_compose_v2:
-    project_src: "{{ compose_path }}"
-    pull: missing
-    services: 
-      - postgres-cache
-    env_files: .env
-    state: absent
+# This was done destructively because it also removes the network.
+# otherwise docker would consistently fail to come back up with some network error.
+# surprised theres no options in the ansible module for this.
+- name: destructively take 8knot down
+  include_tasks: down-remove.yml
 
 - name: Delete the 8Knot cache volume to clear the cache
   community.docker.docker_volume:
