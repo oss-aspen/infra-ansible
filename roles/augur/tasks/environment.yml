@@ -1,0 +1,5 @@
+#prometheus-node-exporter, tmux
+
+# earlyoom
+# cp earlyoom /etc/default/earlyoom
+# restart
