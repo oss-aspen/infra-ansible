@@ -161,8 +161,25 @@
 - name: Bring 8knot up
   include_tasks: up.yml
 
+- name: Crash Recovery - register start
+  set_fact:
+    recovery_start: "{{ now() }}"
 
+- name: Wait for PostgreSQL to start accepting connections
+  ansible.builtin.wait_for:
+    host: localhost
+    port: 5432
+    state: started
+    delay: 5 # Seconds to wait before starting checks
+    timeout: 1500 # Maximum seconds to wait
 
+- name: Crash recovery - register end
+  set_fact:
+    recovery_end: "{{ now() }}"
+# Print debug info, or use the timestamps to calculate whatever you need
+- name: Print execution time
+  debug:
+    msg: "Crash recovery start: {{ recovery_start }}, end: {{ recovery_end }} Duration: ~{{ (recovery_end - recovery_start).total_seconds() }} seconds"
 # - name: Disable Fast Snapshot Restore on all snapshots to save money
 #   ansible.builtin.include_role:
 #     name: aws
