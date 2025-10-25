@@ -180,6 +180,11 @@
 - name: Print execution time
   debug:
     msg: "Crash recovery start: {{ recovery_start }}, end: {{ recovery_end }} Duration: ~{{ (recovery_end - recovery_start).total_seconds() }} seconds"
+
+- name: Trigger refresh of materialized views
+  ansible.builtin.include_role:
+    name: eightknot
+    tasks_from: refresh_mat_views
 # - name: Disable Fast Snapshot Restore on all snapshots to save money
 #   ansible.builtin.include_role:
 #     name: aws
