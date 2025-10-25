@@ -72,14 +72,14 @@
   delegate_to: localhost
   when: (now(utc=True) - (latest_volume.create_time | to_datetime(iso8601format) )).days > 3
   vars:
-    iso8601format: '%Y-%m-%dT%H:%M:%S.%f+00:00'
-  
+    iso8601format: "%Y-%m-%dT%H:%M:%S.%f+00:00"
+
 - name: use newly created volume as latest
   ansible.builtin.set_fact:
     latest_volume: "{{ new_volume.volume }}"
   when: (now(utc=True) - (latest_volume.create_time | to_datetime(iso8601format) )).days > 3
   vars:
-    iso8601format: '%Y-%m-%dT%H:%M:%S.%f+00:00'
+    iso8601format: "%Y-%m-%dT%H:%M:%S.%f+00:00"
 
 - name: Bring 8knot down
   include_tasks: down.yml
