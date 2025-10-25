@@ -185,6 +185,19 @@
   ansible.builtin.include_role:
     name: eightknot
     tasks_from: refresh_mat_views
+
+- name: Validate that 8knot is up and serving requests from the public domain
+  ansible.builtin.uri:
+    url: https://eightknot.osci.io
+    method: GET
+    # The 'status_code' parameter defaults to 200,
+    # but you can be explicit if you want:
+    status_code: 200
+  register: web_check
+  until: web_check.status == 200
+  retries: 30 # Total number of retries
+  delay: 10 # Seconds to wait between retries
+  delegate_to: localhost
 # - name: Disable Fast Snapshot Restore on all snapshots to save money
 #   ansible.builtin.include_role:
 #     name: aws
