@@ -198,17 +198,18 @@
   retries: 30 # Total number of retries
   delay: 10 # Seconds to wait between retries
   delegate_to: localhost
-# - name: Disable Fast Snapshot Restore on all snapshots to save money
-#   ansible.builtin.include_role:
-#     name: aws
-#     tasks_from: disable_fsr
 
-# - name: Cleanup old snapshots
-#   ansible.builtin.include_role:
-#     name: aws
-#     tasks_from: cleanup_snapshots.yml
+- name: Disable Fast Snapshot Restore on all snapshots to save money
+  ansible.builtin.include_role:
+    name: aws
+    tasks_from: disable_fsr
 
-# - name: Cleanup old volumes
-#   ansible.builtin.include_role:
-#     name: aws
-#     tasks_from: cleanup_volumes.yml
+- name: Cleanup old snapshots
+  ansible.builtin.include_role:
+    name: aws
+    tasks_from: cleanup_snapshots.yml
+
+- name: Cleanup old volumes
+  ansible.builtin.include_role:
+    name: aws
+    tasks_from: cleanup_volumes.yml
