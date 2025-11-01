@@ -3,7 +3,7 @@
     file: secrets.yml
 
 # https://stackoverflow.com/questions/22225095/trying-to-launch-a-process-via-screen-from-within-ansible
-- name: start a screen session to refresh the materialized views
+- name: start a tmux session to refresh the materialized views
   ansible.builtin.shell: |
     tmux new-session -d -s "ansible-refresh-mat-views" \
     "docker container exec -e PGPASSWORD={{ augur_pg_password }} {{ augur_pg_container_name }} \
