@@ -4,7 +4,7 @@ x-postgres-common:
   user: postgres
   restart: unless-stopped
   stop_grace_period: 1800s
-  shm_size: 268435456
+  shm_size: 16g
   healthcheck:
     test: 'pg_isready -U augur --dbname=postgres'
     interval: 10s
