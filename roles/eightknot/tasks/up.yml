@@ -3,3 +3,6 @@
     project_src: "{{ compose_path }}"
     pull: missing
     env_files: .env
+    scale:
+      worker-query: 4
+      worker-callback: 4
