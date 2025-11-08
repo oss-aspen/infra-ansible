@@ -165,6 +165,7 @@
     owner: 999
     group: systemd-journal
     mode: "0600"
+  become: true
 
 - name: Bring 8knot up
   include_tasks: up.yml

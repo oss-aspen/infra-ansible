@@ -21,3 +21,4 @@
     owner: 999
     group: systemd-journal
     mode: "0600"
+  become: true
