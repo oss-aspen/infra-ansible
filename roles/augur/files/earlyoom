@@ -9,8 +9,8 @@ EARLYOOM_ARGS="-r 3600 --avoid '(^|/)(init|X|sshd|postgres|systemd)$'"
 # Print memory report every second instead of every minute
 # EARLYOOM_ARGS="-r 1"
 
-# Available minimum memory 5%
-# EARLYOOM_ARGS="-m 5"
+# Available minimum memory 2%
+EARLYOOM_ARGS="-m 2"
 
 # Available minimum memory 15% and free minimum swap 5%
 # EARLYOOM_ARGS="-m 15 -s 5"
