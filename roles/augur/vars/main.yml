@@ -1,5 +1,5 @@
 augur_git_clone_path: /opt/git/augur
-compose_path: /opt/augur/compose
+compose_path: /opt/compose/augur
 compose_file: docker-compose.yml
 
 postgres_data_mount_point: "/opt/augur/postgresql/data"
