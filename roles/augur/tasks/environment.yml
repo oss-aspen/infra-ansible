@@ -1,5 +1,36 @@
-#prometheus-node-exporter, tmux
+- name: Ensure system packages are installed
+  ansible.builtin.apt:
+    pkg:
+      - prometheus-node-exporter
+      - tmux
+    state: present
+    update_cache: true
+  become: true
 
-# earlyoom
-# cp earlyoom /etc/default/earlyoom
-# restart
+- name: Copy earlyoom config
+  ansible.builtin.copy:
+    src: files/earlyoom
+    dest: "/etc/default/earlyoom"
+    mode: "0644"
+    owner: root
+  become: true
+
+- name: Restart earlyoom service
+  ansible.builtin.service:
+    name: earlyoom
+    state: restarted
+  become: true
+
+- name: Copy docker daemon.json
+  ansible.builtin.copy:
+    src: files/daemon.json
+    dest: "/etc/docker/daemon.json "
+    mode: "0644"
+    owner: root
+  become: true
+
+- name: Restart docker service
+  ansible.builtin.service:
+    name: docker
+    state: restarted
+  become: true
