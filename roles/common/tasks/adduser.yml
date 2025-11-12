@@ -18,10 +18,8 @@
   ansible.posix.authorized_key:
     user: "{{ item.0.name }}"
     state: present
-    key: '{{ item.1 }}'
+    key: "{{ item.1 }}"
   loop: "{{ system_users | subelements('ssh_keys') }}"
   when: system_users is defined
   become: true
-  
-
 ## Remove user

@@ -36,7 +36,7 @@
   # This prepares the database for a consistent filesystem-level backup (snapshot).
   community.docker.docker_container_exec:
     container: "{{ augur_pg_container_name }}"
-    command: "psql -U {{ augur_pg_container_user }} -c \"CHECKPOINT;\""
+    command: 'psql -U {{ augur_pg_container_user }} -c "CHECKPOINT;"'
     # The command is escaped correctly for shell execution within docker_container_exec.
     # It calls psql, connects as 'postgres' user, and executes the SQL function.
   environment:
