@@ -1,0 +1,20 @@
+- name: Build the augur main image
+  community.docker.docker_image_build:
+    name: "augur:{{ augur_deploy_version }}"
+    rebuild: always
+    path: "{{ augur_git_clone_path }}/"
+    dockerfile: docker/backend/Dockerfile
+
+- name: Build the augur keyman image
+  community.docker.docker_image_build:
+    name: "augur-keyman:{{ augur_deploy_version }}"
+    rebuild: always
+    path: "{{ augur_git_clone_path }}/"
+    dockerfile: docker/keyman/Dockerfile
+
+- name: Build the augur rabbitmq image
+  community.docker.docker_image_build:
+    name: "augur-rabbitmq:{{ augur_deploy_version }}"
+    rebuild: always
+    path: "{{ augur_git_clone_path }}/"
+    dockerfile: docker/rabbitmq/Dockerfile
