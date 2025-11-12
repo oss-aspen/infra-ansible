@@ -24,7 +24,7 @@
 - name: Copy docker daemon.json
   ansible.builtin.copy:
     src: files/daemon.json
-    dest: "/etc/docker/daemon.json "
+    dest: "/etc/docker/daemon.json"
     mode: "0644"
     owner: root
   become: true
