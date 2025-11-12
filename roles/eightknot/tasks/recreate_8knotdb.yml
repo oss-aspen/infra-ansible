@@ -72,14 +72,14 @@
   delegate_to: localhost
   when: (now(utc=True) - (latest_volume.create_time | to_datetime(iso8601format) )).days > 3
   vars:
-    iso8601format: '%Y-%m-%dT%H:%M:%S.%f+00:00'
-  
+    iso8601format: "%Y-%m-%dT%H:%M:%S.%f+00:00"
+
 - name: use newly created volume as latest
   ansible.builtin.set_fact:
     latest_volume: "{{ new_volume.volume }}"
   when: (now(utc=True) - (latest_volume.create_time | to_datetime(iso8601format) )).days > 3
   vars:
-    iso8601format: '%Y-%m-%dT%H:%M:%S.%f+00:00'
+    iso8601format: "%Y-%m-%dT%H:%M:%S.%f+00:00"
 
 - name: Bring 8knot down
   include_tasks: down.yml
@@ -161,19 +161,55 @@
 - name: Bring 8knot up
   include_tasks: up.yml
 
+- name: Crash Recovery - register start
+  set_fact:
+    recovery_start: "{{ now() }}"
 
+- name: Wait for PostgreSQL to start accepting connections
+  ansible.builtin.wait_for:
+    host: localhost
+    port: 5432
+    state: started
+    delay: 5 # Seconds to wait before starting checks
+    timeout: 1500 # Maximum seconds to wait
 
-# - name: Disable Fast Snapshot Restore on all snapshots to save money
-#   ansible.builtin.include_role:
-#     name: aws
-#     tasks_from: disable_fsr
+- name: Crash recovery - register end
+  set_fact:
+    recovery_end: "{{ now() }}"
+# Print debug info, or use the timestamps to calculate whatever you need
+- name: Print execution time
+  debug:
+    msg: "Crash recovery start: {{ recovery_start }}, end: {{ recovery_end }} Duration: ~{{ ((recovery_end | to_datetime) - (recovery_start | to_datetime)).total_seconds() }} seconds"
 
-# - name: Cleanup old snapshots
-#   ansible.builtin.include_role:
-#     name: aws
-#     tasks_from: cleanup_snapshots.yml
+- name: Trigger refresh of materialized views
+  ansible.builtin.include_role:
+    name: eightknot
+    tasks_from: refresh_mat_views
 
-# - name: Cleanup old volumes
-#   ansible.builtin.include_role:
-#     name: aws
-#     tasks_from: cleanup_volumes.yml
+- name: Validate that 8knot is up and serving requests from the public domain
+  ansible.builtin.uri:
+    url: https://eightknot.osci.io
+    method: GET
+    # The 'status_code' parameter defaults to 200,
+    # but you can be explicit if you want:
+    status_code: 200
+  register: web_check
+  until: web_check.status == 200
+  retries: 30 # Total number of retries
+  delay: 10 # Seconds to wait between retries
+  delegate_to: localhost
+
+- name: Disable Fast Snapshot Restore on all snapshots to save money
+  ansible.builtin.include_role:
+    name: aws
+    tasks_from: disable_fsr
+
+- name: Cleanup old snapshots
+  ansible.builtin.include_role:
+    name: aws
+    tasks_from: cleanup_snapshots.yml
+
+- name: Cleanup old volumes
+  ansible.builtin.include_role:
+    name: aws
+    tasks_from: cleanup_volumes.yml

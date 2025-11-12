@@ -1,0 +1,23 @@
+- name: Install the latest version of augur
+  hosts: [augur]
+  tasks:
+    # - name: Configure system for augur
+    #   ansible.builtin.include_role:
+    #     name: augur
+    #     tasks_from: environment
+    # - name: Download augur
+    #   ansible.builtin.include_role:
+    #     name: augur
+    #     tasks_from: download
+    # - name: Build the augur container images
+    #   ansible.builtin.include_role:
+    #     name: augur
+    #     tasks_from: build
+    - name: Deploy the augur config files and container images
+      ansible.builtin.include_role:
+        name: augur
+        tasks_from: install
+    - name: bring augur up
+      ansible.builtin.include_role:
+        name: augur
+        tasks_from: up

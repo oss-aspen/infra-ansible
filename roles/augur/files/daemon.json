@@ -1,0 +1,9 @@
+{
+  "log-driver": "json-file",
+  "log-opts": {
+    "max-size": "10m",
+    "max-file": "20"
+  },
+  "shutdown-timeout": 1800,
+  "metrics-addr": "127.0.0.1:9323"
+}

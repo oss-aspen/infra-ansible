@@ -1,0 +1,84 @@
+{
+    "Augur": {
+        "developer": 0,
+        "version": 1
+    },
+    "Keys": {
+        "github": "<gh_api_key>",
+        "gitlab": "<gl_api_key>"
+    },
+    "Facade": {
+        "check_updates": 1,
+        "create_xlsx_summary_files": 1,
+        "delete_marked_repos": 0,
+        "fix_affiliations": 1,
+        "force_invalidate_caches": 1,
+        "limited_run": 0,
+        "multithreaded": 1,
+        "nuke_stored_affiliations": 0,
+        "pull_repos": 1,
+        "rebuild_caches": 1,
+        "run_analysis": 1,
+        "run_facade_contributors": 1,
+        "facade_contributor_full_recollect": 0
+    },
+    "Server": {
+        "cache_expire": "3600",
+        "host": "0.0.0.0",
+        "port": 5000,
+        "workers": 6,
+        "timeout": 6000,
+        "ssl": false,
+        "ssl_cert_file": null,
+        "ssl_key_file": null
+    },
+    "Logging": {
+        "logs_directory": "",
+        "log_level": "INFO"
+    },
+    "Celery": {
+        "core_worker_count": 15,
+        "secondary_worker_count": 20,
+        "facade_worker_count": 20,
+        "refresh_materialized_views_interval_in_days": 0
+    },
+    "Redis": {
+        "cache_group": 0,
+        "connection_string": "dummy_value"
+    },
+    "RabbitMQ": {
+        "connection_string": "dummy_value"
+    },
+    "Tasks": {
+        "collection_interval": 30,
+        "core_collection_interval_days": 14,
+        "secondary_collection_interval_days": 14,
+        "facade_collection_interval_days": 14,
+        "ml_collection_interval_days": 40
+    },
+    "Message_Insights": {
+        "insight_days": 30,
+        "models_dir": "message_models"
+    },
+    "Clustering_Task": {
+        "max_df": 0.9,
+        "max_features": 1000,
+        "min_df": 0.1,
+        "num_clusters": 4
+    },
+    "Insight_Task": {
+        "confidence_interval": 95,
+        "contamination": 0.1,
+        "switch": 1,
+        "workers": 1,
+        "training_days": 1000,
+        "anomaly_days": 14
+    },
+    "Task_Routine": {
+        "prelim_phase": 1,
+        "primary_repo_collect_phase": 1,
+        "secondary_repo_collect_phase": 1,
+        "facade_phase": 1,
+        "machine_learning_phase": 0
+    }
+}

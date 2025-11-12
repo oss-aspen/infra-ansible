@@ -1,0 +1,30 @@
+- name: Prepare location for git repo files
+  ansible.builtin.file:
+    path: "{{ augur_git_clone_path }}"
+    state: directory
+    mode: "0755"
+    owner: root
+  become: true
+
+- name: Ensure git is installed
+  apt:
+    name: git
+    state: present
+    update_cache: true
+  become: true
+
+- name: Clone the augur repository
+  git:
+    repo: https://github.com/chaoss/augur
+    dest: "{{ augur_git_clone_path }}"
+    clone: yes
+    update: yes
+    single_branch: yes
+    force: true # clear any patches that may exist. start totally fresh
+    version: "{{ augur_deploy_version }}"
+  register: git_clone_result
+  become: true
+
+- name: Display deployed commit hash
+  debug:
+    msg: "Augur checked out commit: {{ git_clone_result.after }}"

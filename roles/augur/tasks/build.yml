@@ -1,0 +1,42 @@
+- name: Ensure docker is installed
+  ansible.builtin.include_role:
+    name: common
+    tasks_from: docker_apt
+
+- name: "Find the facts for the root mount point"
+  ansible.builtin.set_fact:
+    # Use selectattr to find the specific mount and `first` to get it from the list
+    mount_info: "{{ ansible_facts.mounts | selectattr('mount', 'equalto', '/') | first | default({}) }}"
+
+- name: "Fail if available space is less than {{ required_free_space }}"
+  # the purpose of this check is to make sure we have enough free space for the build
+  vars:
+    required_free_space: "15 GB"
+  ansible.builtin.fail:
+    msg: >
+      Insufficient free space on root for build.
+      Required: {{ required_free_space }},
+      Available: {{ mount_info.size_available | human_readable(unit='B', traditional=True) }}.
+      Please clean up the build cache or otherwise free some space
+  when: mount_info.size_available < required_free_space | ansible.builtin.human_to_bytes
+
+- name: Build the augur main image
+  community.docker.docker_image_build:
+    name: "augur:{{ augur_deploy_version }}"
+    rebuild: always
+    path: "{{ augur_git_clone_path }}/"
+    dockerfile: docker/backend/Dockerfile
+
+- name: Build the augur keyman image
+  community.docker.docker_image_build:
+    name: "augur-keyman:{{ augur_deploy_version }}"
+    rebuild: always
+    path: "{{ augur_git_clone_path }}/"
+    dockerfile: docker/keyman/Dockerfile
+
+- name: Build the augur rabbitmq image
+  community.docker.docker_image_build:
+    name: "augur-rabbitmq:{{ augur_deploy_version }}"
+    rebuild: always
+    path: "{{ augur_git_clone_path }}/"
+    dockerfile: docker/rabbitmq/Dockerfile
