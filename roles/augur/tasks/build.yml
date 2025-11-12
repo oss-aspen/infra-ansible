@@ -1,3 +1,8 @@
+- name: Ensure docker is installed
+  ansible.builtin.include_role:
+    name: common
+    tasks_from: docker_apt
+
 - name: Build the augur main image
   community.docker.docker_image_build:
     name: "augur:{{ augur_deploy_version }}"
