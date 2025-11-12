@@ -27,4 +27,4 @@
 
 - name: Display deployed commit hash
   debug:
-    msg: "Augur checked out commit: {{ git_clone_result.after }} ({{ git_clone_ref }})"
+    msg: "Augur checked out commit: {{ git_clone_result.after }}"
