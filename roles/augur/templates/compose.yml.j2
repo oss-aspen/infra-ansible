@@ -33,7 +33,7 @@ services:
       - augur
 
   augur-keyman:
-    image: augur-keyman
+    image: augur-keyman:{{ augur_deploy_version }}
     restart: unless-stopped
     user: 3456:3456  # Run as an arbitrary non-root user
     environment:
@@ -44,7 +44,7 @@ services:
       - augur
 
   rabbitmq:
-    image: augur-rabbitmq:latest
+    image: augur-rabbitmq:{{ augur_deploy_version }}
     restart: unless-stopped
     environment:
       RABBIT_MQ_DEFAULT_USER: ${AUGUR_RABBITMQ_USERNAME}
