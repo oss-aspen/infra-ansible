@@ -23,6 +23,7 @@
     force: true # clear any patches that may exist. start totally fresh
     version: "{{ augur_deploy_version }}"
   register: git_clone_result
+  become: true
 
 - name: Display deployed commit hash
   debug:
