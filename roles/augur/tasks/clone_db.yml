@@ -13,7 +13,7 @@
 
 # TODO: maybe make sure materialized views were updated semi recently
 
-- name: "Find the facts for the '{{ mount_point }}' mount point"
+- name: "Find the facts for the '{{ postgres_data_mount_point }}' mount point"
   ansible.builtin.set_fact:
     # Use selectattr to find the specific mount and `first` to get it from the list
     mount_info: "{{ ansible_facts.mounts | selectattr('mount', 'equalto', mount_point) | first | default({}) }}"
@@ -26,7 +26,7 @@
     required_free_space: "500 GB"
   ansible.builtin.fail:
     msg: >
-      Insufficient free space on '{{ mount_point }}'.
+      Insufficient free space on '{{ postgres_data_mount_point }}'.
       Required: {{ required_free_space }},
       Available: {{ mount_info.size_available | human_readable(unit='B', traditional=True) }}.
   when: mount_info.size_available < required_free_space | ansible.builtin.human_to_bytes
@@ -53,20 +53,18 @@
   # before the snapshot can be prudent.
   # This task should be executed *before* taking the EBS snapshot.
 
-
-- name: Determine block device for {{ mount_point }}
+- name: Determine block device for {{ postgres_data_mount_point }}
   ansible.builtin.set_fact:
     mount_point_block: "{{ ansible_mounts | json_query(query) | first }}"
   vars:
-    query: "[?mount=='{{ mount_point }}'].device"
-
+    query: "[?mount=='{{ postgres_data_mount_point }}'].device"
 
 - name: Identify aws volume mounted at location
   identify_volume:
     partition_device: "{{ mount_point_block }}"
   register: aws_vol
   # vars:
-    # mount_point: "{{ mount_point }}"# this is already set in the role variables, but if its not it needs to be
+  # mount_point: "{{ postgres_data_mount_point }}"# this is already set in the role variables, but if its not it needs to be
 # - debug:
 #       msg: "volume: {{ aws_vol.aws_volume_id }}"
 
