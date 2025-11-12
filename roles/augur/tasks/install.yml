@@ -1,0 +1,42 @@
+- name: Load extra variables
+  ansible.builtin.include_vars:
+    file: secrets.yml
+
+- name: Prepare location for compose files
+  ansible.builtin.file:
+    path: "{{ compose_path }}"
+    state: directory
+    mode: "0755"
+    owner: root
+  become: true
+
+- name: Write compose file using jinja2
+  ansible.builtin.template:
+    src: templates/compose.yml.j2
+    dest: "{{ compose_path }}/{{ compose_file }}"
+    mode: "0644"
+    owner: root
+  become: true
+
+- name: Write env file using jinja2
+  ansible.builtin.template:
+    src: templates/.env.j2
+    dest: "{{ compose_path }}/.env"
+    mode: "0644"
+    owner: root
+  become: true
+
+- name: Prepare augur config directory
+  ansible.builtin.file:
+    path: "{{ augur_config_data_mount_point }}"
+    state: directory
+    mode: "0755"
+    owner: root
+  become: true
+
+- name: Copy augur.json
+  ansible.builtin.copy:
+    src: files/augur.json
+    dest: "{{ augur_config_data_mount_point }}"
+    mode: "0644"
+  become: true
