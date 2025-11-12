@@ -8,3 +8,5 @@ augur_config_data_mount_point: "/opt/augur/config"
 augur_pg_container_name: "augur-augur-db-1"
 augur_pg_container_user: "augur"
 augur_pg_password: "{{ vault_postgres_password }}"
+
+augur_deploy_version: "v0.91.0"

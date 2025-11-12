@@ -54,9 +54,7 @@ services:
       - augur
 
   augur:
-    #image: augur-new:latest
-    image: augur:v0.90.0
-    #image: augur:v0.89.3_fix
+    image: augur:{{ augur_deploy_version }}
     volumes:
       - /opt/facade/clones:/augur/facade
       - /opt/facade/logs:/logs
@@ -89,9 +87,7 @@ services:
       - rabbitmq
 
   flower:
-    #image: augur-new:latest
-    image: augur:v0.90.0
-    #image: augur:v0.89.3_fix
+    image: augur:{{ augur_deploy_version }}
     restart: unless-stopped
     command:
 #      [ "celery", "-A", "augur.tasks.init.celery_app.celery_app", "flower" ]
