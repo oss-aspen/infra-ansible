@@ -38,7 +38,7 @@
     },
     "Celery": {
         "core_worker_count": 15,
-        "secondary_worker_count": 15,
+        "secondary_worker_count": 20,
         "facade_worker_count": 20,
         "refresh_materialized_views_interval_in_days": 3
     },
@@ -51,8 +51,8 @@
     },
     "Tasks": {
         "collection_interval": 30,
-        "core_collection_interval_days": 10,
-        "secondary_collection_interval_days": 10,
+        "core_collection_interval_days": 14,
+        "secondary_collection_interval_days": 14,
         "facade_collection_interval_days": 14,
         "ml_collection_interval_days": 40
     },
