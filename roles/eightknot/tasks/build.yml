@@ -6,48 +6,10 @@
     update_cache: true
   become: true
 
-- name: Check If Docker Is Installed
-  command: docker --version
-  register: docker_valid
-  ignore_errors: true
-
 - name: Ensure docker is installed
-  apt:
-    pkg:
-      - docker
-      - docker.io
-      - docker-compose
-    state: present
-    update_cache: true
-  become: true
-  when: docker_valid.failed
-
-- name: Add docker apt repository key.
-  ansible.builtin.get_url:
-    url: https://download.docker.com/linux/debian/gpg
-    dest: /etc/apt/trusted.gpg.d/docker.asc
-    mode: '0644'
-    force: true
-  become: true
-  when: docker_valid.failed
-
-
-- name: Add Docker Repository
-  apt_repository:
-    repo: deb https://download.docker.com/linux/debian bookworm stable
-    state: present
-  become: true
-  when: docker_valid.failed
-
-
-- name: Install docker-ce
-  apt:
-    name: docker-ce
-    state: latest
-    update_cache: true
-  become: true
-  when: docker_valid.failed
-
+  ansible.builtin.include_role:
+    name: common
+    tasks_from: docker_apt
 
 - name: Add user to docker group
   ansible.builtin.user:
