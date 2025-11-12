@@ -1,3 +1,11 @@
+- name: Ensure gpg is installed
+  apt:
+    pkg:
+      - gpg
+    state: present
+    update_cache: true
+  become: true
+
 - name: Check If Docker Is Installed
   command: docker --version
   register: docker_valid
