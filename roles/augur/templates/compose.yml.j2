@@ -46,7 +46,7 @@ services:
       - augur
 
   rabbitmq:
-    image: augur-rabbitmq:{{ augur_deploy_version }}
+    image: augur-rabbitmq:v0.90
     restart: unless-stopped
     environment:
       RABBIT_MQ_DEFAULT_USER: ${AUGUR_RABBITMQ_USERNAME}
