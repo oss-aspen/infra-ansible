@@ -40,7 +40,7 @@
         "core_worker_count": 15,
         "secondary_worker_count": 20,
         "facade_worker_count": 20,
-        "refresh_materialized_views_interval_in_days": 3
+        "refresh_materialized_views_interval_in_days": 0
     },
     "Redis": {
         "cache_group": 0,
