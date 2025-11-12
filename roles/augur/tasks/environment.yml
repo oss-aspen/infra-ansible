@@ -14,12 +14,14 @@
     mode: "0644"
     owner: root
   become: true
+  register: earlyoom_config_result
 
 - name: Restart earlyoom service
   ansible.builtin.service:
     name: earlyoom
     state: restarted
   become: true
+  when: earlyoom_config_result.changed
 
 - name: Copy docker daemon.json
   ansible.builtin.copy:
@@ -28,9 +30,11 @@
     mode: "0644"
     owner: root
   become: true
+  register: dockerdaemon_config_result
 
 - name: Restart docker service
   ansible.builtin.service:
     name: docker
     state: restarted
   become: true
+  when: dockerdaemon_config_result.changed
