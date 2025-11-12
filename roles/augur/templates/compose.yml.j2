@@ -60,6 +60,7 @@ services:
     volumes:
       - /opt/facade/clones:/augur/facade
       - /opt/facade/logs:/logs
+      - {{ augur_config_data_mount_point }}:/config
     restart: unless-stopped
     #command:
     #  [ "sleep", "3600" ]
