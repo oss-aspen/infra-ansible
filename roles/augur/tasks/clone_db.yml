@@ -16,7 +16,7 @@
 - name: "Find the facts for the '{{ postgres_data_mount_point }}' mount point"
   ansible.builtin.set_fact:
     # Use selectattr to find the specific mount and `first` to get it from the list
-    mount_info: "{{ ansible_facts.mounts | selectattr('mount', 'equalto', mount_point) | first | default({}) }}"
+    mount_info: "{{ ansible_facts.mounts | selectattr('mount', 'equalto', postgres_data_mount_point) | first | default({}) }}"
 
 - name: "Fail if available space is less than {{ required_free_space }}"
   # the purpose of this check is to make sure we have enough free space in case
