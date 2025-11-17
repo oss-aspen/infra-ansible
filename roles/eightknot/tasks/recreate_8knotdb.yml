@@ -158,6 +158,15 @@
     name: "{{ eightknot_pg_cache_volume_name }}"
     state: absent
 
+- name: Update the postgres config from the clone by copying postgresql.conf
+  ansible.builtin.copy:
+    src: files/postgresql.conf
+    dest: "{{ mount_point }}/postgresql.conf"
+    owner: 999
+    group: systemd-journal
+    mode: "0600"
+  become: true
+
 - name: Bring 8knot up
   include_tasks: up.yml
 
@@ -179,7 +188,7 @@
 # Print debug info, or use the timestamps to calculate whatever you need
 - name: Print execution time
   debug:
-    msg: "Crash recovery start: {{ recovery_start }}, end: {{ recovery_end }} Duration: ~{{ ((recovery_end | to_datetime) - (recovery_start | to_datetime)).total_seconds() }} seconds"
+    msg: "Crash recovery start: {{ recovery_start }}, end: {{ recovery_end }} Duration: ~{{ ((recovery_end | to_datetime) - (recovery_start | to_datetime)).total_seconds() | int }} seconds"
 
 - name: Trigger refresh of materialized views
   ansible.builtin.include_role:

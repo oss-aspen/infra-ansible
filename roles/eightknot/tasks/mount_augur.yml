@@ -2,7 +2,7 @@
   ansible.builtin.file:
     path: "{{ mount_point }}"
     state: directory
-    mode: '0755'
+    mode: "0755"
     owner: 999
   become: true
 
@@ -12,4 +12,13 @@
     src: "{{ source_device_partition }}"
     fstype: xfs
     state: mounted
+  become: true
+
+- name: Write the postgres config
+  ansible.builtin.copy:
+    src: files/postgresql.conf
+    dest: "{{ mount_point }}/postgresql.conf"
+    owner: 999
+    group: systemd-journal
+    mode: "0600"
   become: true
