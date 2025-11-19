@@ -6,32 +6,44 @@
   ansible.builtin.file:
     path: "{{ compose_path }}"
     state: directory
-    mode: '0755'
-    owner: "{{ ansible_user }}"
+    mode: "0755"
+    owner: root
   become: true
 
 - name: Write compose file using jinja2
   ansible.builtin.template:
-      src: templates/compose.yml.j2
-      dest: "{{ compose_path }}/compose.yml"
+    src: templates/compose.yml.j2
+    dest: "{{ compose_path }}/compose.yml"
+    mode: "0640"
+    group: sudo
+    owner: root
+  become: true
 
 - name: Write environment file using jinja2
   ansible.builtin.template:
-      src: templates/.env.j2
-      dest: "{{ compose_path }}/.env"
+    src: templates/.env.j2
+    dest: "{{ compose_path }}/.env"
+    mode: "0640"
+    group: sudo
+    owner: root
+  become: true
 
 - name: Prepare location for caddy config files
   ansible.builtin.file:
     path: /opt/caddy/
     state: directory
-    mode: '0755'
-    owner: "{{ ansible_user }}"
+    group: sudo
+    owner: root
   become: true
 
-- name: Write Caddyfile using jinja2 
+- name: Write Caddyfile using jinja2
   ansible.builtin.template:
     src: templates/Caddyfile.j2
     dest: /opt/caddy/Caddyfile
+    mode: "0640"
+    group: sudo
+    owner: root
+  become: true
 
 - name: Mount Augur DB
   ansible.builtin.include_role:
