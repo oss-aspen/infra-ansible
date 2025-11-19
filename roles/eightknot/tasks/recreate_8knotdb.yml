@@ -158,15 +158,6 @@
     name: "{{ eightknot_pg_cache_volume_name }}"
     state: absent
 
-- name: Update the postgres config from the clone by copying postgresql.conf
-  ansible.builtin.copy:
-    src: files/postgresql.conf
-    dest: "{{ mount_point }}/postgresql.conf"
-    owner: 999
-    group: systemd-journal
-    mode: "0600"
-  become: true
-
 - name: Bring 8knot up
   include_tasks: up.yml
 
