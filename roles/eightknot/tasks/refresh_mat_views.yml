@@ -2,12 +2,26 @@
   ansible.builtin.include_vars:
     file: secrets.yml
 
+- name: Build SQL Query for materialized view refresh
+  set_fact:
+    sql_query: >-
+      {% for view in views_to_refresh -%}
+      Refresh materialized view augur_data.{{ view }};
+      {% endfor %}
+  vars:
+    views_to_refresh:
+      - explorer_contributor_actions
+      - explorer_issue_assignments
+      - explorer_pr_assignments
+      - explorer_pr_response
+      - explorer_repo_languages
+
 # https://stackoverflow.com/questions/22225095/trying-to-launch-a-process-via-screen-from-within-ansible
 - name: start a tmux session to refresh the materialized views
   ansible.builtin.shell: |
     tmux new-session -d -s "ansible-refresh-mat-views" \
     "docker container exec -e PGPASSWORD={{ augur_pg_password }} {{ augur_pg_container_name }} \
-    psql -U {{ augur_pg_container_user }} -c 'Refresh materialized view augur_data.explorer_contributor_actions; Refresh materialized view augur_data.explorer_issue_assignments; Refresh materialized view augur_data.explorer_pr_assignments; Refresh materialized view augur_data.explorer_pr_response; Refresh materialized view augur_data.explorer_repo_languages;'"
+    psql -U {{ augur_pg_container_user }} -c '{{ sql_query }}'"
   # environment:
   #   PGPASSWORD: "{{ augur_pg_password }}" # Pass the password securely via environment variable
   vars:
