@@ -158,8 +158,14 @@
     name: "{{ eightknot_pg_cache_volume_name }}"
     state: absent
 
-- name: Bring 8knot up
-  include_tasks: up.yml
+- name: Bring 8knot database up
+  community.docker.docker_compose_v2:
+    project_src: "{{ compose_path }}"
+    pull: missing
+    files: "{{ compose_file }}"
+    services:
+      - augur-db
+    env_files: .env
 
 - name: Crash Recovery - register start
   set_fact:
@@ -180,6 +186,10 @@
 - name: Print execution time
   debug:
     msg: "Crash recovery start: {{ recovery_start }}, end: {{ recovery_end }} Duration: ~{{ ((recovery_end | to_datetime) - (recovery_start | to_datetime)).total_seconds() | int }} seconds"
+
+
+- name: Bring 8knot up
+  include_tasks: up.yml
 
 - name: Trigger refresh of materialized views
   ansible.builtin.include_role:
