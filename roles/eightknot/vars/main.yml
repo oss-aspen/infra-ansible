@@ -7,12 +7,10 @@ docker_image_tag: 8knot:main
 #eightknot.osci.io
 public_hostname: "{{ inventory_hostname }}"
 
-
 source_device_disk: "/dev/nvme1n1"
 # fallback value in case one cant be determined from the mount point (i.e. because it isnt mounted)
 source_device_partition: "{{source_device_disk}}p1"
 mount_point: "/opt/augur/postgresql/data"
-
 
 # --- PostgreSQL & Docker Configuration ---
 augur_pg_container_mount_point: "/var/lib/postgresql/data" # The mount point for PostgreSQL data on the target server
@@ -30,9 +28,8 @@ pg_version: "16" # PostgreSQL version tag (e.g., '16', 'latest')
 backup_label: "ansible_snapshot_backup" # A label for your backup (e.g., to identify the snapshot source)
 
 # --- New Volume Settings (Optional) ---
-                        # Set to 0 or comment out to keep the original size from the snapshot.
+# Set to 0 or comment out to keep the original size from the snapshot.
 new_volume_type: "gp3" # Optional: Type of the new EBS volume (e.g., gp2, gp3, io1, st1)
-
 
 
 # Bot accounts with postgres access
