@@ -182,11 +182,22 @@
 - name: Crash recovery - register end
   set_fact:
     recovery_end: "{{ now() }}"
-# Print debug info, or use the timestamps to calculate whatever you need
-- name: Print execution time
-  debug:
-    msg: "Crash recovery start: {{ recovery_start }}, end: {{ recovery_end }} Duration: ~{{ ((recovery_end | to_datetime) - (recovery_start | to_datetime)).total_seconds() | int }} seconds"
 
+- block:
+    # Print debug info, or use the timestamps to calculate whatever you need
+    - name: Print start and end times
+      debug:
+        msg: "Crash recovery start: {{ recovery_start }}, end: {{ recovery_end }} "
+
+    # Print debug info, or use the timestamps to calculate whatever you need
+    - name: Print execution time
+      debug:
+        msg: "Duration: ~{{ ((recovery_end | to_datetime) - (recovery_start | to_datetime)).total_seconds() | int }} seconds"
+
+  rescue:
+    - name: Print rescue
+      debug:
+        msg: "Could not print crash recovery time"
 
 - name: Bring 8knot up
   include_tasks: up.yml
