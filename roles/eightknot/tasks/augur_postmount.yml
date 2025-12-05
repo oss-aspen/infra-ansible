@@ -30,7 +30,7 @@
 
 - name: Run SQL scripts using UTF-8 client encoding for session and positional args
   community.postgresql.postgresql_script:
-    db: augur
+    login_db: augur
     login_host: "localhost"
     login_user: "{{ augur_pg_container_user }}"
     login_password: "{{ augur_pg_password }}"
@@ -41,7 +41,7 @@
 # Create automation accounts
 - name: Create bot/automation users in postgres.
   community.postgresql.postgresql_user:
-    db: augur
+    login_db: augur
     login_host: "localhost"
     login_user: "{{ augur_pg_container_user }}"
     login_password: "{{ augur_pg_password }}"
