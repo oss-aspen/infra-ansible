@@ -46,7 +46,7 @@
       password: "{{ bot_account_grafana_password }}"
 
 # Create reearch accounts
-# same as above but possibly referencing an 
+# same as above but possibly referencing a static password hash in another file
 
 - name: remove location for sql files
   ansible.builtin.file:
