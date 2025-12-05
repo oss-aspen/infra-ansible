@@ -2,6 +2,14 @@
   ansible.builtin.include_vars:
     file: secrets.yml
 
+- name: Ensure psycopg2 python module is installed on system python
+  apt:
+    pkg:
+      - python3-psycopg2
+    state: present
+    update_cache: true
+  become: true
+
 - name: Prepare location for sql files
   ansible.builtin.file:
     path: /opt/compose/8knot/sql
