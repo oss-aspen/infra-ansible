@@ -28,6 +28,10 @@
   loop: "{{ query('fileglob', 'files/sql/*.sql') }}"
   become: true
 
+- name: gather list of sql files to execute on remote
+  shell: ls /opt/compose/8knot/sql/*.sql
+  register: path_files
+
 - name: Run SQL scripts using UTF-8 client encoding for session and positional args
   community.postgresql.postgresql_script:
     login_db: augur
@@ -36,7 +40,7 @@
     login_password: "{{ augur_pg_password }}"
     path: "{{ item }}"
     encoding: UTF-8
-  loop: "{{ query('fileglob', '/opt/compose/8knot/sql/*.sql') }}"
+  loop: "{{ path_files.stdout_lines }}"
 
 # Create automation accounts
 - name: Create bot/automation users in postgres.
