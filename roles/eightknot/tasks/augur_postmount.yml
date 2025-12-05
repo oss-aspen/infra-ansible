@@ -51,6 +51,7 @@
     login_password: "{{ augur_pg_password }}"
     name: "{{ item.username }}"
     password: "{{ item.password }}"
+  no_log: true
   loop:
     - username: notebook_publishing
       password: "{{ bot_account_publishing_password }}"
