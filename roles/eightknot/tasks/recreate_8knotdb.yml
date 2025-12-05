@@ -158,11 +158,10 @@
     name: "{{ eightknot_pg_cache_volume_name }}"
     state: absent
 
-- name: Bring 8knot database up
+- name: Bring 8knot up (database only)
   community.docker.docker_compose_v2:
     project_src: "{{ compose_path }}"
     pull: missing
-    files: "{{ compose_file }}"
     services:
       - augur-db
     env_files: .env
