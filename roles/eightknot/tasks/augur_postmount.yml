@@ -1,0 +1,55 @@
+- name: Load extra variables
+  ansible.builtin.include_vars:
+    file: secrets.yml
+
+- name: Prepare location for sql files
+  ansible.builtin.file:
+    path: /opt/compose/8knot/sql
+    state: directory
+    group: sudo
+    owner: root
+  become: true
+
+- name: Copy sql files
+  copy:
+    src: "{{ item }}"
+    dest: /opt/compose/8knot/sql/
+    group: sudo
+    owner: root
+    mode: 0744
+  loop: "{{ query('fileglob', 'files/sql/*.sql') }}"
+  become: true
+
+- name: Run SQL scripts using UTF-8 client encoding for session and positional args
+  community.postgresql.postgresql_script:
+    db: augur
+    login_host: "localhost"
+    login_user: "{{ augur_pg_container_user }}"
+    login_password: "{{ augur_pg_password }}"
+    path: "{{ item }}"
+    encoding: UTF-8
+  loop: "{{ query('fileglob', '/opt/compose/8knot/sql/*.sql') }}"
+
+# Create automation accounts
+- name: Create bot/automation users in postgres.
+  community.postgresql.postgresql_user:
+    db: augur
+    login_host: "localhost"
+    login_user: "{{ augur_pg_container_user }}"
+    login_password: "{{ augur_pg_password }}"
+    name: "{{ item.username }}"
+    password: "{{ item.password }}"
+  loop:
+    - username: notebook_publishing
+      password: "{{ bot_account_publishing_password }}"
+    - username: grafana_monitoring
+      password: "{{ bot_account_grafana_password }}"
+
+# Create reearch accounts
+# same as above but possibly referencing an 
+
+- name: remove location for sql files
+  ansible.builtin.file:
+    path: /opt/compose/8knot/sql
+    state: absent
+  become: true
