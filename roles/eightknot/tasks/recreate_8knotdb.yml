@@ -198,6 +198,10 @@
       debug:
         msg: "Could not print crash recovery time"
 
+- name: Run 8knot database customizations
+  include_tasks: augur_postmount.yml
+    
+
 - name: Bring 8knot up
   include_tasks: up.yml
 
