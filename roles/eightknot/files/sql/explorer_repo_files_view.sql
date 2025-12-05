@@ -14,7 +14,7 @@ AS SELECT rl.repo_id,
             repo_labor.rl_analysis_date
            FROM augur_data.repo_labor
           ORDER BY repo_labor.repo_id, repo_labor.rl_analysis_date DESC))
-WITH DATA;
+WITH NO DATA;
 
 -- View indexes:
 CREATE INDEX idx_explorer_repo_files_repo_id ON augur_data.explorer_repo_files USING btree (repo_id);

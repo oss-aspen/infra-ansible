@@ -10,7 +10,7 @@ AS SELECT pr.repo_id,
      JOIN augur_data.pull_request_files prf ON pr.pull_request_id = prf.pull_request_id
      LEFT JOIN augur_data.pull_request_reviews prr ON pr.pull_request_id = prr.pull_request_id
   GROUP BY prf.pr_file_path, pr.repo_id
-WITH DATA;
+WITH NO DATA;
 
 -- View indexes:
 CREATE INDEX idx_explorer_cntrb_per_file_repo_id ON augur_data.explorer_cntrb_per_file USING btree (repo_id);
