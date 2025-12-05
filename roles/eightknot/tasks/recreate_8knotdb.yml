@@ -175,7 +175,7 @@
   ansible.builtin.wait_for:
     host: localhost
     port: 5432
-    state: started
+    state: drained
     delay: 5 # Seconds to wait before starting checks
     timeout: 1500 # Maximum seconds to wait
 
