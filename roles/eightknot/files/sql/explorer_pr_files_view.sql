@@ -1,6 +1,6 @@
 -- augur_data.explorer_pr_files source
 
-CREATE MATERIALIZED VIEW augur_data.explorer_pr_files
+CREATE MATERIALIZED VIEW IF NOT EXISTS augur_data.explorer_pr_files
 TABLESPACE pg_default
 AS SELECT prf.pr_file_path AS file_path,
     pr.pull_request_id,
@@ -10,4 +10,4 @@ AS SELECT prf.pr_file_path AS file_path,
 WITH NO DATA;
 
 -- View indexes:
-CREATE INDEX idx_explorer_pr_files_repo_id ON augur_data.explorer_pr_files USING btree (repo_id);
+CREATE INDEX IF NOT EXISTS idx_explorer_pr_files_repo_id ON augur_data.explorer_pr_files USING btree (repo_id);

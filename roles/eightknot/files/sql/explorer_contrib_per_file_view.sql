@@ -1,6 +1,6 @@
 -- augur_data.explorer_cntrb_per_file source
 
-CREATE MATERIALIZED VIEW augur_data.explorer_cntrb_per_file
+CREATE MATERIALIZED VIEW IF NOT EXISTS augur_data.explorer_cntrb_per_file
 TABLESPACE pg_default
 AS SELECT pr.repo_id,
     prf.pr_file_path AS file_path,
@@ -13,4 +13,4 @@ AS SELECT pr.repo_id,
 WITH NO DATA;
 
 -- View indexes:
-CREATE INDEX idx_explorer_cntrb_per_file_repo_id ON augur_data.explorer_cntrb_per_file USING btree (repo_id);
+CREATE INDEX IF NOT EXISTS idx_explorer_cntrb_per_file_repo_id ON augur_data.explorer_cntrb_per_file USING btree (repo_id);

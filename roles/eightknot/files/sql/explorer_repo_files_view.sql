@@ -1,6 +1,6 @@
 -- augur_data.explorer_repo_files source
 
-CREATE MATERIALIZED VIEW augur_data.explorer_repo_files
+CREATE MATERIALIZED VIEW IF NOT EXISTS augur_data.explorer_repo_files
 TABLESPACE pg_default
 AS SELECT rl.repo_id,
     r.repo_name,
@@ -17,4 +17,4 @@ AS SELECT rl.repo_id,
 WITH NO DATA;
 
 -- View indexes:
-CREATE INDEX idx_explorer_repo_files_repo_id ON augur_data.explorer_repo_files USING btree (repo_id);
+CREATE INDEX IF NOT EXISTS idx_explorer_repo_files_repo_id ON augur_data.explorer_repo_files USING btree (repo_id);
