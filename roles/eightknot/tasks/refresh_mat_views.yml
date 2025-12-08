@@ -15,6 +15,10 @@
       - explorer_pr_assignments
       - explorer_pr_response
       - explorer_repo_languages
+      # newly created ones
+      - explorer_cntrb_per_file
+      - explorer_pr_files
+      - explorer_repo_files
 
 # https://stackoverflow.com/questions/22225095/trying-to-launch-a-process-via-screen-from-within-ansible
 - name: start a tmux session to refresh the materialized views
