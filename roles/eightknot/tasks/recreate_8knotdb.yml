@@ -171,12 +171,12 @@
     recovery_start: "{{ now() }}"
 
 - name: Wait for PostgreSQL to start accepting connections
-  ansible.builtin.wait_for:
-    host: localhost
-    port: 5432
-    state: drained
-    delay: 5 # Seconds to wait before starting checks
-    timeout: 1500 # Maximum seconds to wait
+  ansible.builtin.command: docker exec -i {{ augur_pg_container_name }} psql -U {{ augur_pg_container_user }} -c "SELECT 'READY' WHERE pg_is_in_recovery() = 'f';"
+  register: recovery_check
+  ignore_errors: true
+  until: recovery_check.rc == 0 and "READY" in recovery_check.stdout
+  retries: 1500
+  delay: 1
 
 - name: Crash recovery - register end
   set_fact:
