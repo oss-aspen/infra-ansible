@@ -28,19 +28,29 @@
   loop: "{{ query('fileglob', 'files/sql/*.sql') }}"
   become: true
 
-- name: gather list of sql files to execute on remote
-  shell: ls /opt/compose/8knot/sql/*.sql
-  register: path_files
+- block:
+    - name: gather list of sql files to execute on remote
+      shell: ls /opt/compose/8knot/sql/*.sql
+      register: path_files
+      failed_when: false
+      changed_when: false
 
-- name: Run SQL scripts using UTF-8 client encoding for session and positional args
-  community.postgresql.postgresql_script:
-    login_db: augur
-    login_host: "localhost"
-    login_user: "{{ augur_pg_container_user }}"
-    login_password: "{{ augur_pg_password }}"
-    path: "{{ item }}"
-    encoding: UTF-8
-  loop: "{{ path_files.stdout_lines }}"
+    - name: Run SQL scripts using UTF-8 client encoding for session and positional args
+      community.postgresql.postgresql_script:
+        login_db: augur
+        login_host: "localhost"
+        login_user: "{{ augur_pg_container_user }}"
+        login_password: "{{ augur_pg_password }}"
+        path: "{{ item }}"
+        encoding: UTF-8
+      loop: "{{ path_files.stdout_lines }}"
+
+  always:
+    - name: remove location for sql files
+      ansible.builtin.file:
+        path: /opt/compose/8knot/sql
+        state: absent
+      become: true
 
 # Create automation accounts
 - name: Create bot/automation users in postgres.
@@ -61,8 +71,3 @@
 # Create reearch accounts
 # same as above but possibly referencing a static password hash in another file
 
-- name: remove location for sql files
-  ansible.builtin.file:
-    path: /opt/compose/8knot/sql
-    state: absent
-  become: true
