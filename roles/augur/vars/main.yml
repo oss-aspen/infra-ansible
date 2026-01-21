@@ -10,4 +10,4 @@ augur_pg_container_name: "augur-augur-db-1"
 augur_pg_container_user: "augur"
 augur_pg_password: "{{ vault_augur_password }}"
 
-augur_deploy_version: "v0.91.0"
+augur_deploy_version: "v0.92.0"
