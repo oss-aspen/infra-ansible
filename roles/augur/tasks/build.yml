@@ -11,7 +11,7 @@
 - name: "Fail if available space is less than {{ required_free_space }}"
   # the purpose of this check is to make sure we have enough free space for the build
   vars:
-    required_free_space: "15 GB"
+    required_free_space: "8 GB"
   ansible.builtin.fail:
     msg: >
       Insufficient free space on root for build.
