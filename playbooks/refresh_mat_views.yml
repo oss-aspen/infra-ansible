@@ -1,0 +1,7 @@
+- name: refresh 8Knot materialized views
+  hosts: [eightknot]
+  tasks:
+    - name: run tasks
+      ansible.builtin.include_role:
+        name: eightknot
+        tasks_from: refresh_mat_views
