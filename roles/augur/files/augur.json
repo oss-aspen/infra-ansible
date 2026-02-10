@@ -37,7 +37,7 @@
         "log_level": "INFO"
     },
     "Celery": {
-        "core_worker_count": 10,
+        "core_worker_count": 15,
         "secondary_worker_count": 20,
         "facade_worker_count": 10,
         "refresh_materialized_views_interval_in_days": 0
