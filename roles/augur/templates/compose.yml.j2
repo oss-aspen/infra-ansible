@@ -53,10 +53,6 @@ services:
   rabbitmq:
     image: augur-rabbitmq:{{ augur_deploy_version }}
     restart: unless-stopped
-    environment:
-      RABBIT_MQ_DEFAULT_USER: ${AUGUR_RABBITMQ_USERNAME}
-      RABBIT_MQ_DEFAULT_PASSWORD: ${AUGUR_RABBITMQ_PASSWORD}
-      RABBIT_MQ_DEFAULT_VHOST: ${AUGUR_RABBITMQ_VHOST}
     networks:
       - augur
     healthcheck:
