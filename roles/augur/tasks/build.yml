@@ -45,6 +45,6 @@
     path: "{{ augur_git_clone_path }}/"
     dockerfile: docker/rabbitmq/Dockerfile
     args:
-      - RABBIT_MQ_DEFAULT_USER: "{{ augur_rabbit_username }}"
-      - RABBIT_MQ_DEFAULT_PASSWORD: "{{ augur_rabbit_password }}"
-      - RABBIT_MQ_DEFAULT_VHOST: "{{ augur_rabbit_vhost }}"
+      RABBIT_MQ_DEFAULT_USER: "{{ augur_rabbit_username }}"
+      RABBIT_MQ_DEFAULT_PASSWORD: "{{ augur_rabbit_password }}"
+      RABBIT_MQ_DEFAULT_VHOST: "{{ augur_rabbit_vhost }}"
