@@ -1,3 +1,7 @@
+- name: Load extra variables
+  ansible.builtin.include_vars:
+    file: secrets.yml
+
 - name: Ensure docker is installed
   ansible.builtin.include_role:
     name: common
