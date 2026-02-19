@@ -11,3 +11,8 @@ augur_pg_container_user: "augur"
 augur_pg_password: "{{ vault_augur_password }}"
 
 augur_deploy_version: "v0.92.0"
+
+
+augur_rabbit_username: augur
+augur_rabbit_password: "{{ vault_rabbitmq_password }}"
+augur_rabbit_vhost: augur_vhost
