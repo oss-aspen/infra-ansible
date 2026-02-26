@@ -23,14 +23,22 @@
     force: true # clear any patches that may exist. start totally fresh
     version: "{{ git_clone_ref }}"
   register: git_clone_result
+  become: true
 
 - name: Display deployed commit hash
   debug:
     msg: "8Knot deployed from commit: {{ git_clone_result.after }} ({{ git_clone_ref }})"
 
-- name: Patch the 8Knot repository
+- name: Patch the 8Knot repository to fix proxy stuff
   ansible.posix.patch:
     src: patches/proxyfix.patch
     remote_src: false
     dest: "{{ git_clone_path }}/8Knot/app.py"
+  become: true
 
+- name: Patch the 8Knot repository to disable the affiliations page
+  ansible.posix.patch:
+    src: patches/disable-affiliation.patch
+    remote_src: false
+    dest: "{{ git_clone_path }}/8Knot/pages/index/index_components.py"
+  become: true
