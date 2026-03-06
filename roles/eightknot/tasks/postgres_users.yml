@@ -102,11 +102,15 @@
     name: "{{ item.username }}"
     password: "{{ item.password }}"
   no_log: true
-  loop: postgres_users
+  loop: "{{ postgres_users }}"
 
 - name: Make sure augur users (roles) only belong to their assigned groups (roles)
   community.postgresql.postgresql_membership:
+    login_db: augur
+    login_host: "localhost"
+    login_user: "{{ augur_pg_container_user }}"
+    login_password: "{{ augur_pg_password }}"
     group: "{{ item.group }}"
     target_role: "{{ item.username }}"
     state: exact
-  loop: postgres_users
+  loop: "{{ postgres_users }}"
