@@ -35,6 +35,9 @@
 - name: Grant privs to read only role
   community.postgresql.postgresql_privs:
     login_db: augur
+    login_host: "localhost"
+    login_user: "{{ augur_pg_container_user }}"
+    login_password: "{{ augur_pg_password }}"
     state: absent
     privs: SELECT
     type: table
@@ -57,19 +60,37 @@
 - name: revoke all read privs to researcher role
   community.postgresql.postgresql_privs:
     login_db: augur
+    login_host: "localhost"
+    login_user: "{{ augur_pg_container_user }}"
+    login_password: "{{ augur_pg_password }}"
     state: absent
-    privs: SELECT
+    privs: ALL
     type: database
+    database: augur
     roles: researcher
 
-- name: Grant augur_data privs to researcher role
+- name: Grant augur_data USAGE privs to researcher role
   community.postgresql.postgresql_privs:
     login_db: augur
+    login_host: "localhost"
+    login_user: "{{ augur_pg_container_user }}"
+    login_password: "{{ augur_pg_password }}"
     state: present
-    privs: SELECT
+    privs: USAGE
     type: schema
     objs: augur_data
-    schema: not-specified
+    roles: researcher
+
+- name: Grant augur_data SELECT privs to researcher role
+  community.postgresql.postgresql_privs:
+    login_db: augur
+    login_host: "localhost"
+    login_user: "{{ augur_pg_container_user }}"
+    login_password: "{{ augur_pg_password }}"
+    state: present
+    privs: SELECT
+    type: table
+    objs: ALL_IN_SCHEMA
     roles: researcher
 
 - name: Ensure defined user accounts (roles intended for login) exist in postgres
