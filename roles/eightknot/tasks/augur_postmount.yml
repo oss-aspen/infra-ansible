@@ -61,10 +61,10 @@
       postgres_users:
         - username: notebook_publishing
           password: "{{ bot_account_publishing_password }}"
-          group: augur_read_only
+          groups: augur_read_only
         - username: grafana_monitoring
           password: "{{ bot_account_grafana_password }}"
-          group: augur_read_only
+          groups: augur_read_only,pg_read_all_stats
 
 # Create research accounts
 # same as above but possibly referencing a static password hash in another file

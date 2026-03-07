@@ -110,7 +110,7 @@
     login_host: "localhost"
     login_user: "{{ augur_pg_container_user }}"
     login_password: "{{ augur_pg_password }}"
-    group: "{{ item.group }}"
+    groups: "{{ item.groups.split(',') }}"
     target_role: "{{ item.username }}"
     state: exact
   loop: "{{ postgres_users }}"
