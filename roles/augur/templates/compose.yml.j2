@@ -40,7 +40,7 @@ services:
       - augur
 
   augur-keyman:
-    image: augur-keyman:{{ augur_deploy_version | replace('/', '-') }}
+    image: augur-keyman:{{ augur_tag_version }}
     restart: unless-stopped
     user: 3456:3456  # Run as an arbitrary non-root user
     environment:
@@ -51,7 +51,7 @@ services:
       - augur
 
   rabbitmq:
-    image: augur-rabbitmq:{{ augur_deploy_version | replace('/', '-') }}
+    image: augur-rabbitmq:{{ augur_tag_version }}
     restart: unless-stopped
     networks:
       - augur
@@ -63,7 +63,7 @@ services:
       start_period: 10s
 
   augur:
-    image: augur:{{ augur_deploy_version | replace('/', '-') }}
+    image: augur:{{ augur_tag_version }}
     volumes:
       - /opt/facade/clones:/augur/facade
       - /opt/facade/logs:/logs
@@ -101,7 +101,7 @@ services:
         condition: service_healthy
 
   flower:
-    image: augur:{{ augur_deploy_version | replace('/', '-') }}
+    image: augur:{{ augur_tag_version }}
     restart: unless-stopped
     command:
 #      [ "celery", "-A", "augur.tasks.init.celery_app.celery_app", "flower" ]
