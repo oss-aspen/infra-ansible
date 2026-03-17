@@ -1,0 +1,116 @@
+- name: Load extra variables
+  ansible.builtin.include_vars:
+    file: secrets.yml
+
+- name: Ensure psycopg2 python module is installed on system python
+  apt:
+    pkg:
+      - python3-psycopg2
+    state: present
+    update_cache: true
+  become: true
+
+- name: Create/ensure read_only role exists for automations
+  # this user has relatively broad read only permissions over a lot of the database (data, operations, public, spdx schemas)
+  # It is intended as a role for automations to be added to to set their permissions.
+  # this is a subset of the pg_read_all_data  built in role that prevents access to a couple sensitive tables (api keys)
+  community.postgresql.postgresql_user:
+    login_db: augur
+    login_host: "localhost"
+    login_user: "{{ augur_pg_container_user }}"
+    login_password: "{{ augur_pg_password }}"
+    name: "augur_read_only"
+    password: ""
+    # role_attr_flags: "{{ permission_flags | join(',') }}"
+  no_log: true
+  # vars:
+  #   permission_flags:
+  #     - NOSUPERUSER
+  #     - NOCREATEDB
+  #     - NOCREATEROLE
+  #     - NOLOGIN
+  #     - NOREPLICATION
+  #     - NOBYPASSRLS
+
+- name: Grant privs to read only role
+  community.postgresql.postgresql_privs:
+    login_db: augur
+    login_host: "localhost"
+    login_user: "{{ augur_pg_container_user }}"
+    login_password: "{{ augur_pg_password }}"
+    state: absent
+    privs: SELECT
+    type: table
+    objs: config,refresh_tokens,user_session_tokens,users,worker_oauth
+    schema: augur_operations
+    roles: augur_read_only
+
+- name: Create/ensure role exists for researchers
+  # this user has a narrower set of read only permissions over mostly just augur data (data, mat views etc)
+  # It is intended as a subset of the read only role for granting to all researcher accounts.
+  community.postgresql.postgresql_user:
+    login_db: augur
+    login_host: "localhost"
+    login_user: "{{ augur_pg_container_user }}"
+    login_password: "{{ augur_pg_password }}"
+    name: "researcher"
+    password: ""
+  no_log: true
+
+- name: revoke all read privs to researcher role
+  community.postgresql.postgresql_privs:
+    login_db: augur
+    login_host: "localhost"
+    login_user: "{{ augur_pg_container_user }}"
+    login_password: "{{ augur_pg_password }}"
+    state: absent
+    privs: ALL
+    type: database
+    database: augur
+    roles: researcher
+
+- name: Grant augur_data USAGE privs to researcher role
+  community.postgresql.postgresql_privs:
+    login_db: augur
+    login_host: "localhost"
+    login_user: "{{ augur_pg_container_user }}"
+    login_password: "{{ augur_pg_password }}"
+    state: present
+    privs: USAGE
+    type: schema
+    objs: augur_data
+    roles: researcher
+
+- name: Grant augur_data SELECT privs to researcher role
+  community.postgresql.postgresql_privs:
+    login_db: augur
+    login_host: "localhost"
+    login_user: "{{ augur_pg_container_user }}"
+    login_password: "{{ augur_pg_password }}"
+    state: present
+    privs: SELECT
+    type: table
+    objs: ALL_IN_SCHEMA
+    roles: researcher
+
+- name: Ensure defined user accounts (roles intended for login) exist in postgres
+  community.postgresql.postgresql_user:
+    login_db: augur
+    login_host: "localhost"
+    login_user: "{{ augur_pg_container_user }}"
+    login_password: "{{ augur_pg_password }}"
+    name: "{{ item.username }}"
+    password: "{{ item.password }}"
+  no_log: true
+  loop: "{{ postgres_users }}"
+
+- name: Make sure augur users (roles) only belong to their assigned groups (roles)
+  community.postgresql.postgresql_membership:
+    login_db: augur
+    login_host: "localhost"
+    login_user: "{{ augur_pg_container_user }}"
+    login_password: "{{ augur_pg_password }}"
+    groups: "{{ item.groups.split(',') }}"
+    target_role: "{{ item.username }}"
+    state: exact
+  loop: "{{ postgres_users }}"

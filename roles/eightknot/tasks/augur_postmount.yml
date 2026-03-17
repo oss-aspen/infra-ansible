@@ -54,20 +54,17 @@
 
 # Create automation accounts
 - name: Create bot/automation users in postgres.
-  community.postgresql.postgresql_user:
-    login_db: augur
-    login_host: "localhost"
-    login_user: "{{ augur_pg_container_user }}"
-    login_password: "{{ augur_pg_password }}"
-    name: "{{ item.username }}"
-    password: "{{ item.password }}"
-  no_log: true
-  loop:
-    - username: notebook_publishing
-      password: "{{ bot_account_publishing_password }}"
-    - username: grafana_monitoring
-      password: "{{ bot_account_grafana_password }}"
+  ansible.builtin.include_role:
+    name: eightknot
+    tasks_from: postgres_users
+    vars:
+      postgres_users:
+        - username: notebook_publishing
+          password: "{{ bot_account_publishing_password }}"
+          groups: augur_read_only
+        - username: grafana_monitoring
+          password: "{{ bot_account_grafana_password }}"
+          groups: augur_read_only,pg_read_all_stats
 
-# Create reearch accounts
+# Create research accounts
 # same as above but possibly referencing a static password hash in another file
-
