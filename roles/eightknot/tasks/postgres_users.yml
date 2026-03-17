@@ -32,7 +32,7 @@
   #     - NOREPLICATION
   #     - NOBYPASSRLS
 
-- name: Grant privs to read only role
+- name: revoke privs for sensitive tables on read only role
   community.postgresql.postgresql_privs:
     login_db: augur
     login_host: "localhost"
@@ -91,6 +91,7 @@
     privs: SELECT
     type: table
     objs: ALL_IN_SCHEMA
+    schema: augur_data
     roles: researcher
 
 - name: Ensure defined user accounts (roles intended for login) exist in postgres
