@@ -48,15 +48,24 @@ provided all the prerequisites are present, usage should be a relatively simple 
 
 However, depending on the playbook you may need extra parameters:
 
-- `--vault-id` - this tells ansible which credentials to use for ansible vault. The value `prod` is most likely what you want. Note that depending on how you store your ansible vault credentials, you may need to specify something else, such as:
-  - `prod@<path to script>` if you use a [script](https://github.com/ansible-community/contrib-scripts/blob/main/vault/vault-keyring-client.py) to fetch your ansible vault password
+- `--ask-vault-pass` - If the playbook you are running requires accessing secret encrypted variables, this will prompt you for the password to decrypt those variables.
 - `--ask-become-pass` - If the server you are connecting to asks for a password the first time you use `sudo`, you need to provide that password so ansible can elevate its permissions when needed.
 - `-e "ansible_user=username"` - If your username on the relevant system is different from the one on your local machine, ansible needs to know what it is so it can log in.
+
+<details>
+<summary>
+Additional, less recommended options
+</summary>
+
+- `--vault-id` - this tells ansible which credentials to use for ansible vault. The value `prod` is most likely what you want. Note that depending on how you store your ansible vault credentials, you may need to specify something else, such as:
+  - `prod@<path to script>` if you use a [script](https://github.com/ansible-community/contrib-scripts/blob/main/vault/vault-keyring-client.py) to fetch your ansible vault password
+
+</details>
 
 
 ### Example
 for example, following all the above guidelines, kicking off a snapshot of the Augur DB would look like this 
-`ansible-playbook playbooks/augur-clonedb.yml --vault-id prod@~/Scripts/vault-keyring-client.py --ask-become-pass -e "ansible_user=username"`
+`ansible-playbook playbooks/augur-clonedb.yml ---ask-vault-pass --ask-become-pass -e "ansible_user=username"`
 
 ## Included Module Testing
 
