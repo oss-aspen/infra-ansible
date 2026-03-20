@@ -62,6 +62,7 @@
       - username: notebook_publishing
         password: "{{ bot_account_publishing_password }}"
         groups: augur_read_only
+        conn_limit: 2
       - username: grafana_monitoring
         password: "{{ bot_account_grafana_password }}"
         groups: augur_read_only,pg_read_all_stats

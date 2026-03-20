@@ -20,6 +20,7 @@
     login_user: "{{ augur_pg_container_user }}"
     login_password: "{{ augur_pg_password }}"
     name: "augur_read_only"
+    conn_limit: 20
     password: ""
     # role_attr_flags: "{{ permission_flags | join(',') }}"
   no_log: true
@@ -55,6 +56,7 @@
     login_password: "{{ augur_pg_password }}"
     name: "researcher"
     password: ""
+    conn_limit: 5
   no_log: true
 
 - name: revoke all read privs to researcher role
@@ -102,6 +104,7 @@
     login_password: "{{ augur_pg_password }}"
     name: "{{ item.username }}"
     password: "{{ item.password }}"
+    conn_limit: "{{ item.conn_limit | default(omit) }}"
   no_log: true
   loop: "{{ postgres_users }}"
 
