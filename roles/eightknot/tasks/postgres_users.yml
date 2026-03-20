@@ -21,6 +21,8 @@
     login_password: "{{ augur_pg_password }}"
     name: "augur_read_only"
     conn_limit: 20
+    connect_params:
+      application_name: "{{ postgres_connection_name }}"
     password: ""
     # role_attr_flags: "{{ permission_flags | join(',') }}"
   no_log: true
@@ -39,6 +41,8 @@
     login_host: "localhost"
     login_user: "{{ augur_pg_container_user }}"
     login_password: "{{ augur_pg_password }}"
+    connect_params:
+      application_name: "{{ postgres_connection_name }}"
     state: absent
     privs: SELECT
     type: table
@@ -57,6 +61,8 @@
     name: "researcher"
     password: ""
     conn_limit: 5
+    connect_params:
+      application_name: "{{ postgres_connection_name }}"
   no_log: true
 
 - name: revoke all read privs to researcher role
@@ -65,6 +71,8 @@
     login_host: "localhost"
     login_user: "{{ augur_pg_container_user }}"
     login_password: "{{ augur_pg_password }}"
+    connect_params:
+      application_name: "{{ postgres_connection_name }}"
     state: absent
     privs: ALL
     type: database
@@ -77,6 +85,8 @@
     login_host: "localhost"
     login_user: "{{ augur_pg_container_user }}"
     login_password: "{{ augur_pg_password }}"
+    connect_params:
+      application_name: "{{ postgres_connection_name }}"
     state: present
     privs: USAGE
     type: schema
@@ -89,6 +99,8 @@
     login_host: "localhost"
     login_user: "{{ augur_pg_container_user }}"
     login_password: "{{ augur_pg_password }}"
+    connect_params:
+      application_name: "{{ postgres_connection_name }}"
     state: present
     privs: SELECT
     type: table
@@ -102,6 +114,8 @@
     login_host: "localhost"
     login_user: "{{ augur_pg_container_user }}"
     login_password: "{{ augur_pg_password }}"
+    connect_params:
+      application_name: "{{ postgres_connection_name }}"
     name: "{{ item.username }}"
     password: "{{ item.password }}"
     conn_limit: "{{ item.conn_limit | default(omit) }}"
@@ -114,6 +128,8 @@
     login_host: "localhost"
     login_user: "{{ augur_pg_container_user }}"
     login_password: "{{ augur_pg_password }}"
+    connect_params:
+      application_name: "{{ postgres_connection_name }}"
     groups: "{{ item.groups.split(',') }}"
     target_role: "{{ item.username }}"
     state: exact
