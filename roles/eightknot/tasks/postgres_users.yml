@@ -114,4 +114,5 @@
     groups: "{{ item.groups.split(',') }}"
     target_role: "{{ item.username }}"
     state: exact
+  no_log: true
   loop: "{{ postgres_users }}"
