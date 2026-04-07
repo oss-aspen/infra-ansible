@@ -19,7 +19,7 @@
     user: "{{ item.0.name }}"
     state: present
     key: "{{ item.1 }}"
-  loop: "{{ system_users | subelements('ssh_keys') }}"
+  loop: "{{ system_users | subelements('ssh_keys', skip_missing=True) }}"
   when: system_users is defined
   become: true
 ## Remove user
