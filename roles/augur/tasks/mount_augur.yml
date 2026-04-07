@@ -1,0 +1,34 @@
+- name: Prepare location for postgres data mount
+  ansible.builtin.file:
+    path: "{{ postgres_data_mount_point }}"
+    state: directory
+    mode: "0755"
+
+    owner: 999
+  become: true
+
+- name: remount DB to {{ postgres_data_mount_point }}
+  ansible.posix.mount:
+    path: "{{ postgres_data_mount_point }}"
+    src: "{{ source_device_partition }}"
+    fstype: xfs
+    state: mounted
+  become: true
+
+- name: Write the postgres config
+  ansible.builtin.copy:
+    src: files/postgresql.conf
+    dest: "{{ postgres_data_mount_point }}/postgresql.conf"
+    owner: 999
+    group: systemd-journal
+    mode: "0600"
+  become: true
+
+- name: Write the postgres auth config
+  ansible.builtin.copy:
+    src: files/pg_hba.conf
+    dest: "{{ postgres_data_mount_point }}/pg_hba.conf"
+    owner: 999
+    group: systemd-journal
+    mode: "0600"
+  become: true
