@@ -16,7 +16,7 @@
 
 - name: Write the postgres config
   ansible.builtin.copy:
-    src: files/postgresql.conf
+    src: files/replication-postgresql.conf
     dest: "{{ mount_point }}/postgresql.conf"
     owner: 999
     group: systemd-journal

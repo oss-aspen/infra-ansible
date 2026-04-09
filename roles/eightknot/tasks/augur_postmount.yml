@@ -2,6 +2,48 @@
   ansible.builtin.include_vars:
     file: secrets.yml
 
+- name: Remove a PostgreSQL replication slot
+  community.postgresql.postgresql_query:
+    login_db: augur
+    login_host: "localhost"
+    login_user: "{{ augur_pg_container_user }}"
+    login_password: "{{ augur_pg_password }}"
+    query: "SELECT pg_drop_replication_slot('fivetran_pgoutput_slot')"
+  register: slot_result
+  failed_when:
+    - slot_result.msg is defined
+    - "'does not exist' not in slot_result.msg"
+
+# - name: Remove a PostgreSQL user (role)
+#   community.postgresql.postgresql_user:
+#     login_db: augur
+#     login_host: "localhost"
+#     login_user: "{{ augur_pg_container_user }}"
+#     login_password: "{{ augur_pg_password }}"
+#     name: "fivetran"
+#     state: absent
+#   tags: cleanup_user
+
+- name: take 8knot down
+  include_tasks: down.yml
+
+- name: Write the postgres config
+  ansible.builtin.copy:
+    src: files/postgresql.conf
+    dest: "{{ mount_point }}/postgresql.conf"
+    owner: 999
+    group: systemd-journal
+    mode: "0600"
+  become: true
+
+- name: Bring 8knot up again (database only)
+  community.docker.docker_compose_v2:
+    project_src: "{{ compose_path }}"
+    pull: missing
+    services:
+      - augur-db
+    env_files: .env
+
 - name: Ensure psycopg2 python module is installed on system python
   apt:
     pkg:
