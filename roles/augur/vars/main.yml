@@ -2,7 +2,7 @@ augur_git_clone_path: /opt/git/augur
 compose_path: /opt/compose/augur
 compose_file: docker-compose.yml
 
-source_device_disk: "/dev/nvme1n1"
+source_device_disk: "/dev/nvme2n1"
 # fallback value in case one cant be determined from the mount point (i.e. because it isnt mounted)
 source_device_partition: "{{source_device_disk}}p1"
 
