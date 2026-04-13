@@ -7,7 +7,7 @@ docker_image_tag: 8knot:main
 #eightknot.osci.io
 public_hostname: "{{ inventory_hostname }}"
 
-source_device_disk: "/dev/nvme2n1"
+source_device_disk: "/dev/nvme1n1"
 # fallback value in case one cant be determined from the mount point (i.e. because it isnt mounted)
 source_device_partition: "{{source_device_disk}}p1"
 mount_point: "/opt/augur/postgresql/data"
