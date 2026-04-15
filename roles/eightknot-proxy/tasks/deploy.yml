@@ -1,0 +1,16 @@
+- name: Prepare location for caddy config files
+  ansible.builtin.file:
+    path: /opt/caddy/
+    state: directory
+    group: sudo
+    owner: root
+  become: true
+
+- name: Write Caddyfile using jinja2
+  ansible.builtin.template:
+    src: templates/Caddyfile.j2
+    dest: /opt/caddy/Caddyfile
+    mode: "0640"
+    group: sudo
+    owner: root
+  become: true
