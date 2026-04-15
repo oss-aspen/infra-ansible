@@ -54,7 +54,7 @@ services:
       - "8080:8080" # bound to host port, exposed app endpoint
     networks:
       - 8knot
-      - web
+      - caddy_web
 
   app-server:
     image: {{ docker_image_tag }}
@@ -181,5 +181,5 @@ volumes:
 
 networks:
   8knot:
-  web:
+  caddy_web:
     external: true
