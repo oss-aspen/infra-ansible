@@ -14,8 +14,7 @@
     group: sudo
     owner: root
   become: true
-
-
+  register: caddyfile_config
 
 - name: Prepare location for compose files
   ansible.builtin.file:
@@ -33,3 +32,11 @@
     group: sudo
     owner: root
   become: true
+  register: compose_config
+
+- name: Restart caddy proxy service
+  community.docker.docker_compose_v2:
+    project_src: "{{ compose_path }}"
+    pull: missing
+    state: restarted
+  when: compose_config.changed or caddyfile_config.changed
