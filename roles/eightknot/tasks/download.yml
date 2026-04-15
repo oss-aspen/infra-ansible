@@ -9,7 +9,7 @@
   ansible.builtin.file:
     path: "{{ git_clone_path }}"
     state: directory
-    mode: '0755'
+    mode: "0755"
     owner: "{{ ansible_user }}"
   become: true
 
