@@ -1,8 +1,9 @@
-git_clone_path: /opt/git/8Knot
-git_clone_ref: main
-
 compose_path: /opt/compose/8knot/
-docker_image_tag: 8knot:main
+
+git_clone_path: /opt/git/8Knot
+
+git_clone_ref: v1.2.0
+docker_image_tag: 8knot:v1.2.0
 
 #eightknot.osci.io
 public_hostname: "{{ inventory_hostname }}"
