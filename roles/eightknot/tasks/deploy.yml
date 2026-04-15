@@ -1,51 +1,20 @@
-- name: Load extra variables
-  ansible.builtin.include_vars:
-    file: secrets.yml
-
-- name: Prepare location for compose files
-  ansible.builtin.file:
-    path: "{{ compose_path }}"
-    state: directory
-    mode: "0755"
-    owner: root
-  become: true
-
-- name: Write compose file using jinja2
-  ansible.builtin.template:
-    src: templates/compose.yml.j2
-    dest: "{{ compose_path }}/compose.yml"
-    mode: "0640"
-    group: sudo
-    owner: root
-  become: true
-
-- name: Write environment file using jinja2
-  ansible.builtin.template:
-    src: templates/.env.j2
-    dest: "{{ compose_path }}/.env"
-    mode: "0640"
-    group: sudo
-    owner: root
-  become: true
-
-- name: Prepare location for caddy config files
-  ansible.builtin.file:
-    path: /opt/caddy/
-    state: directory
-    group: sudo
-    owner: root
-  become: true
-
-- name: Write Caddyfile using jinja2
-  ansible.builtin.template:
-    src: templates/Caddyfile.j2
-    dest: /opt/caddy/Caddyfile
-    mode: "0640"
-    group: sudo
-    owner: root
-  become: true
-
-- name: Mount Augur DB
+- name: Configure system for 8Knot
   ansible.builtin.include_role:
     name: eightknot
-    tasks_from: mount_augur
+    tasks_from: environment
+- name: Download 8Knot
+  ansible.builtin.include_role:
+    name: eightknot
+    tasks_from: download
+- name: Build the 8Knot container image
+  ansible.builtin.include_role:
+    name: eightknot
+    tasks_from: build
+- name: Deploy the 8Knot config files and container images
+  ansible.builtin.include_role:
+    name: eightknot
+    tasks_from: configure
+- name: restart 8Knot
+  ansible.builtin.include_role:
+    name: eightknot
+    tasks_from: restart

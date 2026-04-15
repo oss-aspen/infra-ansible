@@ -35,10 +35,3 @@
     remote_src: false
     dest: "{{ git_clone_path }}/8Knot/app.py"
   become: true
-
-- name: Patch the 8Knot repository to disable the affiliations page
-  ansible.posix.patch:
-    src: patches/disable-affiliation.patch
-    remote_src: false
-    dest: "{{ git_clone_path }}/8Knot/pages/index/index_components.py"
-  become: true
