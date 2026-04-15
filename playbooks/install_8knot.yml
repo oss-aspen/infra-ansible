@@ -1,7 +1,7 @@
-- name: Install the latest version of 8Knot
+- name: Install the services on the 8Knot EC2
   hosts: [eightknot]
   tasks:
-    - name: Configure system for 8Knot
+    - name: Deploy the 8Knot app
       ansible.builtin.include_role:
         name: eightknot
         tasks_from: deploy

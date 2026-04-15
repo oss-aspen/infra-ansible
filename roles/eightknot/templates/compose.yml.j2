@@ -54,6 +54,7 @@ services:
       - "8080:8080" # bound to host port, exposed app endpoint
     networks:
       - 8knot
+      - caddy_web
 
   app-server:
     image: {{ docker_image_tag }}
@@ -173,22 +174,6 @@ services:
     networks:
       - 8knot
 
-  caddy:
-    image: caddy:2.9-alpine
-    restart: unless-stopped
-    cap_add:
-      - NET_ADMIN
-    ports:
-      - "80:80"
-      - "443:443"
-      - "443:443/udp"
-    volumes:
-      - /opt/caddy:/etc/caddy
-      - caddy_data:/data
-      - caddy_config:/config
-    networks:
-      - 8knot
-
 volumes:
   caddy_data:
   caddy_config:
@@ -196,3 +181,5 @@ volumes:
 
 networks:
   8knot:
+  caddy_web:
+    external: true
