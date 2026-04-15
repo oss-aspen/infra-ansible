@@ -16,7 +16,7 @@
     - name: Deploy the 8Knot config files and container images
       ansible.builtin.include_role:
         name: eightknot
-        tasks_from: deploy
+        tasks_from: configure
     - name: restart 8Knot
       ansible.builtin.include_role:
         name: eightknot
