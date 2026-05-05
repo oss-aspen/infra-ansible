@@ -20,4 +20,4 @@ augur_tag_version: "{{ augur_pull_version  | replace('/', '-') }}"
 
 augur_rabbit_username: augur
 augur_rabbit_password: "{{ vault_rabbitmq_password }}"
-augur_rabbit_vhost: collectoss_vhost
+augur_rabbit_vhost: augur_vhost
