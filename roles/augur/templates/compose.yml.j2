@@ -65,6 +65,7 @@ services:
   core:
     image: ghcr.io/chaoss/collectoss:{{ augur_tag_version }}
     volumes:
+      - cache:/cache
       - /opt/facade/clones:/collectoss/facade
       - /opt/facade/logs:/logs
       - {{ augur_config_data_mount_point }}:/config
@@ -88,6 +89,8 @@ services:
       RABBITMQ_CONN_STRING: amqp://${AUGUR_RABBITMQ_USERNAME:-augur}:${AUGUR_RABBITMQ_PASSWORD:-password123}@rabbitmq:5672/${AUGUR_RABBITMQ_VHOST:-augur_vhost}
       AUGUR_RESET_LOGS: False
       CONFIG_DATADIR: /config
+      CACHE_DATADIR: /cache
+      CACHE_LOCKDIR: /cache
     networks:
       - collectoss
     depends_on:
@@ -121,3 +124,6 @@ services:
   
 networks:
   collectoss:
+
+volumes:
+  cache:
