@@ -15,7 +15,7 @@
 
 - name: Clone the augur repository
   git:
-    repo: https://github.com/chaoss/augur
+    repo: "{{ git_clone_url }}"
     dest: "{{ augur_git_clone_path }}"
     clone: yes
     update: yes

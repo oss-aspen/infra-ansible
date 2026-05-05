@@ -1,4 +1,5 @@
 augur_git_clone_path: /opt/git/collectoss
+git_clone_url: https://github.com/chaoss/collectoss
 compose_path: /opt/compose/collectoss
 compose_file: docker-compose.yml
 
