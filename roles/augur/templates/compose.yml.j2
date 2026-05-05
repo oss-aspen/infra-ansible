@@ -62,7 +62,7 @@ services:
       retries: 10
       start_period: 10s
 
-  collectoss:
+  core:
     image: ghcr.io/chaoss/collectoss:{{ augur_tag_version }}
     volumes:
       - /opt/facade/clones:/collectoss/facade
