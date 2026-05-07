@@ -14,7 +14,7 @@ x-postgres-common:
     retries: 5
 
 services:
-  augur-db:
+  database:
     <<: *postgres-common
     environment:
       POSTGRES_DB: ${AUGUR_DB}
@@ -26,7 +26,7 @@ services:
       - {{ postgres_data_mount_point }}:/var/lib/postgresql/data
      # - /opt/facade/dumps/:/dumps # probably legacy from when backups were done this way
     networks:
-      - augur
+      - collectoss
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U ${AUGUR_DB_USER:-augur} -d ${AUGUR_DB_NAME:-augur}"]
       interval: 10s
@@ -37,10 +37,10 @@ services:
     image: redis:alpine
     restart: unless-stopped
     networks:
-      - augur
+      - collectoss
 
-  augur-keyman:
-    image: augur-keyman:{{ augur_tag_version }}
+  keyman:
+    image: ghcr.io/chaoss/collectoss-keyman:{{ augur_tag_version }}
     restart: unless-stopped
     user: 3456:3456  # Run as an arbitrary non-root user
     environment:
@@ -48,13 +48,13 @@ services:
     depends_on:
       - redis
     networks:
-      - augur
+      - collectoss
 
   rabbitmq:
     image: augur-rabbitmq:{{ augur_tag_version }}
     restart: unless-stopped
     networks:
-      - augur
+      - collectoss
     healthcheck:
       test: ["CMD", "rabbitmq-diagnostics", "ping"]
       interval: 10s
@@ -62,10 +62,11 @@ services:
       retries: 10
       start_period: 10s
 
-  augur:
-    image: augur:{{ augur_tag_version }}
+  core:
+    image: ghcr.io/chaoss/collectoss:{{ augur_tag_version }}
     volumes:
-      - /opt/facade/clones:/augur/facade
+      - cache:/cache
+      - /opt/facade/clones:/collectoss/facade
       - /opt/facade/logs:/logs
       - {{ augur_config_data_mount_point }}:/config
     restart: unless-stopped
@@ -76,7 +77,7 @@ services:
     extra_hosts:
       - "host.docker.internal:host-gateway" #Be able to ping services on the local machine
     environment:
-      AUGUR_DB: postgresql+psycopg2://${AUGUR_DB_USER:-augur}:${AUGUR_DB_PASSWORD:-augur}@augur-db:5432/augur
+      AUGUR_DB: postgresql+psycopg2://${AUGUR_DB_USER:-augur}:${AUGUR_DB_PASSWORD:-augur}@database:5432/augur
       AUGUR_DB_SCHEMA_BUILD: 1
       AUGUR_DOCKER_DEPLOY: 1
       AUGUR_FLAGS: ${AUGUR_FLAGS}
@@ -88,38 +89,41 @@ services:
       RABBITMQ_CONN_STRING: amqp://${AUGUR_RABBITMQ_USERNAME:-augur}:${AUGUR_RABBITMQ_PASSWORD:-password123}@rabbitmq:5672/${AUGUR_RABBITMQ_VHOST:-augur_vhost}
       AUGUR_RESET_LOGS: False
       CONFIG_DATADIR: /config
+      CACHE_DATADIR: /cache
+      CACHE_LOCKDIR: /cache
     networks:
-      - augur
+      - collectoss
     depends_on:
-      augur-db:
+      database:
         condition: service_healthy
       redis:
         condition: service_started
-      augur-keyman:
+      keyman:
         condition: service_started
       rabbitmq:
         condition: service_healthy
 
   flower:
-    image: augur:{{ augur_tag_version }}
+    image: ghcr.io/chaoss/collectoss:{{ augur_tag_version }}
     restart: unless-stopped
     command:
-#      [ "celery", "-A", "augur.tasks.init.celery_app.celery_app", "flower" ]
-# Test this for the Flower crash
-      [ "celery", "-A", "augur.tasks.init.celery_app.celery_app", "flower", "--max-tasks=1000000" ]
+      [ "celery", "-A", "collectoss.tasks.init.celery_app.celery_app", "flower", "--max-tasks=1000000" ]
     environment:
-      AUGUR_DB: postgresql+psycopg2://${AUGUR_DB_USER:-augur}:${AUGUR_DB_PASSWORD:-augur}@augur-db:5432/augur
+      AUGUR_DB: postgresql+psycopg2://${AUGUR_DB_USER:-augur}:${AUGUR_DB_PASSWORD:-augur}@database:5432/augur
       REDIS_CONN_STRING: redis://redis:6379
       RABBITMQ_CONN_STRING: amqp://${AUGUR_RABBITMQ_USERNAME:-augur}:${AUGUR_RABBITMQ_PASSWORD:-password123}@rabbitmq:5672/${AUGUR_RABBITMQ_VHOST:-augur_vhost}
     ports:
       - 5555:5555
     networks:
-      - augur
+      - collectoss
     depends_on:
-      - augur
-      - augur-db
+      - core
+      - database
       - redis
       - rabbitmq
   
 networks:
-  augur:
+  collectoss:
+
+volumes:
+  cache:
