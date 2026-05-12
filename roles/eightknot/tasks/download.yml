@@ -45,7 +45,7 @@
     strip: 1
   become: true
 
-- name: Patch the 8Knot repository to remove rank so the new matview can work
+- name: Patch the 8Knot repository to fix the group query
   ansible.posix.patch:
     src: patches/groupissue.patch
     remote_src: false
@@ -54,7 +54,7 @@
     strip: 1
   become: true
 
-- name: Patch the 8Knot repository to remove rank so the new matview can work
+- name: Patch the 8Knot repository to fix lottery stuff
   ansible.posix.patch:
     src: patches/lotteryfix.patch
     remote_src: false
