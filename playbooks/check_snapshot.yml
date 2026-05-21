@@ -1,0 +1,33 @@
+- name: Check a given AWS snapshot
+  hosts: [ localhost ] # Define your target server group in your inventory (e.g., [webservers] or [db_servers])
+  # gather_facts: true # Gather facts about the target host
+  tasks:
+    - name: Load aws variables
+      ansible.builtin.include_vars:
+        file: ../roles/aws/vars/main.yml
+
+    - name: test aws credentials
+      ansible.builtin.include_role:
+        name: aws
+        tasks_from: check_saml
+
+    # Get information about snapshots with FSR status
+    - name: Get snapshot info including FSR status
+      amazon.aws.ec2_snapshot_info:
+        snapshot_ids:
+          - "{{ snapshot_id }}"
+        profile: "{{ aws_auth_profile }}"
+        region: "{{ aws_region }}"
+      register: snapshot_info
+
+    # - name: Display snapshot info with FSR details
+    #   debug:
+    #     msg: "Snapshot {{ item.snapshot_id }} has FSR enabled in zones: {{
+    #       item.fast_snapshot_restores | map(attribute='availability_zone') |
+    #       list }}"
+    #   loop: "{{ snapshot_info.snapshots }}"
+    #   when: item.fast_snapshot_restores | length > 0
+
+    - name: "Display snapshot {{ snapshot_id }}:"
+      debug:
+        msg: "{{ snapshot_info.snapshots[0].progress }}"
