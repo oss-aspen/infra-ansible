@@ -65,7 +65,7 @@ Additional, less recommended options
 
 ### Example
 for example, following all the above guidelines, kicking off a snapshot of the Augur DB would look like this 
-`ansible-playbook playbooks/augur-clonedb.yml --ask-vault-pass --ask-become-pass -e "ansible_user=username"`
+`ansible-playbook playbooks/clonewritedb.yml --ask-vault-pass --ask-become-pass -e "ansible_user=username"`
 
 ## Included Module Testing
 
