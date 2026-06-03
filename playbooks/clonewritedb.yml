@@ -19,5 +19,5 @@
   tasks:
     - name: run tasks
       ansible.builtin.include_role:
-        name: augur
+        name: collectoss
         tasks_from: clone_db

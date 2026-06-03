@@ -3,5 +3,5 @@
   tasks:
     - name: Deploy collectoss
       ansible.builtin.include_role:
-        name: augur
+        name: collectoss
         tasks_from: deploy
