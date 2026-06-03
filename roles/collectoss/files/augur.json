@@ -51,9 +51,9 @@
     },
     "Tasks": {
         "collection_interval": 30,
-        "core_collection_interval_days": 12,
-        "secondary_collection_interval_days": 12,
-        "facade_collection_interval_days": 12,
+        "core_collection_interval_days": 7,
+        "secondary_collection_interval_days": 7,
+        "facade_collection_interval_days": 7,
         "ml_collection_interval_days": 40
     },
     "Message_Insights": {
