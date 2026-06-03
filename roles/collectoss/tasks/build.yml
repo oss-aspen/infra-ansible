@@ -24,21 +24,21 @@
       Please clean up the build cache or otherwise free some space
   when: mount_info.size_available < required_free_space | ansible.builtin.human_to_bytes
 
-- name: Build the augur main image
+- name: Build the collectoss main image
   community.docker.docker_image_build:
     name: "augur:{{ augur_tag_version }}"
     rebuild: always
     path: "{{ augur_git_clone_path }}/"
     dockerfile: docker/backend/Dockerfile
 
-- name: Build the augur keyman image
+- name: Build the collectoss keyman image
   community.docker.docker_image_build:
     name: "augur-keyman:{{ augur_tag_version }}"
     rebuild: always
     path: "{{ augur_git_clone_path }}/"
     dockerfile: docker/keyman/Dockerfile
 
-- name: Build the augur rabbitmq image
+- name: Build the collectoss rabbitmq image
   community.docker.docker_image_build:
     name: "augur-rabbitmq:{{ augur_tag_version }}"
     rebuild: always

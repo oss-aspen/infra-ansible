@@ -1,20 +1,20 @@
-- name: Configure system for augur
+- name: Configure system for collectoss
   ansible.builtin.include_role:
     name: collectoss
     tasks_from: environment
-# - name: Download augur
+# - name: Download collectoss
 #   ansible.builtin.include_role:
 #     name: collectoss
 #     tasks_from: download
-# - name: Build the augur container images
+# - name: Build the collectoss container images
 #   ansible.builtin.include_role:
 #     name: collectoss
 #     tasks_from: build
-- name: Deploy the augur config files and container images
+- name: Deploy the collectoss config files and container images
   ansible.builtin.include_role:
     name: collectoss
     tasks_from: install
-- name: bring augur up
+- name: bring collectoss up
   ansible.builtin.include_role:
     name: collectoss
     tasks_from: up

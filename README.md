@@ -1,6 +1,6 @@
 # OSPO Infrastructure Management
 
-This repository contains Ansible playbooks and roles for deploying and managing infrastructure for [Augur](https://github.com/chaoss/augur) and [8Knot](https://github.com/oss-aspen/8Knot) services in production (EC2 instances).
+This repository contains Ansible playbooks and roles for deploying and managing infrastructure for [collectoss](https://github.com/chaoss/collectoss) and [8Knot](https://github.com/oss-aspen/8Knot) services in production (EC2 instances).
 
 
 ## Overview
@@ -11,12 +11,12 @@ Ansible is a powerful automation tool for managing and configuring server infras
 
 **Playbooks**
 
-This repository is organized with all the high-level processes defined in playbooks within the `playbooks` folder. This includes things like installing 8Knot, installing augur, upgrading a system's apt packages, performing backups, etc.
+This repository is organized with all the high-level processes defined in playbooks within the `playbooks` folder. This includes things like installing 8Knot, installing collectoss, upgrading a system's apt packages, performing backups, etc.
 
 See each individual .yml file in this folder to read more about what it is for.
 
 **Roles and Tasks**
-In order to improve maintainability and reuse of common processes, these playbooks refer to "roles", which are a slightly more granular way to group things in ansible. These are located in the `roles` folder and contain various configuration items for the different services (augur, 8knot, etc).
+In order to improve maintainability and reuse of common processes, these playbooks refer to "roles", which are a slightly more granular way to group things in ansible. These are located in the `roles` folder and contain various configuration items for the different services (collectoss, 8knot, etc).
 
 Within these roles there are files that define specific `tasks`. These files are where the actual definitions for the actions being performed usually live, broken up granularly enough to allow them to be reused by multiple playbooks or even other tasks as needed.
 
@@ -64,7 +64,7 @@ Additional, less recommended options
 
 
 ### Example
-for example, following all the above guidelines, kicking off a snapshot of the Augur DB would look like this 
+for example, following all the above guidelines, kicking off a snapshot of the collectoss DB would look like this 
 `ansible-playbook playbooks/clonewritedb.yml --ask-vault-pass --ask-become-pass -e "ansible_user=username"`
 
 ## Included Module Testing

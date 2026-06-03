@@ -13,7 +13,7 @@
     update_cache: true
   become: true
 
-- name: Clone the augur repository
+- name: Clone the collectoss repository
   git:
     repo: "{{ git_clone_url }}"
     dest: "{{ augur_git_clone_path }}"
@@ -27,4 +27,4 @@
 
 - name: Display deployed commit hash
   debug:
-    msg: "Augur checked out commit: {{ git_clone_result.after }}"
+    msg: "collectoss checked out commit: {{ git_clone_result.after }}"

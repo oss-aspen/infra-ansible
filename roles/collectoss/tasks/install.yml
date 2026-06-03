@@ -26,7 +26,7 @@
     owner: root
   become: true
 
-- name: Prepare augur config directory
+- name: Prepare collectoss config directory
   ansible.builtin.file:
     path: "{{ augur_config_data_mount_point }}"
     state: directory
