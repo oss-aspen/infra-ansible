@@ -1,7 +1,0 @@
-- name: Install the latest version of augur
-  hosts: [ augur ]
-  tasks:
-    - name: Deploy augur
-      ansible.builtin.include_role:
-        name: augur
-        tasks_from: deploy
