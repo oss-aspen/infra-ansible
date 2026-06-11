@@ -40,7 +40,7 @@ services:
       - collectoss
 
   keyman:
-    image: ghcr.io/chaoss/collectoss-keyman:{{ augur_tag_version }}
+    image: ghcr.io/chaoss/collectoss-keyman:{{ docker_tag_version }}
     restart: unless-stopped
     user: 3456:3456  # Run as an arbitrary non-root user
     environment:
@@ -51,7 +51,7 @@ services:
       - collectoss
 
   rabbitmq:
-    image: augur-rabbitmq:{{ augur_tag_version }}
+    image: augur-rabbitmq:{{ docker_tag_version }}
     restart: unless-stopped
     networks:
       - collectoss
@@ -63,7 +63,7 @@ services:
       start_period: 10s
 
   core:
-    image: ghcr.io/chaoss/collectoss:{{ augur_tag_version }}
+    image: ghcr.io/chaoss/collectoss:{{ docker_tag_version }}
     volumes:
       - cache:/cache
       - /opt/facade/clones:/collectoss/facade
@@ -104,7 +104,7 @@ services:
         condition: service_healthy
 
   flower:
-    image: ghcr.io/chaoss/collectoss:{{ augur_tag_version }}
+    image: ghcr.io/chaoss/collectoss:{{ docker_tag_version }}
     restart: unless-stopped
     command:
       [ "celery", "-A", "collectoss.tasks.init.celery_app.celery_app", "flower", "--max-tasks=1000000" ]

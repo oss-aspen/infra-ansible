@@ -26,21 +26,21 @@
 
 - name: Build the collectoss main image
   community.docker.docker_image_build:
-    name: "augur:{{ augur_tag_version }}"
+    name: "augur:{{ docker_tag_version }}"
     rebuild: always
     path: "{{ augur_git_clone_path }}/"
     dockerfile: docker/backend/Dockerfile
 
 - name: Build the collectoss keyman image
   community.docker.docker_image_build:
-    name: "augur-keyman:{{ augur_tag_version }}"
+    name: "augur-keyman:{{ docker_tag_version }}"
     rebuild: always
     path: "{{ augur_git_clone_path }}/"
     dockerfile: docker/keyman/Dockerfile
 
 - name: Build the collectoss rabbitmq image
   community.docker.docker_image_build:
-    name: "augur-rabbitmq:{{ augur_tag_version }}"
+    name: "augur-rabbitmq:{{ docker_tag_version }}"
     rebuild: always
     path: "{{ augur_git_clone_path }}/"
     dockerfile: docker/rabbitmq/Dockerfile
