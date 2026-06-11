@@ -171,7 +171,7 @@
     recovery_start: "{{ now() }}"
 
 - name: Wait for PostgreSQL to start accepting connections
-  ansible.builtin.command: docker exec -i {{ augur_pg_container_name }} psql -U {{ augur_pg_container_user }} -c "SELECT 'READY' WHERE pg_is_in_recovery() = 'f';"
+  ansible.builtin.command: docker exec -i {{ pg_container_name }} psql -U {{ augur_pg_container_user }} -c "SELECT 'READY' WHERE pg_is_in_recovery() = 'f';"
   register: recovery_check
   ignore_errors: true
   until: recovery_check.rc == 0 and "READY" in recovery_check.stdout
