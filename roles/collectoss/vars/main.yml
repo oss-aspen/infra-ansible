@@ -18,6 +18,6 @@ augur_pg_password: "{{ vault_augur_password }}"
 docker_pull_version: "v1.1.0-rc1"
 docker_tag_version: "{{ docker_pull_version  | replace('/', '-') }}"
 
-augur_rabbit_username: augur
-augur_rabbit_password: "{{ vault_rabbitmq_password }}"
-augur_rabbit_vhost: augur_vhost
+rabbit_username: augur
+rabbit_password: "{{ vault_rabbitmq_password }}"
+rabbit_vhost: augur_vhost
