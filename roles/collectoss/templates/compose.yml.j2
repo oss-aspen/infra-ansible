@@ -17,9 +17,9 @@ services:
   database:
     <<: *postgres-common
     environment:
-      POSTGRES_DB: ${AUGUR_DB}
-      POSTGRES_USER: ${AUGUR_DB_USER}
-      POSTGRES_PASSWORD: ${AUGUR_DB_PASSWORD}
+      POSTGRES_DB: ${COLLECTOSS_DB}
+      POSTGRES_USER: ${COLLECTOSS_DB_USER}
+      POSTGRES_PASSWORD: ${COLLECTOSS_DB_PASSWORD}
     ports:
       - 5432:5432
     volumes:
@@ -28,7 +28,7 @@ services:
     networks:
       - collectoss
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${AUGUR_DB_USER:-augur} -d ${AUGUR_DB_NAME:-augur}"]
+      test: ["CMD-SHELL", "pg_isready -U ${COLLECTOSS_DB_USER:-augur} -d ${COLLECTOSS_DB_NAME:-augur}"]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -77,17 +77,17 @@ services:
     extra_hosts:
       - "host.docker.internal:host-gateway" #Be able to ping services on the local machine
     environment:
-      AUGUR_DB: postgresql+psycopg2://${AUGUR_DB_USER:-augur}:${AUGUR_DB_PASSWORD:-augur}@database:5432/augur
-      AUGUR_DB_SCHEMA_BUILD: 1
-      AUGUR_DOCKER_DEPLOY: 1
-      AUGUR_FLAGS: ${AUGUR_FLAGS}
-      AUGUR_GITHUB_USERNAME: ${AUGUR_GITHUB_USERNAME}
-      AUGUR_GITHUB_API_KEY: ${AUGUR_GITHUB_API_KEY}
-      AUGUR_GITLAB_USERNAME: ${AUGUR_GITLAB_USERNAME}
-      AUGUR_GITLAB_API_KEY: ${AUGUR_GITLAB_API_KEY}
+      COLLECTOSS_DB: postgresql+psycopg2://${COLLECTOSS_DB_USER:-augur}:${COLLECTOSS_DB_PASSWORD:-augur}@database:5432/augur
+      COLLECTOSS_DB_SCHEMA_BUILD: 1
+      COLLECTOSS_DOCKER_DEPLOY: 1
+      COLLECTOSS_FLAGS: ${COLLECTOSS_FLAGS}
+      COLLECTOSS_GITHUB_USERNAME: ${COLLECTOSS_GITHUB_USERNAME}
+      COLLECTOSS_GITHUB_API_KEY: ${COLLECTOSS_GITHUB_API_KEY}
+      COLLECTOSS_GITLAB_USERNAME: ${COLLECTOSS_GITLAB_USERNAME}
+      COLLECTOSS_GITLAB_API_KEY: ${COLLECTOSS_GITLAB_API_KEY}
       REDIS_CONN_STRING: redis://redis:6379
-      RABBITMQ_CONN_STRING: amqp://${AUGUR_RABBITMQ_USERNAME:-augur}:${AUGUR_RABBITMQ_PASSWORD:-password123}@rabbitmq:5672/${AUGUR_RABBITMQ_VHOST:-augur_vhost}
-      AUGUR_RESET_LOGS: False
+      RABBITMQ_CONN_STRING: amqp://${COLLECTOSS_RABBITMQ_USERNAME:-augur}:${COLLECTOSS_RABBITMQ_PASSWORD:-password123}@rabbitmq:5672/${COLLECTOSS_RABBITMQ_VHOST:-augur_vhost}
+      COLLECTOSS_RESET_LOGS: False
       CONFIG_DATADIR: /config
       CACHE_DATADIR: /cache
       CACHE_LOCKDIR: /cache
@@ -109,9 +109,9 @@ services:
     command:
       [ "celery", "-A", "collectoss.tasks.init.celery_app.celery_app", "flower", "--max-tasks=1000000" ]
     environment:
-      AUGUR_DB: postgresql+psycopg2://${AUGUR_DB_USER:-augur}:${AUGUR_DB_PASSWORD:-augur}@database:5432/augur
+      COLLECTOSS_DB: postgresql+psycopg2://${COLLECTOSS_DB_USER:-augur}:${COLLECTOSS_DB_PASSWORD:-augur}@database:5432/augur
       REDIS_CONN_STRING: redis://redis:6379
-      RABBITMQ_CONN_STRING: amqp://${AUGUR_RABBITMQ_USERNAME:-augur}:${AUGUR_RABBITMQ_PASSWORD:-password123}@rabbitmq:5672/${AUGUR_RABBITMQ_VHOST:-augur_vhost}
+      RABBITMQ_CONN_STRING: amqp://${COLLECTOSS_RABBITMQ_USERNAME:-augur}:${COLLECTOSS_RABBITMQ_PASSWORD:-password123}@rabbitmq:5672/${COLLECTOSS_RABBITMQ_VHOST:-augur_vhost}
     ports:
       - 5555:5555
     networks:
