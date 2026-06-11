@@ -68,7 +68,7 @@ services:
       - cache:/cache
       - /opt/facade/clones:/collectoss/facade
       - /opt/facade/logs:/logs
-      - {{ augur_config_data_mount_point }}:/config
+      - {{ config_data_mount_point }}:/config
     restart: unless-stopped
     #command:
     #  [ "sleep", "3600" ]

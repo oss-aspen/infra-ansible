@@ -28,7 +28,7 @@
 
 - name: Prepare collectoss config directory
   ansible.builtin.file:
-    path: "{{ augur_config_data_mount_point }}"
+    path: "{{ config_data_mount_point }}"
     state: directory
     mode: "0755"
     owner: root
@@ -37,6 +37,6 @@
 - name: Copy augur.json
   ansible.builtin.copy:
     src: files/augur.json
-    dest: "{{ augur_config_data_mount_point }}"
+    dest: "{{ config_data_mount_point }}"
     mode: "0644"
   become: true
