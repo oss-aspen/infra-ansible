@@ -1,0 +1,9 @@
+- name: Pull selected images
+  community.docker.docker_compose_v2_pull:
+    project_src: "{{ compose_path }}"
+    # pull: missing
+    services:
+      - core
+      - keyman
+      - redis
+    env_files: .env
