@@ -51,7 +51,7 @@ services:
       - collectoss
 
   rabbitmq:
-    image: augur-rabbitmq:{{ docker_tag_version }}
+    image: augur-rabbitmq:v1.0.0
     restart: unless-stopped
     networks:
       - collectoss
