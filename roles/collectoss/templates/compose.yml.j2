@@ -17,7 +17,7 @@ services:
   database:
     <<: *postgres-common
     environment:
-      POSTGRES_DB: ${COLLECTOSS_DB}
+      POSTGRES_DB: ${COLLECTOSS_DB_NAME}
       POSTGRES_USER: ${COLLECTOSS_DB_USER}
       POSTGRES_PASSWORD: ${COLLECTOSS_DB_PASSWORD}
     ports:
@@ -77,7 +77,7 @@ services:
     extra_hosts:
       - "host.docker.internal:host-gateway" #Be able to ping services on the local machine
     environment:
-      COLLECTOSS_DB: postgresql+psycopg2://${COLLECTOSS_DB_USER:-augur}:${COLLECTOSS_DB_PASSWORD:-augur}@database:5432/augur
+      COLLECTOSS_DB: postgresql+psycopg2://${COLLECTOSS_DB_USER:-augur}:${COLLECTOSS_DB_PASSWORD:-augur}@database:5432/${COLLECTOSS_DB_NAME:-augur}
       COLLECTOSS_DB_SCHEMA_BUILD: 1
       COLLECTOSS_DOCKER_DEPLOY: 1
       COLLECTOSS_FLAGS: ${COLLECTOSS_FLAGS}
@@ -109,7 +109,7 @@ services:
     command:
       [ "celery", "-A", "collectoss.tasks.init.celery_app.celery_app", "flower", "--max-tasks=1000000" ]
     environment:
-      COLLECTOSS_DB: postgresql+psycopg2://${COLLECTOSS_DB_USER:-augur}:${COLLECTOSS_DB_PASSWORD:-augur}@database:5432/augur
+      COLLECTOSS_DB: postgresql+psycopg2://${COLLECTOSS_DB_USER:-augur}:${COLLECTOSS_DB_PASSWORD:-augur}@database:5432/${COLLECTOSS_DB_NAME:-augur}
       REDIS_CONN_STRING: redis://redis:6379
       RABBITMQ_CONN_STRING: amqp://${COLLECTOSS_RABBITMQ_USERNAME:-augur}:${COLLECTOSS_RABBITMQ_PASSWORD:-password123}@rabbitmq:5672/${COLLECTOSS_RABBITMQ_VHOST:-augur_vhost}
     ports:
