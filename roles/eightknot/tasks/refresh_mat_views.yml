@@ -24,13 +24,13 @@
 - name: start a tmux session to refresh the materialized views
   ansible.builtin.shell: |
     tmux new-session -d -s "ansible-refresh-mat-views" \
-    "docker container exec -e PGPASSWORD={{ augur_pg_password }} {{ augur_pg_container_name }} \
+    "docker container exec -e PGPASSWORD={{ augur_pg_password }} {{ pg_container_name }} \
     psql -U {{ augur_pg_container_user }} -c '{{ sql_query }}'"
   # environment:
   #   PGPASSWORD: "{{ augur_pg_password }}" # Pass the password securely via environment variable
   vars:
     augur_pg_container_user: augur
-    augur_pg_container_name: 8knot-augur-db-1
+    pg_container_name: 8knot-augur-db-1
   async: 36000 # 10 hours
   poll: 0 #exit immediately and continue
   changed_when: true # This task changes the state of the database

@@ -1,6 +1,6 @@
 - name: Prepare location for git repo files
   ansible.builtin.file:
-    path: "{{ augur_git_clone_path }}"
+    path: "{{ git_clone_path }}"
     state: directory
     mode: "0755"
     owner: root
@@ -16,12 +16,12 @@
 - name: Clone the collectoss repository
   git:
     repo: "{{ git_clone_url }}"
-    dest: "{{ augur_git_clone_path }}"
+    dest: "{{ git_clone_path }}"
     clone: yes
     update: yes
     single_branch: yes
     force: true # clear any patches that may exist. start totally fresh
-    version: "{{ augur_pull_version }}"
+    version: "{{ docker_pull_version }}"
   register: git_clone_result
   become: true
 

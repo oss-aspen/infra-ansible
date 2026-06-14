@@ -1,5 +1,5 @@
 - name: Start all services
   community.docker.docker_compose_v2:
     project_src: "{{ compose_path }}"
-    pull: missing
+    pull: never
     env_files: .env

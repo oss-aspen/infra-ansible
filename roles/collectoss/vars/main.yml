@@ -1,4 +1,4 @@
-augur_git_clone_path: /opt/git/collectoss
+git_clone_path: /opt/git/collectoss
 git_clone_url: https://github.com/chaoss/collectoss
 compose_path: /opt/compose/collectoss
 compose_file: docker-compose.yml
@@ -8,16 +8,15 @@ source_device_disk: "/dev/nvme2n1"
 source_device_partition: "{{source_device_disk}}p1"
 
 postgres_data_mount_point: "/opt/augur/postgresql/data"
-augur_config_data_mount_point: "/opt/augur/config"
+config_data_mount_point: "/opt/augur/config"
 
+pg_container_name: "collectoss-database-1"
+pg_container_user: "augur"
+pg_password: "{{ vault_augur_password }}"
 
-augur_pg_container_name: "collectoss-database-1"
-augur_pg_container_user: "augur"
-augur_pg_password: "{{ vault_augur_password }}"
+docker_pull_version: "v1.1.0-rc1"
+docker_tag_version: "{{ docker_pull_version  | replace('/', '-') }}"
 
-augur_pull_version: "v1.0.0"
-augur_tag_version: "{{ augur_pull_version  | replace('/', '-') }}"
-
-augur_rabbit_username: augur
-augur_rabbit_password: "{{ vault_rabbitmq_password }}"
-augur_rabbit_vhost: augur_vhost
+rabbit_username: augur
+rabbit_password: "{{ vault_rabbitmq_password }}"
+rabbit_vhost: augur_vhost

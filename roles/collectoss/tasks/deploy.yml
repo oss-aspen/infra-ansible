@@ -6,6 +6,10 @@
 #   ansible.builtin.include_role:
 #     name: collectoss
 #     tasks_from: download
+- name: Pull collectoss images
+  ansible.builtin.include_role:
+    name: collectoss
+    tasks_from: pull
 # - name: Build the collectoss container images
 #   ansible.builtin.include_role:
 #     name: collectoss
