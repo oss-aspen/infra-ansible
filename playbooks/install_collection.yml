@@ -1,0 +1,7 @@
+- name: Install the latest version of collectoss
+  hosts: [collection]
+  tasks:
+    - name: Deploy collectoss
+      ansible.builtin.include_role:
+        name: collectoss
+        tasks_from: deploy

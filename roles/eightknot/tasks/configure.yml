@@ -36,7 +36,7 @@
     owner: root
   become: true
 
-- name: Mount Augur DB
+- name: Mount collectoss DB
   ansible.builtin.include_role:
     name: eightknot
     tasks_from: mount_augur

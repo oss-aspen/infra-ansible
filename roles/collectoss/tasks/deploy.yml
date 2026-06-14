@@ -1,0 +1,20 @@
+- name: Configure system for collectoss
+  ansible.builtin.include_role:
+    name: collectoss
+    tasks_from: environment
+# - name: Download collectoss
+#   ansible.builtin.include_role:
+#     name: collectoss
+#     tasks_from: download
+# - name: Build the collectoss container images
+#   ansible.builtin.include_role:
+#     name: collectoss
+#     tasks_from: build
+- name: Deploy the collectoss config files and container images
+  ansible.builtin.include_role:
+    name: collectoss
+    tasks_from: install
+- name: bring collectoss up
+  ansible.builtin.include_role:
+    name: collectoss
+    tasks_from: up
