@@ -35,30 +35,3 @@
     remote_src: false
     dest: "{{ git_clone_path }}/8Knot/app.py"
   become: true
-
-- name: Patch the 8Knot repository to remove rank so the new matview can work
-  ansible.posix.patch:
-    src: patches/rank.patch
-    remote_src: false
-    basedir: "{{ git_clone_path }}"
-    # Ignore the first part of the path (the "a/") from git-formatted patches
-    strip: 1
-  become: true
-
-- name: Patch the 8Knot repository to fix the group query
-  ansible.posix.patch:
-    src: patches/groupissue.patch
-    remote_src: false
-    basedir: "{{ git_clone_path }}"
-    # Ignore the first part of the path (the "a/") from git-formatted patches
-    strip: 1
-  become: true
-
-- name: Patch the 8Knot repository to fix lottery stuff
-  ansible.posix.patch:
-    src: patches/lotteryfix.patch
-    remote_src: false
-    basedir: "{{ git_clone_path }}"
-    # Ignore the first part of the path (the "a/") from git-formatted patches
-    strip: 1
-  become: true
