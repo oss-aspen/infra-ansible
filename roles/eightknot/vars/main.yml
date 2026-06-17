@@ -2,8 +2,8 @@ compose_path: /opt/compose/8knot/
 
 git_clone_path: /opt/git/8Knot
 
-git_clone_ref: v1.2.0
-docker_image_tag: 8knot:v1.2.0
+git_clone_ref: v1.3
+docker_image_tag: 8knot:v1.3
 
 source_device_disk: "/dev/nvme1n1"
 # fallback value in case one cant be determined from the mount point (i.e. because it isnt mounted)
