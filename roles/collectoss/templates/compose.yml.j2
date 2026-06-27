@@ -88,6 +88,7 @@ services:
       REDIS_CONN_STRING: redis://redis:6379
       RABBITMQ_CONN_STRING: amqp://${COLLECTOSS_RABBITMQ_USERNAME:-augur}:${COLLECTOSS_RABBITMQ_PASSWORD:-password123}@rabbitmq:5672/${COLLECTOSS_RABBITMQ_VHOST:-augur_vhost}
       COLLECTOSS_RESET_LOGS: False
+      COLLECTOSS_LOGS_DIRECTORY: /logs
       CONFIG_DATADIR: /config
       CACHE_DATADIR: /cache
       CACHE_LOCKDIR: /cache
