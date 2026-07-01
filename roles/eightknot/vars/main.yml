@@ -14,8 +14,8 @@ mount_point: "/opt/augur/postgresql/data"
 pg_container_mount_point: "/var/lib/postgresql/data" # The mount point for PostgreSQL data on the target server
 pg_container_name: "8knot-core-database-1"
 pg_container_user: "augur"
-augur_pg_password: "{{ vault_augur_password }}"
 
+pg_container_password: "{{ vault_augur_password }}"
 
 postgres_connection_name: "RH OSPO ansible scripts"
 

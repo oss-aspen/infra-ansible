@@ -18,7 +18,7 @@
     login_db: augur
     login_host: "localhost"
     login_user: "{{ pg_container_user }}"
-    login_password: "{{ augur_pg_password }}"
+    login_password: "{{ pg_container_password }}"
     name: "augur_read_only"
     conn_limit: 20
     connect_params:
@@ -40,7 +40,7 @@
     login_db: augur
     login_host: "localhost"
     login_user: "{{ pg_container_user }}"
-    login_password: "{{ augur_pg_password }}"
+    login_password: "{{ pg_container_password }}"
     connect_params:
       application_name: "{{ postgres_connection_name }}"
     state: absent
@@ -57,7 +57,7 @@
     login_db: augur
     login_host: "localhost"
     login_user: "{{ pg_container_user }}"
-    login_password: "{{ augur_pg_password }}"
+    login_password: "{{ pg_container_password }}"
     name: "researcher"
     password: ""
     conn_limit: 5
@@ -70,7 +70,7 @@
     login_db: augur
     login_host: "localhost"
     login_user: "{{ pg_container_user }}"
-    login_password: "{{ augur_pg_password }}"
+    login_password: "{{ pg_container_password }}"
     connect_params:
       application_name: "{{ postgres_connection_name }}"
     state: absent
@@ -84,7 +84,7 @@
     login_db: augur
     login_host: "localhost"
     login_user: "{{ pg_container_user }}"
-    login_password: "{{ augur_pg_password }}"
+    login_password: "{{ pg_container_password }}"
     connect_params:
       application_name: "{{ postgres_connection_name }}"
     state: present
@@ -98,7 +98,7 @@
     login_db: augur
     login_host: "localhost"
     login_user: "{{ pg_container_user }}"
-    login_password: "{{ augur_pg_password }}"
+    login_password: "{{ pg_container_password }}"
     connect_params:
       application_name: "{{ postgres_connection_name }}"
     state: present
@@ -113,7 +113,7 @@
     login_db: augur
     login_host: "localhost"
     login_user: "{{ pg_container_user }}"
-    login_password: "{{ augur_pg_password }}"
+    login_password: "{{ pg_container_password }}"
     connect_params:
       application_name: "{{ postgres_connection_name }}"
     name: "{{ item.username }}"
@@ -127,7 +127,7 @@
     login_db: augur
     login_host: "localhost"
     login_user: "{{ pg_container_user }}"
-    login_password: "{{ augur_pg_password }}"
+    login_password: "{{ pg_container_password }}"
     connect_params:
       application_name: "{{ postgres_connection_name }}"
     groups: "{{ item.groups.split(',') }}"
