@@ -4,7 +4,7 @@
 
 - name: Remove a PostgreSQL replication slot
   community.postgresql.postgresql_query:
-    login_db: augur
+    login_db: "{{ pg_container_db_name }}"
     login_host: "localhost"
     login_user: "{{ pg_container_user }}"
     login_password: "{{ pg_container_password }}"
@@ -16,7 +16,7 @@
 
 # - name: Remove a PostgreSQL user (role)
 #   community.postgresql.postgresql_user:
-#     login_db: augur
+#     login_db: "{{ pg_container_db_name }}"
 #     login_host: "localhost"
 #     login_user: "{{ pg_container_user }}"
 #     login_password: "{{ pg_container_password }}"
@@ -79,7 +79,7 @@
 
     - name: Run SQL scripts using UTF-8 client encoding for session and positional args
       community.postgresql.postgresql_script:
-        login_db: augur
+        login_db: "{{ pg_container_db_name }}"
         login_host: "localhost"
         login_user: "{{ pg_container_user }}"
         login_password: "{{ pg_container_password }}"
