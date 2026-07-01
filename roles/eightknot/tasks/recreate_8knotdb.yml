@@ -163,7 +163,7 @@
     project_src: "{{ compose_path }}"
     pull: missing
     services:
-      - augur-db
+      - core-database
     env_files: .env
 
 - name: Crash Recovery - register start

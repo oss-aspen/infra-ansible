@@ -41,7 +41,7 @@
     project_src: "{{ compose_path }}"
     pull: missing
     services:
-      - augur-db
+      - core-database
     env_files: .env
 
 - name: Ensure psycopg2 python module is installed on system python
