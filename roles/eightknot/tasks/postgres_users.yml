@@ -17,7 +17,7 @@
   community.postgresql.postgresql_user:
     login_db: augur
     login_host: "localhost"
-    login_user: "{{ augur_pg_container_user }}"
+    login_user: "{{ pg_container_user }}"
     login_password: "{{ augur_pg_password }}"
     name: "augur_read_only"
     conn_limit: 20
@@ -39,7 +39,7 @@
   community.postgresql.postgresql_privs:
     login_db: augur
     login_host: "localhost"
-    login_user: "{{ augur_pg_container_user }}"
+    login_user: "{{ pg_container_user }}"
     login_password: "{{ augur_pg_password }}"
     connect_params:
       application_name: "{{ postgres_connection_name }}"
@@ -56,7 +56,7 @@
   community.postgresql.postgresql_user:
     login_db: augur
     login_host: "localhost"
-    login_user: "{{ augur_pg_container_user }}"
+    login_user: "{{ pg_container_user }}"
     login_password: "{{ augur_pg_password }}"
     name: "researcher"
     password: ""
@@ -69,7 +69,7 @@
   community.postgresql.postgresql_privs:
     login_db: augur
     login_host: "localhost"
-    login_user: "{{ augur_pg_container_user }}"
+    login_user: "{{ pg_container_user }}"
     login_password: "{{ augur_pg_password }}"
     connect_params:
       application_name: "{{ postgres_connection_name }}"
@@ -83,7 +83,7 @@
   community.postgresql.postgresql_privs:
     login_db: augur
     login_host: "localhost"
-    login_user: "{{ augur_pg_container_user }}"
+    login_user: "{{ pg_container_user }}"
     login_password: "{{ augur_pg_password }}"
     connect_params:
       application_name: "{{ postgres_connection_name }}"
@@ -97,7 +97,7 @@
   community.postgresql.postgresql_privs:
     login_db: augur
     login_host: "localhost"
-    login_user: "{{ augur_pg_container_user }}"
+    login_user: "{{ pg_container_user }}"
     login_password: "{{ augur_pg_password }}"
     connect_params:
       application_name: "{{ postgres_connection_name }}"
@@ -112,7 +112,7 @@
   community.postgresql.postgresql_user:
     login_db: augur
     login_host: "localhost"
-    login_user: "{{ augur_pg_container_user }}"
+    login_user: "{{ pg_container_user }}"
     login_password: "{{ augur_pg_password }}"
     connect_params:
       application_name: "{{ postgres_connection_name }}"
@@ -126,7 +126,7 @@
   community.postgresql.postgresql_membership:
     login_db: augur
     login_host: "localhost"
-    login_user: "{{ augur_pg_container_user }}"
+    login_user: "{{ pg_container_user }}"
     login_password: "{{ augur_pg_password }}"
     connect_params:
       application_name: "{{ postgres_connection_name }}"

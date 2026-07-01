@@ -6,7 +6,7 @@
   community.postgresql.postgresql_query:
     login_db: augur
     login_host: "localhost"
-    login_user: "{{ augur_pg_container_user }}"
+    login_user: "{{ pg_container_user }}"
     login_password: "{{ augur_pg_password }}"
     query: "SELECT pg_drop_replication_slot('fivetran_pgoutput_slot')"
   register: slot_result
@@ -18,7 +18,7 @@
 #   community.postgresql.postgresql_user:
 #     login_db: augur
 #     login_host: "localhost"
-#     login_user: "{{ augur_pg_container_user }}"
+#     login_user: "{{ pg_container_user }}"
 #     login_password: "{{ augur_pg_password }}"
 #     name: "fivetran"
 #     state: absent
@@ -81,7 +81,7 @@
       community.postgresql.postgresql_script:
         login_db: augur
         login_host: "localhost"
-        login_user: "{{ augur_pg_container_user }}"
+        login_user: "{{ pg_container_user }}"
         login_password: "{{ augur_pg_password }}"
         path: "{{ item }}"
         encoding: UTF-8
@@ -108,6 +108,5 @@
       - username: grafana_monitoring
         password: "{{ bot_account_grafana_password }}"
         groups: augur_read_only,pg_read_all_stats
-
 # Create research accounts
 # same as above but possibly referencing a static password hash in another file
