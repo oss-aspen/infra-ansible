@@ -20,7 +20,7 @@ services:
       POSTGRES_PASSWORD: ${AUGUR_PASSWORD}
     #command: postgres
     volumes:
-      - {{ mount_point }}:/var/lib/postgresql/data
+      - {{ mount_point }}:{{ pg_container_mount_point }}
     networks:
       - 8knot
     ports:
@@ -166,7 +166,7 @@ services:
     command: ["postgres", "-c", "config_file=/etc/postgresql/postgresql.conf"]
     volumes:
       - {{ git_clone_path }}/postgres.conf:/etc/postgresql/postgresql.conf:ro
-      - postgres-cache:/var/lib/postgresql/data
+      - postgres-cache:{{ pg_container_mount_point }}
     env_file:
       - .env
     restart: always
