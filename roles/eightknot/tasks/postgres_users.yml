@@ -47,7 +47,7 @@
     privs: SELECT
     type: table
     objs: config,refresh_tokens,user_session_tokens,users,worker_oauth
-    schema: augur_operations
+    schema: operations
     roles: collectoss_read_only
 
 - name: Create/ensure role exists for researchers
