@@ -79,7 +79,7 @@
     database: "{{ pg_container_db_name }}"
     roles: researcher
 
-- name: Grant augur_data USAGE privs to researcher role
+- name: Grant data USAGE privs to researcher role
   community.postgresql.postgresql_privs:
     login_db: "{{ pg_container_db_name }}"
     login_host: "localhost"
@@ -90,10 +90,10 @@
     state: present
     privs: USAGE
     type: schema
-    objs: augur_data
+    objs: data
     roles: researcher
 
-- name: Grant augur_data SELECT privs to researcher role
+- name: Grant data SELECT privs to researcher role
   community.postgresql.postgresql_privs:
     login_db: "{{ pg_container_db_name }}"
     login_host: "localhost"
@@ -105,7 +105,7 @@
     privs: SELECT
     type: table
     objs: ALL_IN_SCHEMA
-    schema: augur_data
+    schema: data
     roles: researcher
 
 - name: Ensure defined user accounts (roles intended for login) exist in postgres

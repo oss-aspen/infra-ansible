@@ -6,7 +6,7 @@
   set_fact:
     sql_query: >-
       {% for view in views_to_refresh -%}
-      Refresh materialized view augur_data.{{ view }};
+      Refresh materialized view data.{{ view }};
       {% endfor %}
   vars:
     views_to_refresh:

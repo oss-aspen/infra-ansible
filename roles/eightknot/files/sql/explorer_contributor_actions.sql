@@ -1,8 +1,8 @@
--- augur_data.explorer_contributor_actions source
+-- data.explorer_contributor_actions source
 -- we are overriding a materialized view from upstream
-DROP MATERIALIZED VIEW IF EXISTS augur_data.explorer_contributor_actions;
+DROP MATERIALIZED VIEW IF EXISTS data.explorer_contributor_actions;
 
-CREATE MATERIALIZED VIEW IF NOT EXISTS augur_data.explorer_contributor_actions AS
+CREATE MATERIALIZED VIEW IF NOT EXISTS data.explorer_contributor_actions AS
 SELECT
     a.cntrb_id,
     a.created_at,
@@ -18,8 +18,8 @@ FROM (
         i.repo_id,
         'issue_opened'::text           AS action,
         r.repo_name
-    FROM augur_data.issues i
-    JOIN augur_data.repo r ON r.repo_id = i.repo_id
+    FROM data.issues i
+    JOIN data.repo r ON r.repo_id = i.repo_id
     WHERE i.pull_request IS NULL
 
     UNION ALL
@@ -31,11 +31,11 @@ FROM (
         pr.repo_id,
         'pull_request_closed'::text    AS action,
         r.repo_name
-    FROM augur_data.pull_request_events pre
-    JOIN augur_data.pull_requests pr
+    FROM data.pull_request_events pre
+    JOIN data.pull_requests pr
         ON pr.pull_request_id = pre.pull_request_id
         AND pr.pr_merged_at IS NULL
-    JOIN augur_data.repo r ON r.repo_id = pr.repo_id
+    JOIN data.repo r ON r.repo_id = pr.repo_id
     WHERE pre.action = 'closed'
 
     UNION ALL
@@ -47,10 +47,10 @@ FROM (
         pr.repo_id,
         'pull_request_merged'::text    AS action,
         r.repo_name
-    FROM augur_data.pull_request_events pre
-    JOIN augur_data.pull_requests pr
+    FROM data.pull_request_events pre
+    JOIN data.pull_requests pr
         ON pr.pull_request_id = pre.pull_request_id
-    JOIN augur_data.repo r ON r.repo_id = pr.repo_id
+    JOIN data.repo r ON r.repo_id = pr.repo_id
     WHERE pre.action = 'merged'
 
     UNION ALL
@@ -62,11 +62,11 @@ FROM (
         i.repo_id,
         'issue_closed'::text           AS action,
         r.repo_name
-    FROM augur_data.issue_events ie
-    JOIN augur_data.issues i
+    FROM data.issue_events ie
+    JOIN data.issues i
         ON i.issue_id = ie.issue_id
         AND i.pull_request IS NULL
-    JOIN augur_data.repo r ON r.repo_id = i.repo_id
+    JOIN data.repo r ON r.repo_id = i.repo_id
     WHERE ie.action = 'closed'
 
     UNION ALL
@@ -78,10 +78,10 @@ FROM (
         pr.repo_id,
         ('pull_request_review_' || prr.pr_review_state::text) AS action,
         r.repo_name
-    FROM augur_data.pull_request_reviews prr
-    JOIN augur_data.pull_requests pr
+    FROM data.pull_request_reviews prr
+    JOIN data.pull_requests pr
         ON pr.pull_request_id = prr.pull_request_id
-    JOIN augur_data.repo r ON r.repo_id = pr.repo_id
+    JOIN data.repo r ON r.repo_id = pr.repo_id
 
     UNION ALL
 
@@ -92,8 +92,8 @@ FROM (
         pr.repo_id,
         'pull_request_open'::text      AS action,
         r.repo_name
-    FROM augur_data.pull_requests pr
-    JOIN augur_data.repo r ON r.repo_id = pr.repo_id
+    FROM data.pull_requests pr
+    JOIN data.repo r ON r.repo_id = pr.repo_id
 
     UNION ALL
 
@@ -104,11 +104,11 @@ FROM (
         pr.repo_id,
         'pull_request_comment'::text   AS action,
         r.repo_name
-    FROM augur_data.pull_request_message_ref prmr
-    JOIN augur_data.pull_requests pr
+    FROM data.pull_request_message_ref prmr
+    JOIN data.pull_requests pr
         ON pr.pull_request_id = prmr.pull_request_id
-    JOIN augur_data.repo r ON r.repo_id = pr.repo_id
-    JOIN augur_data.message m ON m.msg_id = prmr.msg_id
+    JOIN data.repo r ON r.repo_id = pr.repo_id
+    JOIN data.message m ON m.msg_id = prmr.msg_id
 
     UNION ALL
 
@@ -119,20 +119,20 @@ FROM (
         i.repo_id,
         'issue_comment'::text          AS action,
         r.repo_name
-    FROM augur_data.issue_message_ref imr
-    JOIN augur_data.message m ON m.msg_id = imr.msg_id
-    JOIN augur_data.issues i
+    FROM data.issue_message_ref imr
+    JOIN data.message m ON m.msg_id = imr.msg_id
+    JOIN data.issues i
         ON i.issue_id = imr.issue_id
         AND i.pull_request IS NULL
         AND i.closed_at <> m.msg_timestamp
-    JOIN augur_data.repo r ON r.repo_id = i.repo_id
+    JOIN data.repo r ON r.repo_id = i.repo_id
 ) a
-LEFT JOIN augur_data.contributors co ON co.cntrb_id = a.cntrb_id
+LEFT JOIN data.contributors co ON co.cntrb_id = a.cntrb_id
 ORDER BY a.created_at DESC
 WITH NO DATA;
 
 -- indexes for common access patterns
-CREATE INDEX IF NOT EXISTS idx_eca_repo_id     ON augur_data.explorer_contributor_actions (repo_id);
-CREATE INDEX IF NOT EXISTS idx_eca_cntrb_id    ON augur_data.explorer_contributor_actions (cntrb_id);
-CREATE INDEX IF NOT EXISTS idx_eca_created_at  ON augur_data.explorer_contributor_actions (created_at DESC);
-CREATE INDEX IF NOT EXISTS idx_eca_login       ON augur_data.explorer_contributor_actions (login);
+CREATE INDEX IF NOT EXISTS idx_eca_repo_id     ON data.explorer_contributor_actions (repo_id);
+CREATE INDEX IF NOT EXISTS idx_eca_cntrb_id    ON data.explorer_contributor_actions (cntrb_id);
+CREATE INDEX IF NOT EXISTS idx_eca_created_at  ON data.explorer_contributor_actions (created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_eca_login       ON data.explorer_contributor_actions (login);
