@@ -12,7 +12,7 @@ x-postgres-common:
     retries: 5
 
 services:
-  augur-db:
+  core-database:
     <<: *postgres-common
     environment:
       POSTGRES_DB: ${AUGUR_DATABASE}
