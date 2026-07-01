@@ -142,7 +142,7 @@
     timeout: 60
     msg: "New device {{ mount_point_block }} did not appear within 60 seconds."
 
-- name: remount the augur db
+- name: remount the collectoss db
   include_tasks: mount_augur.yml
 
 # TODO: verify the new mount point matches the new volume ID
