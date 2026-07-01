@@ -25,7 +25,7 @@
   ansible.builtin.shell: |
     tmux new-session -d -s "ansible-refresh-mat-views" \
     "docker container exec -e PGPASSWORD={{ pg_container_password }} {{ pg_container_name }} \
-    psql -U {{ pg_container_user }} -c '{{ sql_query }}'"
+    psql -U {{ pg_container_user }} -d {{ pg_container_db_name }} -c '{{ sql_query }}'"
   # environment:
   #   PGPASSWORD: "{{ pg_container_password }}" # Pass the password securely via environment variable
   vars:
