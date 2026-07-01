@@ -19,7 +19,7 @@
     login_host: "localhost"
     login_user: "{{ pg_container_user }}"
     login_password: "{{ pg_container_password }}"
-    name: "augur_read_only"
+    name: "collectoss_read_only"
     conn_limit: 20
     connect_params:
       application_name: "{{ postgres_connection_name }}"
@@ -48,7 +48,7 @@
     type: table
     objs: config,refresh_tokens,user_session_tokens,users,worker_oauth
     schema: augur_operations
-    roles: augur_read_only
+    roles: collectoss_read_only
 
 - name: Create/ensure role exists for researchers
   # this user has a narrower set of read only permissions over mostly just augur data (data, mat views etc)
