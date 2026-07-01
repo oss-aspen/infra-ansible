@@ -23,7 +23,7 @@ services:
     ports:
       - 5432:5432
     volumes:
-      - {{ postgres_data_mount_point }}:/var/lib/postgresql/data
+      - {{ postgres_data_mount_point }}:{{ postgres_data_mount_point }}
      # - /opt/facade/dumps/:/dumps # probably legacy from when backups were done this way
     networks:
       - collectoss
