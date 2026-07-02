@@ -88,7 +88,7 @@
     database: "{{ pg_container_db_name }}"
     roles: researcher
 
-- name: Grant data USAGE privs to researcher role
+- name: Grant data USAGE privs to researcher role for data schema
   community.postgresql.postgresql_privs:
     login_db: "{{ pg_container_db_name }}"
     login_host: "localhost"
@@ -102,7 +102,7 @@
     objs: data
     roles: researcher
 
-- name: Grant data SELECT privs to researcher role
+- name: Grant data SELECT privs to researcher role for data schema
   community.postgresql.postgresql_privs:
     login_db: "{{ pg_container_db_name }}"
     login_host: "localhost"
