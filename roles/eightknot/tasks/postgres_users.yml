@@ -24,16 +24,16 @@
     connect_params:
       application_name: "{{ postgres_connection_name }}"
     password: ""
-    # role_attr_flags: "{{ permission_flags | join(',') }}"
+    role_attr_flags: "{{ permission_flags | join(',') }}"
   no_log: true
-  # vars:
-  #   permission_flags:
-  #     - NOSUPERUSER
-  #     - NOCREATEDB
-  #     - NOCREATEROLE
-  #     - NOLOGIN
-  #     - NOREPLICATION
-  #     - NOBYPASSRLS
+  vars:
+    permission_flags:
+      - NOSUPERUSER
+      - NOCREATEDB
+      - NOCREATEROLE
+      - NOLOGIN
+      - NOREPLICATION
+      - NOBYPASSRLS
 
 - name: revoke privs for sensitive tables on read only role
   community.postgresql.postgresql_privs:
@@ -63,7 +63,16 @@
     conn_limit: 5
     connect_params:
       application_name: "{{ postgres_connection_name }}"
+    role_attr_flags: "{{ permission_flags | join(',') }}"
   no_log: true
+  vars:
+    permission_flags:
+      - NOSUPERUSER
+      - NOCREATEDB
+      - NOCREATEROLE
+      - NOLOGIN
+      - NOREPLICATION
+      - NOBYPASSRLS
 
 - name: revoke all read privs to researcher role
   community.postgresql.postgresql_privs:
