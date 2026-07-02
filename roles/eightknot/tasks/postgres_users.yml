@@ -74,7 +74,7 @@
       - NOREPLICATION
       - NOBYPASSRLS
 
-- name: revoke all read privs to researcher role
+- name: Grant CONNECT on database to researcher role
   community.postgresql.postgresql_privs:
     login_db: "{{ pg_container_db_name }}"
     login_host: "localhost"
@@ -82,8 +82,8 @@
     login_password: "{{ pg_container_password }}"
     connect_params:
       application_name: "{{ postgres_connection_name }}"
-    state: absent
-    privs: ALL
+    state: present
+    privs: CONNECT
     type: database
     database: "{{ pg_container_db_name }}"
     roles: researcher
