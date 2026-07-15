@@ -110,3 +110,13 @@
         groups: collectoss_read_only,pg_read_all_stats
 # Create research accounts
 # same as above but possibly referencing a static password hash in another file
+
+- name: Load extra variables
+  ansible.builtin.include_vars:
+    file: researchers.yml
+
+# Create research accounts
+- name: Create research accounts in postgres.
+  ansible.builtin.include_role:
+    name: eightknot
+    tasks_from: postgres_users
