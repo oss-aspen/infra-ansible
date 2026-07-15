@@ -1,0 +1,10 @@
+postgres_users:
+  - username: "{{ vault_researcher_1_username }}"
+    password: "{{ vault_researcher_1_password }}"
+    groups: researcher
+  - username: "{{ vault_researcher_2_username }}"
+    password: "{{ vault_researcher_2_password }}"
+    groups: researcher
+  - username: "{{ vault_researcher_3_username }}"
+    password: "{{ vault_researcher_3_password }}"
+    groups: researcher
