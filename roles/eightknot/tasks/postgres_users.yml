@@ -15,105 +15,114 @@
   # It is intended as a role for automations to be added to to set their permissions.
   # this is a subset of the pg_read_all_data  built in role that prevents access to a couple sensitive tables (api keys)
   community.postgresql.postgresql_user:
-    login_db: augur
+    login_db: "{{ pg_container_db_name }}"
     login_host: "localhost"
-    login_user: "{{ augur_pg_container_user }}"
-    login_password: "{{ augur_pg_password }}"
-    name: "augur_read_only"
+    login_user: "{{ pg_container_user }}"
+    login_password: "{{ pg_container_password }}"
+    name: "collectoss_read_only"
     conn_limit: 20
     connect_params:
       application_name: "{{ postgres_connection_name }}"
     password: ""
-    # role_attr_flags: "{{ permission_flags | join(',') }}"
+    role_attr_flags: "{{ permission_flags | join(',') }}"
   no_log: true
-  # vars:
-  #   permission_flags:
-  #     - NOSUPERUSER
-  #     - NOCREATEDB
-  #     - NOCREATEROLE
-  #     - NOLOGIN
-  #     - NOREPLICATION
-  #     - NOBYPASSRLS
+  vars:
+    permission_flags:
+      - NOSUPERUSER
+      - NOCREATEDB
+      - NOCREATEROLE
+      - NOLOGIN
+      - NOREPLICATION
+      - NOBYPASSRLS
 
 - name: revoke privs for sensitive tables on read only role
   community.postgresql.postgresql_privs:
-    login_db: augur
+    login_db: "{{ pg_container_db_name }}"
     login_host: "localhost"
-    login_user: "{{ augur_pg_container_user }}"
-    login_password: "{{ augur_pg_password }}"
+    login_user: "{{ pg_container_user }}"
+    login_password: "{{ pg_container_password }}"
     connect_params:
       application_name: "{{ postgres_connection_name }}"
     state: absent
     privs: SELECT
     type: table
     objs: config,refresh_tokens,user_session_tokens,users,worker_oauth
-    schema: augur_operations
-    roles: augur_read_only
+    schema: operations
+    roles: collectoss_read_only
 
 - name: Create/ensure role exists for researchers
-  # this user has a narrower set of read only permissions over mostly just augur data (data, mat views etc)
+  # this user has a narrower set of read only permissions over mostly just collectoss data (data, mat views etc)
   # It is intended as a subset of the read only role for granting to all researcher accounts.
   community.postgresql.postgresql_user:
-    login_db: augur
+    login_db: "{{ pg_container_db_name }}"
     login_host: "localhost"
-    login_user: "{{ augur_pg_container_user }}"
-    login_password: "{{ augur_pg_password }}"
+    login_user: "{{ pg_container_user }}"
+    login_password: "{{ pg_container_password }}"
     name: "researcher"
     password: ""
     conn_limit: 5
     connect_params:
       application_name: "{{ postgres_connection_name }}"
+    role_attr_flags: "{{ permission_flags | join(',') }}"
   no_log: true
+  vars:
+    permission_flags:
+      - NOSUPERUSER
+      - NOCREATEDB
+      - NOCREATEROLE
+      - NOLOGIN
+      - NOREPLICATION
+      - NOBYPASSRLS
 
-- name: revoke all read privs to researcher role
+- name: Grant CONNECT on database to researcher role
   community.postgresql.postgresql_privs:
-    login_db: augur
+    login_db: "{{ pg_container_db_name }}"
     login_host: "localhost"
-    login_user: "{{ augur_pg_container_user }}"
-    login_password: "{{ augur_pg_password }}"
+    login_user: "{{ pg_container_user }}"
+    login_password: "{{ pg_container_password }}"
     connect_params:
       application_name: "{{ postgres_connection_name }}"
-    state: absent
-    privs: ALL
+    state: present
+    privs: CONNECT
     type: database
-    database: augur
+    database: "{{ pg_container_db_name }}"
     roles: researcher
 
-- name: Grant augur_data USAGE privs to researcher role
+- name: Grant data USAGE privs to researcher role for data schema
   community.postgresql.postgresql_privs:
-    login_db: augur
+    login_db: "{{ pg_container_db_name }}"
     login_host: "localhost"
-    login_user: "{{ augur_pg_container_user }}"
-    login_password: "{{ augur_pg_password }}"
+    login_user: "{{ pg_container_user }}"
+    login_password: "{{ pg_container_password }}"
     connect_params:
       application_name: "{{ postgres_connection_name }}"
     state: present
     privs: USAGE
     type: schema
-    objs: augur_data
+    objs: data
     roles: researcher
 
-- name: Grant augur_data SELECT privs to researcher role
+- name: Grant data SELECT privs to researcher role for data schema
   community.postgresql.postgresql_privs:
-    login_db: augur
+    login_db: "{{ pg_container_db_name }}"
     login_host: "localhost"
-    login_user: "{{ augur_pg_container_user }}"
-    login_password: "{{ augur_pg_password }}"
+    login_user: "{{ pg_container_user }}"
+    login_password: "{{ pg_container_password }}"
     connect_params:
       application_name: "{{ postgres_connection_name }}"
     state: present
     privs: SELECT
     type: table
     objs: ALL_IN_SCHEMA
-    schema: augur_data
+    schema: data
     roles: researcher
 
 - name: Ensure defined user accounts (roles intended for login) exist in postgres
   community.postgresql.postgresql_user:
-    login_db: augur
+    login_db: "{{ pg_container_db_name }}"
     login_host: "localhost"
-    login_user: "{{ augur_pg_container_user }}"
-    login_password: "{{ augur_pg_password }}"
+    login_user: "{{ pg_container_user }}"
+    login_password: "{{ pg_container_password }}"
     connect_params:
       application_name: "{{ postgres_connection_name }}"
     name: "{{ item.username }}"
@@ -122,12 +131,12 @@
   no_log: true
   loop: "{{ postgres_users }}"
 
-- name: Make sure augur users (roles) only belong to their assigned groups (roles)
+- name: Make sure collectoss users (roles) only belong to their assigned groups (roles)
   community.postgresql.postgresql_membership:
-    login_db: augur
+    login_db: "{{ pg_container_db_name }}"
     login_host: "localhost"
-    login_user: "{{ augur_pg_container_user }}"
-    login_password: "{{ augur_pg_password }}"
+    login_user: "{{ pg_container_user }}"
+    login_password: "{{ pg_container_password }}"
     connect_params:
       application_name: "{{ postgres_connection_name }}"
     groups: "{{ item.groups.split(',') }}"

@@ -142,7 +142,7 @@
     timeout: 60
     msg: "New device {{ mount_point_block }} did not appear within 60 seconds."
 
-- name: remount the augur db
+- name: remount the collectoss db
   include_tasks: mount_augur.yml
 
 # TODO: verify the new mount point matches the new volume ID
@@ -163,7 +163,7 @@
     project_src: "{{ compose_path }}"
     pull: missing
     services:
-      - augur-db
+      - core-database
     env_files: .env
 
 - name: Crash Recovery - register start
@@ -171,7 +171,7 @@
     recovery_start: "{{ now() }}"
 
 - name: Wait for PostgreSQL to start accepting connections
-  ansible.builtin.command: docker exec -i {{ pg_container_name }} psql -U {{ augur_pg_container_user }} -c "SELECT 'READY' WHERE pg_is_in_recovery() = 'f';"
+  ansible.builtin.command: docker exec -i {{ pg_container_name }} psql -U {{ pg_container_user }} -d {{ pg_container_db_name }} -c "SELECT 'READY' WHERE pg_is_in_recovery() = 'f';"
   register: recovery_check
   ignore_errors: true
   until: recovery_check.rc == 0 and "READY" in recovery_check.stdout
