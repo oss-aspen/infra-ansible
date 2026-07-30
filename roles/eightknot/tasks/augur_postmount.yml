@@ -2,17 +2,21 @@
   ansible.builtin.include_vars:
     file: secrets.yml
 
-- name: Remove a PostgreSQL replication slot
+- name: Remove all PostgreSQL replication slots
   community.postgresql.postgresql_query:
     login_db: "{{ pg_container_db_name }}"
     login_host: "localhost"
     login_user: "{{ pg_container_user }}"
     login_password: "{{ pg_container_password }}"
-    query: "SELECT pg_drop_replication_slot('fivetran_pgoutput_slot')"
-  register: slot_result
-  failed_when:
-    - slot_result.msg is defined
-    - "'does not exist' not in slot_result.msg"
+    query: |
+      DO $$
+      DECLARE
+          r RECORD;
+      BEGIN
+          FOR r IN SELECT slot_name FROM pg_replication_slots LOOP
+              PERFORM pg_drop_replication_slot(r.slot_name);
+          END LOOP;
+      END $$;
 
 # - name: Remove a PostgreSQL user (role)
 #   community.postgresql.postgresql_user:
