@@ -28,7 +28,7 @@
     msg: >
       Insufficient free space on '{{ postgres_data_mount_point }}'.
       Required: {{ required_free_space }},
-      Available: {{ mount_info.size_available | human_readable(unit='B', traditional=True) }}.
+      Available: {{ mount_info.size_available | human_readable(unit='G') }}.
   when: mount_info.size_available < required_free_space | ansible.builtin.human_to_bytes
 
 - name: Tell PostgreSQL to make a checkpoint
