@@ -28,6 +28,17 @@
     #   loop: "{{ snapshot_info.snapshots }}"
     #   when: item.fast_snapshot_restores | length > 0
 
+    - name: "List snapshots with FSR enabled in AZ {{ availability_zone }}"
+      ansible.builtin.command: >
+        aws ec2 describe-fast-snapshot-restores
+        --profile {{ aws_auth_profile }}
+        --region {{ aws_region }}
+      register: fsr_status
+
+    - name: "Display fsr status:"
+      debug:
+        msg: "{{ fsr_status.stdout | from_json | json_query('FastSnapshotRestores') | aws_to_snake_case }}"
+
     - name: "Display snapshot {{ snapshot_id }}:"
       debug:
         msg: "{{ snapshot_info.snapshots[0].progress }}"
