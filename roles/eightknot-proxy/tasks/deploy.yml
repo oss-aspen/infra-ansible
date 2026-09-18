@@ -34,9 +34,19 @@
   become: true
   register: compose_config
 
+- name: Write custom matomo proxy file
+  copy:
+    src: "files/matomo.js"
+    dest: /opt/caddy/a.js
+    group: sudo
+    owner: root
+    mode: 0644
+  become: true
+  register: matomo_file
+
 - name: Restart caddy proxy service
   community.docker.docker_compose_v2:
     project_src: "{{ compose_path }}"
     pull: missing
     state: restarted
-  when: compose_config.changed or caddyfile_config.changed
+  when: compose_config.changed or caddyfile_config.changed or matomo_file.changed

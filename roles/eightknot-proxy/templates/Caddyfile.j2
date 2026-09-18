@@ -1,5 +1,28 @@
 {{ public_hostname }} {
 
-    reverse_proxy reverse-proxy:8080
+# Proxy tracking script
+    handle /a.js {
+        #rewrite * /matomo.js
+        #reverse_proxy https://analytics.ossupstream.org {
+        #    header_up Host analytics.ossupstream.org
+        #}
+        root * /etc/caddy
+        file_server
+#        respond /stealth-matomo.js
+    }
+
+    # Proxy tracking endpoint (preserves query params automatically)
+    handle /a.php {
+        uri query stealth_action_name>action_name
+        rewrite * /matomo.php
+        reverse_proxy https://analytics.ossupstream.org {
+            header_up Host analytics.ossupstream.org
+        }
+    }
+
+    # Main app fallback
+    handle {
+        reverse_proxy reverse-proxy:8080
+    }
 
 }
