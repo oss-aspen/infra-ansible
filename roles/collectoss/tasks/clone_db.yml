@@ -103,5 +103,5 @@
 
       # Check 2: Ensure our snapshot ID is in the 'Successful' array.
       - snapshot_result.snapshot_id in ((enable_fsr_result.stdout | from_json).Successful | map(attribute='SnapshotId'))
-    success_msg: "Successfully initiated FSR for snapshot {{ snapshot_result.snapshot_id }}."
+    success_msg: "Successfully initiated FSR for snapshot {{ snapshot_result.snapshot_id }}"
     fail_msg: "Failed to initiate FSR for snapshot {{ snapshot_result.snapshot_id }}. Check the command output."
